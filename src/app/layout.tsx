@@ -27,12 +27,12 @@ export default function RootLayout({
         <main className="pt-16 md:pt-16 lg:pt-16">{children}</main>
         <Footer />
         <Toaster />
-        <div className="fixed bottom-6 right-6 z-50">
+        <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50">
           <a
             href="tel:9865440099"
-            className="flex items-center gap-2 bg-secondary text-white px-6 py-3 rounded-full shadow-2xl hover:bg-secondary/90 hover:scale-110 transition-all font-bold text-lg border-2 border-white/20"
+            className="flex items-center gap-1.5 md:gap-2 bg-secondary text-white px-4 py-2 md:px-6 md:py-3 rounded-full shadow-2xl hover:bg-secondary/90 hover:scale-110 transition-all font-bold text-sm md:text-lg border-2 border-white/20"
           >
-            <span className="bg-white/20 p-1.5 rounded-full flex items-center justify-center">📞</span>
+            <span className="bg-white/20 p-1 md:p-1.5 rounded-full flex items-center justify-center">📞</span>
             Call Now
           </a>
         </div>
