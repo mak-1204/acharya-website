@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -144,7 +145,6 @@ export default function Home() {
   const [courseFilter, setCourseFilter] = useState('all');
   
   // Stars Marquee State
-  const [starsFilter, setStarsFilter] = useState('ALL');
   const [isStarsPaused, setIsStarsPaused] = useState(false);
 
   useEffect(() => {
@@ -158,14 +158,9 @@ export default function Home() {
     ? COURSES 
     : COURSES.filter(c => c.category === courseFilter);
 
-  // Marquee Data Logic
-  const filteredStars = starsFilter === 'ALL'
-    ? STARS_DATA
-    : STARS_DATA.filter(s => s.category === starsFilter);
-
   // Double the array for seamless infinite marquee loop
-  const loopedStars = [...filteredStars, ...filteredStars];
-  const starsDuration = filteredStars.length <= 3 ? "12s" : "20s";
+  const loopedStars = [...STARS_DATA, ...STARS_DATA];
+  const starsDuration = STARS_DATA.length <= 3 ? "12s" : "20s";
 
   return (
     <div className="flex flex-col w-full">
@@ -301,24 +296,6 @@ export default function Home() {
             <h2 className="text-4xl md:text-5xl font-bold text-[#1C1C1C] mb-8 font-headline">
               Meet Our Stars <span className="text-[#FFC107]">✦</span>
             </h2>
-            
-            {/* Filter Tabs */}
-            <div className="flex flex-wrap justify-center gap-3 mb-12">
-              {['ALL', 'NEET', 'JEE', 'CLASSES 6-10'].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setStarsFilter(tab)}
-                  className={cn(
-                    "px-6 py-2 rounded-full border-2 font-bold text-xs uppercase tracking-wider transition-all",
-                    starsFilter === tab
-                      ? "bg-white border-[#1A237E] text-[#1A237E] shadow-sm"
-                      : "bg-white border-gray-200 text-gray-400 hover:border-gray-300"
-                  )}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
 
             {/* Infinite Marquee Wrapper */}
             <div 
@@ -596,3 +573,4 @@ export default function Home() {
     </div>
   );
 }
+
