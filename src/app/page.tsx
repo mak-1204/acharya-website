@@ -7,12 +7,11 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EnquiryForm } from '@/components/EnquiryForm';
 import { 
   CheckCircle2, BookOpen, Target, Award, Users, 
-  ShieldCheck, Zap, ChevronRight, GraduationCap, MapPin, 
-  Calendar, Quote, Camera, Trophy, Gift, ArrowRight, Phone, ExternalLink
+  ShieldCheck, Zap, GraduationCap, MapPin, 
+  Calendar, Quote, Camera, Trophy, Gift, ArrowRight, Phone
 } from 'lucide-react';
 import {
   Carousel,
@@ -151,14 +150,13 @@ export default function Home() {
     });
   }, [heroApi]);
 
-  // Double the array for seamless infinite marquee loop
   const loopedStars = [...STARS_DATA, ...STARS_DATA];
   const starsDuration = STARS_DATA.length <= 3 ? "12s" : "20s";
 
   return (
     <div className="flex flex-col w-full overflow-x-hidden">
       {/* 1. HERO SECTION */}
-      <section id="hero" className="relative w-full pt-0">
+      <section id="hero" className="relative w-full pt-0 overflow-hidden">
         <Carousel setApi={setHeroApi} opts={{ loop: true }} className="w-full">
           <CarouselContent>
             {HERO_BANNERS.map((banner, index) => (
@@ -169,17 +167,17 @@ export default function Home() {
                       <Badge className="bg-white/20 text-white border-none px-4 py-1.5 uppercase tracking-wider text-[10px] md:text-xs">
                         {banner.badge}
                       </Badge>
-                      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight leading-tight">
+                      <h1 className="text-3xl sm:text-4xl lg:text-7xl font-bold tracking-tight leading-tight">
                         {banner.title}
                       </h1>
                       <p className="text-base md:text-xl text-white/80 max-w-lg">
                         {banner.subtitle}
                       </p>
-                      <div className="flex flex-wrap gap-3 md:gap-4 pt-4">
-                        <Button asChild size="lg" className="w-full sm:w-auto bg-white text-secondary hover:bg-white/90 font-bold rounded-full px-10">
+                      <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-4">
+                        <Button asChild size="lg" className="w-full sm:w-auto bg-white text-secondary hover:bg-white/90 font-bold rounded-full px-10 h-12 md:h-14">
                           <a href={banner.link} target="_blank" rel="noopener noreferrer">{banner.cta}</a>
                         </Button>
-                        <Button asChild size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-white text-white hover:bg-white/10 font-bold rounded-full px-10">
+                        <Button asChild size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-white text-white hover:bg-white/10 font-bold rounded-full px-10 h-12 md:h-14">
                           <a href="tel:9865440099">Call Counselor</a>
                         </Button>
                       </div>
@@ -215,7 +213,7 @@ export default function Home() {
       </section>
 
       {/* 2. STATS STRIP */}
-      <section id="stats" className="bg-white py-8 md:py-12 border-b relative z-30 -mt-6 md:-mt-10 mx-4 md:mx-12 lg:mx-24 rounded-2xl md:rounded-3xl shadow-xl border">
+      <section id="stats" className="bg-white py-8 md:py-12 border-b relative z-30 -mt-6 md:-mt-10 mx-4 md:mx-12 lg:mx-auto max-w-7xl rounded-2xl md:rounded-3xl shadow-xl border">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 text-center">
             {IMPULSE_STATS.map((stat, i) => (
@@ -223,7 +221,7 @@ export default function Home() {
                 <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-3 md:mb-4 group-hover:bg-primary group-hover:text-white transition-all duration-300">
                   {stat.icon}
                 </div>
-                <div className="text-2xl md:text-4xl font-bold text-secondary">{stat.value}</div>
+                <div className="text-xl sm:text-2xl md:text-4xl font-bold text-secondary">{stat.value}</div>
                 <div className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{stat.label}</div>
               </div>
             ))}
@@ -233,13 +231,13 @@ export default function Home() {
 
       {/* 3. COURSES SECTION */}
       <section id="courses" className="py-16 md:py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-7xl">
           <div className="text-center mb-10 md:mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-4">Our Impulse</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary mb-4">Our Impulse</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto italic text-sm md:text-base">Guiding Madurai's brightest minds towards excellence.</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {COURSES.map((course) => (
               <Card key={course.id} className="group hover:shadow-2xl transition-all duration-500 border rounded-2xl md:rounded-3xl overflow-hidden bg-white">
                 <CardContent className="p-6 md:p-8">
@@ -267,11 +265,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. MEET OUR STARS SECTION (Infinite Marquee) */}
+      {/* 4. MEET OUR STARS SECTION */}
       <section id="stars" className="py-16 md:py-24 bg-white scroll-mt-16 overflow-hidden">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-7xl">
           <div className="text-center">
-            <h2 className="text-3xl md:text-5xl font-bold text-[#1C1C1C] mb-8 md:mb-12 font-headline">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1C1C1C] mb-8 md:mb-12 font-headline">
               Meet Our Stars <span className="text-[#FFC107]">✦</span>
             </h2>
 
@@ -293,9 +291,9 @@ export default function Home() {
                 {loopedStars.map((star, idx) => (
                   <div 
                     key={idx} 
-                    className="w-[150px] md:w-[180px] bg-white rounded-xl md:rounded-2xl shadow-md overflow-hidden flex-shrink-0 hover:scale-105 transition-transform duration-300 cursor-pointer border border-border"
+                    className="w-[140px] sm:w-[160px] md:w-[180px] bg-white rounded-xl md:rounded-2xl shadow-md overflow-hidden flex-shrink-0 hover:scale-105 transition-transform duration-300 cursor-pointer border border-border"
                   >
-                    <div className="h-32 md:h-44 bg-gradient-to-br from-[#1A237E] to-[#D32F2F] flex items-center justify-center relative">
+                    <div className="h-32 sm:h-36 md:h-44 bg-gradient-to-br from-[#1A237E] to-[#D32F2F] flex items-center justify-center relative">
                       <span className="text-white text-2xl md:text-4xl font-bold">{star.initials}</span>
                       <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1 px-2 text-center">
                         <span className="text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider">
@@ -319,8 +317,8 @@ export default function Home() {
 
       {/* 5. WHY ACHARYA */}
       <section id="why" className="py-16 md:py-24 bg-secondary text-white scroll-mt-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold mb-10 md:mb-16">Why Madurai Trusts Us?</h2>
+        <div className="container mx-auto px-4 text-center max-w-7xl">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-10 md:mb-16">Why Madurai Trusts Us?</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {WHY_ACHARYA.map((feature, i) => (
               <div key={i} className="bg-white/5 border border-white/10 p-6 md:p-10 rounded-2xl md:rounded-3xl hover:bg-white/10 transition-all text-left">
@@ -337,9 +335,11 @@ export default function Home() {
 
       {/* 6. JOURNEY STEPPER */}
       <section id="journey" className="py-16 md:py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-5xl font-bold text-center text-secondary mb-12 md:mb-20">Your Path to Excellence</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 relative">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-secondary mb-12 md:mb-20">Your Path to Excellence</h2>
+          
+          {/* Desktop/Tablet Horizontal Stepper */}
+          <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 relative">
             <div className="hidden md:block absolute top-10 left-0 w-full h-1 bg-muted -translate-y-1/2 z-0"></div>
             {JOURNEY_STEPS.map((step, i) => (
               <div key={i} className="relative z-10 flex flex-col items-center text-center group">
@@ -351,15 +351,34 @@ export default function Home() {
               </div>
             ))}
           </div>
+
+          {/* Mobile Vertical Stepper */}
+          <div className="flex sm:hidden flex-col gap-8 relative">
+            <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-muted -translate-x-1/2"></div>
+            {JOURNEY_STEPS.map((step, i) => (
+              <div key={i} className="relative z-10 flex flex-col items-center text-center">
+                <div className="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center mb-3 shadow-lg border-4 border-white">
+                  <div className="w-5 h-5">{step.icon}</div>
+                </div>
+                <h3 className="text-base font-bold text-secondary mb-1">{step.title}</h3>
+                <p className="text-muted-foreground text-[11px] px-8">{step.desc}</p>
+                {i < JOURNEY_STEPS.length - 1 && (
+                  <div className="mt-4 animate-bounce">
+                    <ArrowRight className="w-4 h-4 text-primary rotate-90" />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* 7. MODE SECTION */}
       <section id="mode" className="py-16 md:py-24 bg-primary text-white scroll-mt-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-7xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
             <div className="space-y-4 md:space-y-6">
-              <h2 className="text-3xl md:text-5xl font-bold">Learn the Way You Want</h2>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold">Learn the Way You Want</h2>
               <p className="text-lg md:text-xl text-white/80">We offer flexible learning models to suit every student's lifestyle and academic needs.</p>
               <div className="space-y-3 md:space-y-4 pt-2 md:pt-4">
                 {[
@@ -387,14 +406,14 @@ export default function Home() {
 
       {/* 8. ABOUT SECTION */}
       <section id="about" className="py-16 md:py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-7xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
-            <div className="relative h-[300px] md:h-[500px] rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl order-2 lg:order-1">
+            <div className="relative h-[250px] sm:h-[350px] md:h-[500px] rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl order-2 lg:order-1">
               <Image src="https://picsum.photos/seed/about/800/1000" alt="Campus" fill className="object-cover" />
             </div>
             <div className="order-1 lg:order-2">
               <Badge className="bg-primary mb-4 text-[10px] md:text-xs">Established 2007</Badge>
-              <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-4 md:mb-6 leading-tight">Madurai's Legacy of Academic Excellence</h2>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary mb-4 md:mb-6 leading-tight">Madurai's Legacy of Academic Excellence</h2>
               <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-6">
                 Acharya Education has been empowering students for nearly two decades. Our philosophy is simple: limited batch size, expert faculty, and personalized care for every student.
               </p>
@@ -411,7 +430,7 @@ export default function Home() {
                    </div>
                  ))}
               </div>
-              <Button asChild size="lg" className="w-full sm:w-auto rounded-full bg-secondary h-12">
+              <Button asChild size="lg" className="w-full sm:w-auto rounded-full bg-secondary h-12 md:h-14">
                 <Link href="#contact">Visit Our Center</Link>
               </Button>
             </div>
@@ -419,66 +438,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 9. GALLERY SECTION */}
-      <section id="gallery" className="py-16 md:py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-10 md:mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-4 flex items-center justify-center gap-3">
-              <Camera className="text-primary w-6 h-6 md:w-8 md:h-8" /> Life at Acharya
-            </h2>
-            <p className="text-muted-foreground text-sm md:text-base">Glimpses of our vibrant learning environment.</p>
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {GALLERY_IMAGES.map((img, i) => (
-              <div key={i} className="relative group overflow-hidden rounded-xl md:rounded-3xl shadow-lg aspect-[4/3] md:aspect-video">
-                <Image src={img.url} alt={img.title} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
-                <div className="absolute inset-0 bg-secondary/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white p-2 text-center">
-                  <p className="font-bold text-xs md:text-lg">{img.title}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 10. SCHOLARSHIP SECTION */}
-      <section id="scholarship" className="py-16 md:py-24 bg-primary text-white overflow-hidden relative scroll-mt-16">
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center">
-            <div className="space-y-6 md:space-y-8">
-              <Badge className="bg-white/20 mb-2 border-none text-white py-1 px-4 text-[10px] md:text-xs">AEST 2025</Badge>
-              <h2 className="text-4xl md:text-7xl font-bold">Win Up to 100% Scholarship</h2>
-              <p className="text-lg md:text-xl text-white/80">Secure your premium coaching with the Acharya Excellence Scholarship Test. Registrations open soon for Class 6-12.</p>
-              <div className="flex gap-6 md:gap-10">
-                <div className="text-center">
-                   <div className="text-2xl md:text-4xl font-bold">50k+</div>
-                   <div className="text-[10px] uppercase opacity-60">Participants</div>
-                </div>
-                <div className="text-center">
-                   <div className="text-2xl md:text-4xl font-bold">1Cr+</div>
-                   <div className="text-[10px] uppercase opacity-60">Rewards Given</div>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white text-secondary p-8 md:p-12 rounded-2xl md:rounded-[3rem] shadow-2xl relative">
-               <Gift className="absolute -top-6 -right-6 md:-top-10 md:-right-10 w-16 h-16 md:w-24 md:h-24 text-white opacity-20 rotate-12" />
-               <h3 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6">Pre-Register Now</h3>
-               <p className="mb-6 md:mb-8 text-sm md:text-base text-muted-foreground">Register your interest today and be the first to know when AEST 2025 slots are available.</p>
-               <Button asChild size="lg" className="w-full bg-primary hover:bg-primary/90 h-12 md:h-14 text-lg md:text-xl rounded-xl md:rounded-2xl">
-                 <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Register Interest</a>
-               </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 11. TESTIMONIALS SECTION */}
+      {/* 9. TESTIMONIALS SECTION */}
       <section id="testimonials" className="py-16 md:py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-12 md:mb-16 text-center">What Our Students Say</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary mb-12 md:mb-16 text-center">What Our Students Say</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {TESTIMONIALS.map((t, i) => (
-              <Card key={i} className="border-none shadow-xl rounded-2xl md:rounded-3xl p-6 md:p-10 bg-muted/30">
+              <Card key={i} className={cn("border-none shadow-xl rounded-2xl md:rounded-3xl p-6 md:p-10 bg-muted/30", i === 2 && "md:hidden lg:block")}>
                 <Quote className="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6 opacity-20 mx-auto" />
                 <p className="text-base md:text-lg italic text-secondary mb-6 md:mb-8 text-center">"{t.text}"</p>
                 <div className="text-center">
@@ -491,12 +457,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 12. ENQUIRE FORM SECTION */}
+      {/* 10. ENQUIRE SECTION */}
       <section id="enquire" className="py-16 md:py-24 bg-primary relative overflow-hidden scroll-mt-16">
-        <div className="container mx-auto px-4 relative z-10 text-center">
+        <div className="container mx-auto px-4 relative z-10 text-center max-w-7xl">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10 md:mb-12 text-white">
-              <h2 className="text-3xl md:text-6xl font-bold mb-4">Start Your Journey</h2>
+              <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold mb-4">Start Your Journey</h2>
               <p className="text-lg md:text-xl opacity-80">Click below to fill out our official admission enquiry form.</p>
             </div>
             <EnquiryForm source="home_enquire_section" title="Quick Admission Enquiry" />
@@ -504,12 +470,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 13. CONTACT SECTION */}
+      {/* 11. CONTACT SECTION */}
       <section id="contact" className="py-16 md:py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-7xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center">
-            <div className="space-y-8 md:space-y-12">
-              <h2 className="text-3xl md:text-5xl font-bold text-secondary">Visit Our Center</h2>
+            <div className="space-y-8 md:space-y-12 order-2 lg:order-1">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary">Visit Our Center</h2>
               <div className="space-y-6 md:space-y-8">
                 <div className="flex gap-4 md:gap-6 items-start">
                   <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center text-primary shrink-0"><MapPin className="w-5 h-5 md:w-6 md:h-6" /></div>
@@ -534,7 +500,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="h-[300px] md:h-[400px] w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border grayscale opacity-80 hover:grayscale-0 transition-all">
+            <div className="h-[250px] sm:h-[300px] md:h-[400px] w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border grayscale opacity-80 hover:grayscale-0 transition-all order-1 lg:order-2">
               <iframe 
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3929.982548485292!2d78.1481132!3d9.935406!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOcKwNTYnMDEuNSJOIDc4wrAwOCU1My4yIkU!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" 
                 className="w-full h-full border-0" 

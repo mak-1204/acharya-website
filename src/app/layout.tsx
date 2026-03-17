@@ -22,9 +22,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased selection:bg-primary/20">
+      <body className="font-body antialiased selection:bg-primary/20 w-full overflow-x-hidden">
         <Navbar />
-        <main className="pt-16 md:pt-16 lg:pt-16">{children}</main>
+        <main className="pt-16 md:pt-16 lg:pt-16 w-full overflow-x-hidden">{children}</main>
         <Footer />
         <Toaster />
         <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50">

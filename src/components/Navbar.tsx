@@ -96,7 +96,7 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <Logo />
 
-        {/* Desktop Nav Links */}
+        {/* Desktop Nav Links (lg+) */}
         <div className="hidden lg:flex items-center gap-6 xl:gap-8 flex-1 justify-center px-4">
           {NAV_LINKS.map((link) => (
             <Link
@@ -115,7 +115,7 @@ export const Navbar = () => {
           ))}
         </div>
 
-        {/* Desktop Action Buttons */}
+        {/* Desktop Action Buttons (lg+) */}
         <div className="hidden lg:flex items-center gap-4 xl:gap-6 shrink-0">
           <a
             href="tel:9865440099"
@@ -131,7 +131,8 @@ export const Navbar = () => {
 
         {/* Tablet/Mobile Controls */}
         <div className="flex lg:hidden items-center gap-2 sm:gap-3">
-          <Button asChild className="hidden xs:flex bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-full font-bold px-3 sm:px-4 h-8 sm:h-9 text-[10px] sm:text-xs shadow-md text-white">
+          {/* Tablet Only Enquire (md+) */}
+          <Button asChild className="hidden sm:flex lg:hidden bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-full font-bold px-4 h-9 text-xs shadow-md text-white">
             <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Enquire</a>
           </Button>
           <button 

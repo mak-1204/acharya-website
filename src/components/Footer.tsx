@@ -14,11 +14,11 @@ export const Footer = () => {
   }, []);
 
   return (
-    <footer className="bg-secondary text-white pt-12 md:pt-16 pb-8">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 mb-12">
+    <footer className="bg-secondary text-white pt-12 md:pt-16 pb-8 w-full overflow-x-hidden">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 mb-12 text-center sm:text-left">
           {/* Brand */}
-          <div className="space-y-6">
+          <div className="space-y-6 flex flex-col items-center sm:items-start">
             <Link href="/" className="inline-block bg-white p-2 rounded-lg">
               <Image 
                 src="/logo.png" 
@@ -45,8 +45,8 @@ export const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div className="sm:pl-4">
-            <h4 className="text-base md:text-lg font-bold mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-10 after:h-1 after:bg-primary">
+          <div className="space-y-6">
+            <h4 className="text-base md:text-lg font-bold relative pb-2 inline-block after:content-[''] after:absolute after:bottom-0 after:left-1/2 sm:after:left-0 after:-translate-x-1/2 sm:after:translate-x-0 after:w-10 after:h-1 after:bg-primary">
               Quick Links
             </h4>
             <ul className="space-y-3 md:space-y-4 text-white/70 text-sm md:text-base">
@@ -59,8 +59,8 @@ export const Footer = () => {
           </div>
 
           {/* Courses */}
-          <div className="sm:pl-4">
-            <h4 className="text-base md:text-lg font-bold mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-10 after:h-1 after:bg-primary">
+          <div className="space-y-6">
+            <h4 className="text-base md:text-lg font-bold relative pb-2 inline-block after:content-[''] after:absolute after:bottom-0 after:left-1/2 sm:after:left-0 after:-translate-x-1/2 sm:after:translate-x-0 after:w-10 after:h-1 after:bg-primary">
               Our Courses
             </h4>
             <ul className="space-y-3 md:space-y-4 text-white/70 text-sm md:text-base">
@@ -73,20 +73,20 @@ export const Footer = () => {
           </div>
 
           {/* Contact */}
-          <div className="sm:pl-4">
-            <h4 className="text-base md:text-lg font-bold mb-6 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-10 after:h-1 after:bg-primary">
+          <div className="space-y-6">
+            <h4 className="text-base md:text-lg font-bold relative pb-2 inline-block after:content-[''] after:absolute after:bottom-0 after:left-1/2 sm:after:left-0 after:-translate-x-1/2 sm:after:translate-x-0 after:w-10 after:h-1 after:bg-primary">
               Contact Us
             </h4>
-            <ul className="space-y-4 text-white/70 text-sm">
-              <li className="flex gap-3">
+            <ul className="space-y-4 text-white/70 text-sm flex flex-col items-center sm:items-start">
+              <li className="flex gap-3 justify-center sm:justify-start">
                 <MapPin className="w-5 h-5 text-primary shrink-0" />
-                <span className="leading-snug">No. 207, 8th St, Muthuramalingapuram, Karpaga Nagar, K. Pudur, Madurai - 625007</span>
+                <span className="leading-snug max-w-[200px] sm:max-w-none">No. 207, 8th St, Muthuramalingapuram, Karpaga Nagar, K. Pudur, Madurai - 625007</span>
               </li>
-              <li className="flex gap-3">
+              <li className="flex gap-3 justify-center sm:justify-start">
                 <Phone className="w-5 h-5 text-primary shrink-0" />
                 <span>9865440099</span>
               </li>
-              <li className="flex gap-3">
+              <li className="flex gap-3 justify-center sm:justify-start">
                 <Mail className="w-5 h-5 text-primary shrink-0" />
                 <span className="break-all">Acharyaeducation.madurai@gmail.com</span>
               </li>
