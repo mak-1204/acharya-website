@@ -1,23 +1,54 @@
+
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { ImpactCounter } from '@/components/ImpactCounter';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EnquiryForm } from '@/components/EnquiryForm';
-import { CheckCircle2, Star, BookOpen, Target, Award, Users, ShieldCheck, Zap } from 'lucide-react';
+import { CheckCircle2, Star, BookOpen, Target, Award, Users, ShieldCheck, Zap, ChevronRight, GraduationCap, MapPin, Calendar } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 import { cn } from '@/lib/utils';
+
+const HERO_BANNERS = [
+  {
+    title: "JEE Mains 2025 Crash Course",
+    subtitle: "Madurai's Most Intensive Revision Program. 45 Days to Success.",
+    image: "https://picsum.photos/seed/hero1/1200/450",
+    cta: "Enroll Now",
+    link: "/courses",
+    badge: "Limited Seats",
+    color: "bg-[#1A237E]"
+  },
+  {
+    title: "NEET Victory Batch",
+    subtitle: "Complete NCERT Coverage with Daily Doubt Solving Sessions.",
+    image: "https://picsum.photos/seed/hero2/1200/450",
+    cta: "Join Now",
+    link: "/courses",
+    badge: "Admissions Open",
+    color: "bg-[#D32F2F]"
+  },
+  {
+    title: "CLAT Legal Edge",
+    subtitle: "Join Madurai's #1 Dedicated Batch for Law Aspirants.",
+    image: "https://picsum.photos/seed/hero3/1200/450",
+    cta: "Explore More",
+    link: "/courses",
+    badge: "New Batch",
+    color: "bg-[#1A237E]"
+  }
+];
 
 const COURSES = [
   { id: 'jee', title: 'JEE Main & Advanced', target: 'Class 11, 12 & Repeaters', mode: 'Online + Offline', icon: <Target className="w-6 h-6" /> },
@@ -45,45 +76,121 @@ const WHY_ACHARYA = [
   { title: 'Proven Results', desc: 'Legacy of top rankers in Madurai since 2007.', icon: <Zap className="text-secondary" /> },
 ];
 
+const IMPULSE_STATS = [
+  { label: 'Students Trained', value: '50k+', icon: <Users className="w-5 h-5" /> },
+  { label: 'Teachers Benefited', value: '300+', icon: <GraduationCap className="w-5 h-5" /> },
+  { label: 'Centres', value: '7+', icon: <MapPin className="w-5 h-5" /> },
+  { label: 'Years of Excellence', value: '17+', icon: <Calendar className="w-5 h-5" /> },
+];
+
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('all');
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    if (!api) return;
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
 
   return (
     <div className="flex flex-col w-full overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative hero-gradient text-white pt-20 pb-24 md:pt-32 md:pb-40">
-        <div className="container mx-auto px-4 flex flex-col items-center text-center">
-          <Badge className="bg-white/20 text-white border-none mb-6 text-sm py-1 px-4 hover:bg-white/30">
-            Admissions Open for 2025-26
-          </Badge>
-          <h1 className="text-4xl md:text-7xl font-bold mb-6 tracking-tight max-w-4xl">
-            Your Gateway to <span className="text-white underline decoration-white/30 underline-offset-8">IIT, NEET</span> & Beyond
-          </h1>
-          <p className="text-lg md:text-xl text-white/80 mb-10 max-w-2xl leading-relaxed">
-            Madurai's Most Trusted Coaching Since 2007. Join 50,000+ students on the path to excellence.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center mb-12">
-            <Button asChild size="lg" className="bg-white text-secondary hover:bg-white/90 font-bold px-10 h-14 rounded-full text-lg shadow-xl shadow-black/10">
-              <Link href="/courses">Explore Courses</Link>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10 font-bold px-10 h-14 rounded-full text-lg">
-              <a href="tel:9865440099">Book Free Counseling</a>
-            </Button>
+      {/* Hero Carousel Section */}
+      <section className="relative w-full">
+        <Carousel 
+          setApi={setApi}
+          opts={{ loop: true }} 
+          className="w-full"
+        >
+          <CarouselContent>
+            {HERO_BANNERS.map((banner, index) => (
+              <CarouselItem key={index}>
+                <div className={cn("relative w-full h-[350px] md:h-[500px] flex items-center overflow-hidden", banner.color)}>
+                  <div className="container mx-auto px-4 z-10 grid grid-cols-1 lg:grid-cols-2 items-center gap-8">
+                    <div className="text-white space-y-4 md:space-y-6 animate-in slide-in-from-left-10 duration-700">
+                      <Badge className="bg-white/20 text-white border-none px-4 py-1.5 uppercase tracking-wider">
+                        {banner.badge}
+                      </Badge>
+                      <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-tight">
+                        {banner.title}
+                      </h1>
+                      <p className="text-lg md:text-xl text-white/80 max-w-lg">
+                        {banner.subtitle}
+                      </p>
+                      <div className="flex flex-wrap gap-4 pt-4">
+                        <Button asChild size="lg" className="bg-white text-secondary hover:bg-white/90 font-bold rounded-full px-8 h-12">
+                          <Link href={banner.link}>{banner.cta}</Link>
+                        </Button>
+                        <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10 font-bold rounded-full px-8 h-12">
+                          <a href="tel:9865440099">Talk to Expert</a>
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="hidden lg:block relative h-full">
+                      <Image 
+                        src={banner.image} 
+                        alt={banner.title} 
+                        fill 
+                        className="object-contain" 
+                        priority
+                        data-ai-hint="educational poster"
+                      />
+                    </div>
+                  </div>
+                  {/* Decorative Background Pattern */}
+                  <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+            {HERO_BANNERS.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => api?.scrollTo(i)}
+                className={cn(
+                  "w-2.5 h-2.5 rounded-full transition-all",
+                  current === i ? "bg-white w-8" : "bg-white/40"
+                )}
+              />
+            ))}
           </div>
-
-          <div className="flex items-center gap-4 bg-black/10 p-1.5 rounded-full backdrop-blur-sm border border-white/10">
-            <button className="bg-white text-secondary px-6 py-2 rounded-full text-sm font-bold shadow-sm transition-all">🏫 Offline Classes</button>
-            <button className="text-white hover:bg-white/10 px-6 py-2 rounded-full text-sm font-bold transition-all">💻 Online Classes</button>
-          </div>
-        </div>
-
-        {/* Decorative elements */}
-        <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-background to-transparent opacity-50" />
+          <CarouselPrevious className="hidden md:flex left-4 bg-black/20 border-none text-white hover:bg-black/40" />
+          <CarouselNext className="hidden md:flex right-4 bg-black/20 border-none text-white hover:bg-black/40" />
+        </Carousel>
       </section>
 
-      {/* Impact Counter */}
-      <ImpactCounter />
+      {/* Our Impulse Stats Strip */}
+      <section className="bg-white border-b py-6 md:py-8 shadow-sm relative z-30 -mt-0 md:-mt-8 md:rounded-t-3xl md:mx-4 lg:mx-12">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-3 shrink-0">
+               <div className="bg-primary p-2 rounded-lg text-white">
+                  <Zap className="w-6 h-6 fill-current" />
+               </div>
+               <div>
+                 <h2 className="text-xl font-bold text-secondary leading-none">Our Impulse</h2>
+                 <p className="text-xs text-muted-foreground mt-1 uppercase tracking-widest">Acharya Education</p>
+               </div>
+            </div>
+            
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 w-full max-w-4xl">
+              {IMPULSE_STATS.map((stat, i) => (
+                <div key={i} className="flex items-center gap-4 group">
+                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                    {stat.icon}
+                  </div>
+                  <div>
+                    <p className="text-xl md:text-2xl font-bold text-secondary leading-none">{stat.value}</p>
+                    <p className="text-[10px] md:text-xs text-muted-foreground font-semibold uppercase mt-1">{stat.label}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Course Segmentation */}
       <section className="py-20 bg-muted/30">
@@ -95,11 +202,15 @@ export default function Home() {
 
           <Tabs defaultValue="all" className="w-full flex flex-col items-center">
             <TabsList className="bg-white p-1 rounded-full mb-10 h-auto flex flex-wrap justify-center border shadow-sm">
-              <TabsTrigger value="all" className="rounded-full px-8 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-white transition-all font-semibold">ALL</TabsTrigger>
-              <TabsTrigger value="jee" className="rounded-full px-8 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-white transition-all font-semibold">JEE</TabsTrigger>
-              <TabsTrigger value="neet" className="rounded-full px-8 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-white transition-all font-semibold">NEET</TabsTrigger>
-              <TabsTrigger value="clat" className="rounded-full px-8 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-white transition-all font-semibold">CLAT</TabsTrigger>
-              <TabsTrigger value="foundation" className="rounded-full px-8 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-white transition-all font-semibold">FOUNDATION</TabsTrigger>
+              {['all', 'jee', 'neet', 'clat', 'foundation'].map((tab) => (
+                <TabsTrigger 
+                  key={tab}
+                  value={tab} 
+                  className="rounded-full px-8 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-white transition-all font-semibold uppercase text-xs"
+                >
+                  {tab}
+                </TabsTrigger>
+              ))}
             </TabsList>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
@@ -199,45 +310,13 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Student Journey */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-4">
-           <h2 className="text-3xl md:text-4xl font-bold text-center text-secondary mb-16">Your Journey To Success</h2>
-           <div className="relative">
-              {/* Connector Line */}
-              <div className="hidden lg:block absolute top-1/2 left-0 w-full h-0.5 bg-muted-foreground/20 -translate-y-1/2 z-0" />
-
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-12 relative z-10">
-                {[
-                  { step: 1, title: 'Enquire', desc: 'Call or visit us for batch details.', icon: '💬' },
-                  { step: 2, title: 'Counselling', desc: 'Free guidance from experts.', icon: '🤝' },
-                  { step: 3, title: 'Enroll', desc: 'Secure your seat in a small batch.', icon: '📝' },
-                  { step: 4, title: 'Learn', desc: 'Interactive sessions & materials.', icon: '🎓' },
-                  { step: 5, title: 'Succeed', desc: 'Reach your dream college.', icon: '🏆' },
-                ].map((item) => (
-                  <div key={item.step} className="flex flex-col items-center text-center group">
-                    <div className="w-20 h-20 rounded-full bg-white border-4 border-muted flex items-center justify-center text-3xl mb-6 shadow-xl group-hover:border-primary transition-all duration-300 z-10">
-                      {item.icon}
-                    </div>
-                    <div className="bg-secondary text-white w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold mb-4 shadow-md">
-                      {item.step}
-                    </div>
-                    <h4 className="text-xl font-bold text-secondary mb-2">{item.title}</h4>
-                    <p className="text-sm text-muted-foreground">{item.desc}</p>
-                  </div>
-                ))}
-              </div>
-           </div>
-        </div>
-      </section>
-
       {/* Forms Section */}
       <section className="py-24 bg-muted/50 border-t">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-6 leading-tight">Start Your Journey with Acharya Today</h2>
-              <p className="text-lg text-muted-foreground mb-8">Fill in the details below and our academic counsellor will reach out to you within 24 hours to guide you through the best courses for your career goals.</p>
+              <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-6 leading-tight">Start Your Journey Today</h2>
+              <p className="text-lg text-muted-foreground mb-8">Fill in the details below and our academic counsellor will reach out to you within 24 hours.</p>
 
               <div className="space-y-6">
                 {[
