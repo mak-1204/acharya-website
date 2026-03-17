@@ -17,7 +17,7 @@ export const Footer = () => {
                 alt="Acharya Education" 
                 width={180} 
                 height={50} 
-                className="h-auto w-40 object-contain"
+                className="h-auto w-44 object-contain"
               />
             </Link>
             <p className="text-white/70 leading-relaxed">

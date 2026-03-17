@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Phone, ChevronDown } from 'lucide-react';
+import { Menu, X, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -83,9 +83,9 @@ export const Navbar = () => {
       <Image 
         src="/logo.png" 
         alt="Acharya Education" 
-        width={200} 
-        height={60} 
-        className="h-10 md:h-12 w-auto object-contain"
+        width={220} 
+        height={65} 
+        className="h-10 md:h-12 lg:h-14 w-auto object-contain"
         priority
       />
     </Link>
@@ -96,6 +96,7 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <Logo />
 
+        {/* Desktop Nav Links */}
         <div className="hidden lg:flex items-center gap-8 flex-1 justify-center px-4">
           {NAV_LINKS.map((link) => (
             <Link
@@ -114,6 +115,7 @@ export const Navbar = () => {
           ))}
         </div>
 
+        {/* Desktop Action Buttons */}
         <div className="hidden lg:flex items-center gap-6 shrink-0">
           <a
             href="tel:9865440099"
@@ -127,8 +129,9 @@ export const Navbar = () => {
           </Button>
         </div>
 
+        {/* Tablet/Mobile Controls */}
         <div className="flex lg:hidden items-center gap-3">
-          <Button asChild className="bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-full font-bold px-4 h-9 text-xs shadow-md">
+          <Button asChild className="hidden sm:flex bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-full font-bold px-4 h-9 text-xs shadow-md text-white">
             <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Enquire</a>
           </Button>
           <button 
@@ -140,6 +143,7 @@ export const Navbar = () => {
         </div>
       </div>
 
+      {/* Mobile Menu Drawer */}
       <div 
         className={cn(
           "absolute top-full left-0 w-full bg-white shadow-2xl transition-all duration-300 overflow-hidden border-l-4 border-[#D32F2F] lg:hidden",
@@ -170,7 +174,7 @@ export const Navbar = () => {
               <Phone className="w-5 h-5" />
               9865440099
             </a>
-            <Button asChild className="w-full bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-xl h-12 text-lg font-bold shadow-lg">
+            <Button asChild className="w-full bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-xl h-12 text-lg font-bold shadow-lg text-white">
               <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Enquire Now</a>
             </Button>
           </div>
