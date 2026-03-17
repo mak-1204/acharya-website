@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -135,7 +136,7 @@ export default function Home() {
             {HERO_BANNERS.map((banner, index) => (
               <CarouselItem key={index}>
                 <div className={cn("relative w-full h-[450px] md:h-[650px] flex items-center overflow-hidden", banner.color)}>
-                  <div className="container mx-auto px-4 z-10 grid grid-cols-1 lg:grid-cols-2 items-center gap-8">
+                  <div className="container mx-auto px-4 z-10 grid grid-cols-1 lg:grid-cols-2 items-center gap-8 text-left">
                     <div className="text-white space-y-6">
                       <Badge className="bg-white/20 text-white border-none px-4 py-1.5 uppercase tracking-wider">
                         {banner.badge}
@@ -150,7 +151,7 @@ export default function Home() {
                         <Button asChild size="lg" className="bg-white text-secondary hover:bg-white/90 font-bold rounded-full px-10">
                           <a href={banner.link} target="_blank" rel="noopener noreferrer">{banner.cta}</a>
                         </Button>
-                        <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10 font-bold rounded-full px-10">
+                        <Button asChild size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 font-bold rounded-full px-10">
                           <a href="tel:9865440099">Call Counselor</a>
                         </Button>
                       </div>
@@ -204,7 +205,7 @@ export default function Home() {
 
       {/* 3. COURSES SECTION */}
       <section id="courses" className="py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 text-left">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-4">Our Impulse</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto italic">Guiding Madurai's brightest minds towards excellence.</p>
@@ -255,7 +256,7 @@ export default function Home() {
 
       {/* 4. STARS CAROUSEL */}
       <section id="stars" className="py-24 bg-muted/30 scroll-mt-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 text-left">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-4 flex items-center justify-center gap-3">
               Meet Our Stars <Star className="text-yellow-400 fill-yellow-400" />
@@ -309,7 +310,7 @@ export default function Home() {
 
       {/* 6. JOURNEY STEPPER */}
       <section id="journey" className="py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 text-left">
           <h2 className="text-3xl md:text-5xl font-bold text-center text-secondary mb-20">Your Path to Excellence</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
             <div className="hidden md:block absolute top-10 left-0 w-full h-1 bg-muted -translate-y-1/2 z-0"></div>
@@ -328,9 +329,9 @@ export default function Home() {
 
       {/* 7. MODE SECTION */}
       <section id="mode" className="py-24 bg-primary text-white scroll-mt-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 text-left">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-6 text-left">
+            <div className="space-y-6">
               <h2 className="text-4xl md:text-5xl font-bold">Learn the Way You Want</h2>
               <p className="text-xl text-white/80">We offer flexible learning models to suit every student's lifestyle and academic needs.</p>
               <div className="space-y-4 pt-4">
@@ -346,7 +347,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            <div className="bg-white/10 p-10 rounded-3xl backdrop-blur-sm border border-white/20 text-left">
+            <div className="bg-white/10 p-10 rounded-3xl backdrop-blur-sm border border-white/20">
                <h4 className="text-2xl font-bold mb-6">Which mode suits you?</h4>
                <p className="mb-8 opacity-80">Connect with our counselors to understand the best methodology for your success.</p>
                <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 font-bold rounded-full w-full">
@@ -359,12 +360,12 @@ export default function Home() {
 
       {/* 8. ABOUT SECTION */}
       <section id="about" className="py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 text-left">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
               <Image src="https://picsum.photos/seed/about/800/1000" alt="Campus" fill className="object-cover" />
             </div>
-            <div className="text-left">
+            <div>
               <Badge className="bg-primary mb-4">Established 2007</Badge>
               <h2 className="text-4xl md:text-5xl font-bold text-secondary mb-6 leading-tight">Madurai's Legacy of Academic Excellence</h2>
               <p className="text-lg text-muted-foreground leading-relaxed mb-6">
@@ -393,7 +394,7 @@ export default function Home() {
 
       {/* 9. GALLERY SECTION */}
       <section id="gallery" className="py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 text-left">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-4 flex items-center justify-center gap-3">
               <Camera className="text-primary" /> Life at Acharya
@@ -415,9 +416,9 @@ export default function Home() {
 
       {/* 10. SCHOLARSHIP SECTION */}
       <section id="scholarship" className="py-24 bg-primary text-white overflow-hidden relative scroll-mt-16">
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 relative z-10 text-left">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="space-y-8 text-left">
+            <div className="space-y-8">
               <Badge className="bg-white/20 mb-4 border-none text-white py-1 px-4">AEST 2025</Badge>
               <h2 className="text-4xl md:text-7xl font-bold">Win Up to 100% Scholarship</h2>
               <p className="text-xl text-white/80">Secure your premium coaching with the Acharya Excellence Scholarship Test. Registrations open soon for Class 6-12.</p>
@@ -432,7 +433,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="bg-white text-secondary p-12 rounded-[3rem] shadow-2xl relative text-left">
+            <div className="bg-white text-secondary p-12 rounded-[3rem] shadow-2xl relative">
                <Gift className="absolute -top-10 -right-10 w-24 h-24 text-white opacity-20 rotate-12" />
                <h3 className="text-3xl font-bold mb-6">Pre-Register Now</h3>
                <p className="mb-8 text-muted-foreground">Register your interest today and be the first to know when AEST 2025 slots are available.</p>
@@ -452,7 +453,7 @@ export default function Home() {
             {TESTIMONIALS.map((t, i) => (
               <Card key={i} className="border-none shadow-xl rounded-3xl p-10 bg-muted/30">
                 <Quote className="w-10 h-10 text-primary mb-6 opacity-20 mx-auto" />
-                <p className="text-lg italic text-secondary mb-8">"{t.text}"</p>
+                <p className="text-lg italic text-secondary mb-8 text-center">"{t.text}"</p>
                 <h4 className="font-bold text-secondary">{t.name}</h4>
                 <p className="text-xs text-muted-foreground uppercase mt-1 tracking-widest">{t.role}</p>
               </Card>
@@ -463,7 +464,7 @@ export default function Home() {
 
       {/* 12. ENQUIRE FORM SECTION */}
       <section id="enquire" className="py-24 bg-primary relative overflow-hidden scroll-mt-16">
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-12 text-white">
               <h2 className="text-4xl md:text-6xl font-bold mb-4">Start Your Journey</h2>
@@ -476,9 +477,9 @@ export default function Home() {
 
       {/* 13. CONTACT SECTION */}
       <section id="contact" className="py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 text-left">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="space-y-12 text-left">
+            <div className="space-y-12">
               <h2 className="text-4xl md:text-5xl font-bold text-secondary">Visit Our Center</h2>
               <div className="space-y-8">
                 <div className="flex gap-6 items-start">
