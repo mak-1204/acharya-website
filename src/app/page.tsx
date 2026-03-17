@@ -67,12 +67,12 @@ const COURSES = [
 ];
 
 const STARS = [
-  { name: 'Anish Kumar', exam: 'JEE Mains', result: 'AIR 50', batch: '2024', image: null, category: 'JEE Adv. \'25', course: 'Online Classroom Course' },
-  { name: 'Ayesha Mariam', exam: 'NEET-UG', result: 'AIR 74', batch: '2024', image: null, category: 'NEET-UG \'25', course: 'Online Classroom Course' },
-  { name: 'Raghav Ganesh', exam: 'JEE Advanced', result: 'AIR 395', batch: '2023', image: null, category: 'JEE Adv. \'25', course: 'Online Classroom Course' },
-  { name: 'Shruthika', exam: 'NEET', result: 'AIR 1341', batch: '2024', image: null, category: 'NEET-UG \'25', course: 'Online Classroom Course' },
-  { name: 'Charuvrat Bains', exam: 'IESO 2025', result: 'Silver Medal', batch: '2023', image: null, category: 'IESO 2025', course: 'Online Classroom Course' },
-  { name: 'Aabhineet Patn...', exam: 'CBSE 10th', result: '99.4%', batch: '2024', image: null, category: 'CBSE 10th, \'25', course: 'Online Classroom Course' },
+  { name: 'Anish Kumar', exam: 'JEE Mains', result: 'AIR 50', batch: '2024', image: null, category: 'JEE Adv. \'25', course: 'Classroom Program' },
+  { name: 'Ayesha Mariam', exam: 'NEET-UG', result: 'AIR 74', batch: '2024', image: null, category: 'NEET-UG \'25', course: 'Classroom Program' },
+  { name: 'Raghav Ganesh', exam: 'JEE Advanced', result: 'AIR 395', batch: '2023', image: null, category: 'JEE Adv. \'25', course: 'Integrated Program' },
+  { name: 'Shruthika', exam: 'NEET', result: 'AIR 1341', batch: '2024', image: null, category: 'NEET-UG \'25', course: 'Classroom Program' },
+  { name: 'Charuvrat Bains', exam: 'IESO 2025', result: 'Silver Medal', batch: '2023', image: null, category: 'IESO 2025', course: 'Foundation Batch' },
+  { name: 'Aabhineet Patn...', exam: 'CBSE 10th', result: '99.4%', batch: '2024', image: null, category: 'CBSE 10th, \'25', course: 'Tuition Batch' },
 ];
 
 const WHY_ACHARYA = [
@@ -135,7 +135,7 @@ export default function Home() {
     });
   }, [starsApi]);
 
-  // Auto-scroll for Stars Carousel
+  // Continuous Auto-scroll logic
   useEffect(() => {
     if (!starsApi || isStarsPaused) return;
     const interval = setInterval(() => {
@@ -280,62 +280,64 @@ export default function Home() {
 
       <div className="section-divider mx-auto max-w-4xl opacity-20"></div>
 
-      {/* 4. STARS CAROUSEL - MATCHING REFERENCE STYLE */}
-      <section id="stars" className="py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4 text-left">
+      {/* 4. STARS CAROUSEL - MODERN SPLIT DESIGN */}
+      <section id="results" className="py-24 bg-white scroll-mt-16 relative overflow-hidden">
+        {/* Edge Fade Gradients */}
+        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none hidden md:block"></div>
+        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none hidden md:block"></div>
+
+        <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-secondary mb-4 flex items-center justify-center gap-3">
-              Meet Our Stars <Star className="text-yellow-400 fill-yellow-400" />
+              Meet Our Stars <Star className="text-yellow-400 fill-yellow-400 animate-pulse" />
             </h2>
-            <p className="text-muted-foreground text-lg">Top rankers who realized their dreams with Acharya Education.</p>
+            <p className="text-muted-foreground text-lg">Acharya's legacy of excellence, one student at a time.</p>
           </div>
 
           <div 
-            className="w-full relative"
+            className="w-full relative px-4"
             onMouseEnter={() => setIsStarsPaused(true)}
             onMouseLeave={() => setIsStarsPaused(false)}
           >
             <Carousel setApi={setStarsApi} opts={{ align: "start", loop: true }} className="w-full">
-              <CarouselContent>
+              <CarouselContent className="-ml-6">
                 {STARS.map((star, i) => (
                   <CarouselItem key={i} className="md:basis-1/3 lg:basis-1/4 pl-6">
-                    <div className="bg-white rounded-[2rem] border shadow-sm overflow-hidden flex flex-col group hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-[1.02]">
-                      {/* Top section: Headshot + Exam Banner */}
-                      <div className="relative pt-6 px-6 bg-[#e3f2fd]">
-                        <div className="relative aspect-square w-full rounded-t-xl overflow-hidden flex items-end justify-center">
+                    <div className="bg-white rounded-3xl border shadow-sm overflow-hidden flex flex-col group hover:shadow-2xl transition-all duration-500 cursor-pointer hover:-translate-y-2 h-full">
+                      {/* Top Area: Initial Placeholder or Photo */}
+                      <div className="relative pt-8 px-6 pb-6 bg-primary/5 group-hover:bg-primary/10 transition-colors">
+                        <div className="relative aspect-square w-full rounded-2xl overflow-hidden flex items-end justify-center bg-white shadow-inner">
                            {star.image ? (
                              <Image src={star.image} alt={star.name} fill className="object-cover" />
                            ) : (
-                             <div className="w-full h-full flex flex-col items-center justify-center pb-2">
-                               <div className="w-24 h-24 rounded-full bg-white/50 flex items-center justify-center text-secondary mb-4 shadow-inner">
-                                  <Users className="w-12 h-12 opacity-30" />
+                             <div className="w-full h-full flex flex-col items-center justify-center">
+                               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-secondary to-primary/80 flex items-center justify-center text-white mb-2 shadow-lg">
+                                 <span className="text-4xl font-black">
+                                   {getInitials(star.name)}
+                                 </span>
                                </div>
-                               <span className="text-secondary/50 text-6xl font-black select-none">
-                                 {getInitials(star.name)}
-                               </span>
                              </div>
                            )}
                         </div>
-                        {/* Exam Banner */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-[#212121] py-2 px-4 text-center">
-                           <span className="text-white text-xs font-bold uppercase tracking-wider">
+                        {/* Exam Ribbon Banner */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-secondary py-2.5 px-4 text-center transform translate-y-1/2 mx-6 rounded-xl shadow-lg z-20">
+                           <span className="text-white text-xs font-black uppercase tracking-widest">
                              {star.category}
                            </span>
                         </div>
                       </div>
 
-                      {/* Bottom section: Details */}
-                      <div className="p-6 bg-white flex-1 flex flex-col">
+                      {/* Details Area */}
+                      <div className="p-8 pt-10 bg-white flex-1 flex flex-col text-center">
                         <h4 className="text-xl font-bold text-secondary mb-1 truncate">{star.name}</h4>
-                        <p className="text-xs text-muted-foreground mb-1">{star.course}</p>
-                        <p className="text-xs text-muted-foreground mb-4">{star.exam} '{star.batch.slice(-2)}</p>
+                        <p className="text-xs font-semibold text-muted-foreground mb-4 uppercase tracking-tighter">{star.course}</p>
                         
-                        <div className="mt-auto flex items-center justify-between">
-                           <span className="text-2xl font-black text-[#1e88e5] tracking-tight uppercase">
-                             {star.result}
-                           </span>
-                           <div className="w-8 h-8 rounded-full border border-[#1e88e5] flex items-center justify-center text-[#1e88e5] group-hover:bg-[#1e88e5] group-hover:text-white transition-colors">
-                              <ChevronRight className="w-5 h-5" />
+                        <div className="mt-auto">
+                           <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 group-hover:border-primary/30 transition-all">
+                             <p className="text-xs font-bold text-muted-foreground uppercase mb-1">{star.exam} '{star.batch.slice(-2)}</p>
+                             <span className="text-3xl font-black text-primary tracking-tight">
+                               {star.result}
+                             </span>
                            </div>
                         </div>
                       </div>
@@ -343,19 +345,19 @@ export default function Home() {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="-left-6 md:-left-12 h-12 w-12 bg-white shadow-lg border-none hover:bg-muted" />
-              <CarouselNext className="-right-6 md:-right-12 h-12 w-12 bg-white shadow-lg border-none hover:bg-muted" />
+              <CarouselPrevious className="-left-4 h-12 w-12 bg-white shadow-xl border-none hover:bg-muted" />
+              <CarouselNext className="-right-4 h-12 w-12 bg-white shadow-xl border-none hover:bg-muted" />
             </Carousel>
             
-            {/* Dots navigation */}
-            <div className="flex justify-center gap-2 mt-12">
+            {/* Nav Dots */}
+            <div className="flex justify-center gap-3 mt-12">
               {STARS.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => starsApi?.scrollTo(i)}
                   className={cn(
-                    "w-2.5 h-2.5 rounded-full transition-all",
-                    starsCurrent === i ? "bg-[#1e88e5] w-8" : "bg-gray-300"
+                    "h-2 rounded-full transition-all duration-500",
+                    starsCurrent === i ? "bg-primary w-10" : "bg-gray-200 w-2 hover:bg-gray-400"
                   )}
                 />
               ))}
