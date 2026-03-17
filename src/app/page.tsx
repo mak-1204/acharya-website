@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,44 @@ import {
 import { cn } from '@/lib/utils';
 
 const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
+
+const STARS_DATA = [
+  {
+    name: "Anish Kumar",
+    exam: "JEE MAINS '25",
+    score: "99.8 Percentile",
+    category: "JEE",
+    initials: "AK"
+  },
+  {
+    name: "Ayesha Mariam",
+    exam: "NEET-UG '25",
+    score: "685 / 720",
+    category: "NEET",
+    initials: "AM"
+  },
+  {
+    name: "Raghav Ganesh",
+    exam: "JEE ADV. '25",
+    score: "AIR 1204",
+    category: "JEE",
+    initials: "RG"
+  },
+  {
+    name: "Shruthika",
+    exam: "NEET-UG '25",
+    score: "672 / 720",
+    category: "NEET",
+    initials: "S"
+  },
+  {
+    name: "Josalin Mattews",
+    exam: "CLASSES 6-10",
+    score: "Top Rank",
+    category: "CLASSES 6-10",
+    initials: "JM"
+  }
+];
 
 const HERO_BANNERS = [
   {
@@ -108,6 +146,11 @@ export default function Home() {
   const [heroApi, setHeroApi] = useState<CarouselApi>();
   const [heroCurrent, setHeroCurrent] = useState(0);
   const [courseFilter, setCourseFilter] = useState('all');
+  
+  // Stars Carousel State
+  const [starsFilter, setStarsFilter] = useState('ALL');
+  const [starsCurrent, setStarsCurrent] = useState(0);
+  const [isStarsPaused, setIsStarsPaused] = useState(false);
 
   useEffect(() => {
     if (!heroApi) return;
@@ -119,6 +162,27 @@ export default function Home() {
   const filteredCourses = courseFilter === 'all' 
     ? COURSES 
     : COURSES.filter(c => c.category === courseFilter);
+
+  const filteredStars = starsFilter === 'ALL'
+    ? STARS_DATA
+    : STARS_DATA.filter(s => s.category === starsFilter);
+
+  // Auto-scroll logic for stars
+  useEffect(() => {
+    if (isStarsPaused || filteredStars.length <= 1) return;
+    const interval = setInterval(() => {
+      setStarsCurrent(prev => (prev >= filteredStars.length - 1 ? 0 : prev + 1));
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [isStarsPaused, filteredStars.length]);
+
+  // Reset stars carousel on filter change
+  useEffect(() => {
+    setStarsCurrent(0);
+  }, [starsFilter]);
+
+  const nextStar = () => setStarsCurrent(prev => Math.min(filteredStars.length - 1, prev + 1));
+  const prevStar = () => setStarsCurrent(prev => Math.max(0, prev - 1));
 
   return (
     <div className="flex flex-col w-full">
@@ -247,31 +311,106 @@ export default function Home() {
 
       <div className="section-divider mx-auto max-w-4xl opacity-20"></div>
 
-      {/* 4. MEET OUR STARS SECTION - STATIC EMPTY STATE */}
-      <section id="results" className="py-24 bg-white scroll-mt-16 relative overflow-hidden">
+      {/* 4. MEET OUR STARS SECTION */}
+      <section id="stars" className="py-24 bg-white scroll-mt-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-secondary mb-8">
+            <h2 className="text-4xl md:text-5xl font-bold text-[#1C1C1C] mb-8 font-headline">
               Meet Our Stars <span className="text-[#FFC107]">✦</span>
             </h2>
             
-            {/* Visual Tabs Only */}
+            {/* Filter Tabs */}
             <div className="flex flex-wrap justify-center gap-3 mb-12">
-              <button className="px-6 py-2 rounded-full border-2 border-[#1A237E] text-[#1A237E] bg-white font-bold text-xs uppercase tracking-wider">ALL</button>
-              <button className="px-6 py-2 rounded-full border-2 border-gray-200 text-gray-400 bg-white font-bold text-xs uppercase tracking-wider">NEET</button>
-              <button className="px-6 py-2 rounded-full border-2 border-gray-200 text-gray-400 bg-white font-bold text-xs uppercase tracking-wider">JEE</button>
-              <button className="px-6 py-2 rounded-full border-2 border-gray-200 text-gray-400 bg-white font-bold text-xs uppercase tracking-wider">CLASSES 6-10</button>
+              {['ALL', 'NEET', 'JEE', 'CLASSES 6-10'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setStarsFilter(tab)}
+                  className={cn(
+                    "px-6 py-2 rounded-full border-2 font-bold text-xs uppercase tracking-wider transition-all",
+                    starsFilter === tab
+                      ? "bg-white border-[#1A237E] text-[#1A237E] shadow-sm"
+                      : "bg-white border-gray-200 text-gray-400 hover:border-gray-300"
+                  )}
+                >
+                  {tab}
+                </button>
+              ))}
             </div>
 
-            {/* Empty State */}
-            <div className="text-center py-16 bg-muted/20 rounded-[3rem] border-2 border-dashed border-gray-200">
-              <p className="text-6xl mb-6">🏆</p>
-              <p className="text-2xl font-bold text-[#1A237E] uppercase tracking-tight">
-                Our Stars Are On Their Way!
-              </p>
-              <p className="text-gray-500 mt-3 text-base max-w-xs mx-auto">
-                Results will be updated soon. Stay tuned to witness the success of our elite aspirants!
-              </p>
+            {/* Carousel with Faded Edges */}
+            <div className="relative group">
+              {/* Arrows */}
+              <div className="absolute top-1/2 -left-4 lg:-left-12 -translate-y-1/2 z-20 flex gap-2">
+                <button 
+                  onClick={prevStar}
+                  className="w-10 h-10 rounded-full border border-gray-300 bg-white flex items-center justify-center hover:border-[#1A237E] hover:text-[#1A237E] transition-all shadow-sm"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="absolute top-1/2 -right-4 lg:-right-12 -translate-y-1/2 z-20">
+                <button 
+                  onClick={nextStar}
+                  className="w-10 h-10 rounded-full border border-gray-300 bg-white flex items-center justify-center hover:border-[#1A237E] hover:text-[#1A237E] transition-all shadow-sm"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Faded Edge Overlays */}
+              <div className="absolute left-0 top-0 bottom-0 w-20 lg:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-0 w-20 lg:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+
+              {/* Scrolling cards track */}
+              <div 
+                className="overflow-hidden px-4"
+                onMouseEnter={() => setIsStarsPaused(true)}
+                onMouseLeave={() => setIsStarsPaused(false)}
+              >
+                <div 
+                  className="flex gap-6 transition-transform duration-500 ease-in-out"
+                  style={{ transform: `translateX(-${starsCurrent * (180 + 24)}px)` }}
+                >
+                  {filteredStars.map((star, idx) => (
+                    <div 
+                      key={idx} 
+                      className="min-w-[180px] bg-white rounded-2xl shadow-md overflow-hidden flex-shrink-0 hover:scale-105 transition-transform duration-300 cursor-pointer border border-border"
+                    >
+                      {/* Photo placeholder — gradient with initials */}
+                      <div className="h-44 bg-gradient-to-br from-[#1A237E] to-[#D32F2F] flex items-center justify-center relative">
+                        <span className="text-white text-4xl font-bold">{star.initials}</span>
+                        {/* Exam badge strip */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1.5 px-2 text-center">
+                          <span className="text-white text-[10px] font-bold uppercase tracking-wider">
+                            {star.exam}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Card bottom */}
+                      <div className="p-4 text-left">
+                        <p className="font-bold text-[#1C1C1C] text-sm truncate">{star.name}</p>
+                        <p className="text-muted-foreground text-[10px] mt-0.5">Classroom Course</p>
+                        <p className="text-[#D32F2F] font-bold text-lg mt-3">{star.score}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            {/* Dots */}
+            <div className="mt-8 flex justify-center gap-1.5">
+              {filteredStars.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setStarsCurrent(i)}
+                  className={cn(
+                    "w-2 h-2 rounded-full transition-all",
+                    starsCurrent === i ? "bg-[#1A237E] w-6" : "bg-gray-200"
+                  )}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -505,3 +644,4 @@ export default function Home() {
     </div>
   );
 }
+
