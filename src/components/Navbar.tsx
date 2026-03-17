@@ -48,57 +48,62 @@ export const Navbar = () => {
   return (
     <nav
       className={cn(
-        'sticky top-0 z-50 w-full transition-all duration-300',
-        isScrolled ? 'bg-white shadow-md py-3' : 'bg-white py-4'
+        'sticky top-0 z-50 w-full transition-all duration-300 border-b bg-white',
+        isScrolled ? 'shadow-md py-2' : 'py-4'
       )}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex flex-col leading-tight">
-          <span className="text-2xl font-bold tracking-tighter">
-            <span className="text-primary">ACHARYA</span>{' '}
-            <span className="text-secondary">EDUCATION</span>
-          </span>
-          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
+        <Link href="/" className="flex flex-col justify-center shrink-0">
+          <div className="flex items-center gap-1.5 leading-none">
+            <span className="text-xl md:text-2xl font-bold tracking-tighter">
+              <span className="text-primary">ACHARYA</span>{' '}
+              <span className="text-secondary">EDUCATION</span>
+            </span>
+          </div>
+          <span className="text-[9px] md:text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em] mt-0.5 leading-none">
             Since 2007 • Madurai
           </span>
         </Link>
 
         {/* Desktop Links */}
-        <div className="hidden lg:flex items-center space-x-8">
-          <Link
-            href="/"
-            className={cn(
-              'text-sm font-semibold transition-colors hover:text-primary',
-              pathname === '/' ? 'text-primary' : 'text-foreground'
-            )}
-          >
-            Home
-          </Link>
-
-          {/* Courses Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-semibold transition-colors hover:text-primary outline-none">
-              All Courses <ChevronDown className="w-4 h-4" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="rounded-xl p-2 w-56">
-              {COURSE_LINKS.map((link) => (
-                <DropdownMenuItem key={link.href} asChild className="rounded-lg cursor-pointer py-3">
-                  <Link href={link.href} className="font-semibold text-secondary">{link.name}</Link>
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuItem asChild className="rounded-lg cursor-pointer py-3 border-t">
-                <Link href="/courses" className="font-bold text-primary">View All Categories</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {NAV_LINKS.filter(l => l.name !== 'Home').map((link) => (
+        <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
+          {NAV_LINKS.slice(0, 1).map((link) => (
             <Link
               key={link.name}
               href={link.href}
               className={cn(
-                'text-sm font-semibold transition-colors hover:text-primary',
+                'text-sm font-semibold transition-colors hover:text-primary whitespace-nowrap',
+                pathname === link.href ? 'text-primary' : 'text-foreground'
+              )}
+            >
+              {link.name}
+            </Link>
+          ))}
+
+          {/* Courses Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-semibold transition-colors hover:text-primary outline-none whitespace-nowrap">
+              All Courses <ChevronDown className="w-4 h-4 opacity-50" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="rounded-xl p-2 w-56">
+              {COURSE_LINKS.map((link) => (
+                <DropdownMenuItem key={link.href} asChild className="rounded-lg cursor-pointer py-2.5">
+                  <Link href={link.href} className="font-semibold text-secondary w-full block">{link.name}</Link>
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuItem asChild className="rounded-lg cursor-pointer py-2.5 border-t mt-1">
+                <Link href="/courses" className="font-bold text-primary w-full block">View All Categories</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {NAV_LINKS.slice(1).map((link) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              className={cn(
+                'text-sm font-semibold transition-colors hover:text-primary whitespace-nowrap',
                 pathname === link.href ? 'text-primary' : 'text-foreground'
               )}
             >
@@ -108,27 +113,27 @@ export const Navbar = () => {
         </div>
 
         {/* CTAs */}
-        <div className="hidden lg:flex items-center space-x-4">
+        <div className="hidden lg:flex items-center space-x-6 shrink-0">
           <a
             href="tel:9865440099"
-            className="flex items-center text-sm font-bold text-secondary hover:text-primary transition-colors"
+            className="flex items-center text-sm font-bold text-secondary hover:text-primary transition-colors whitespace-nowrap"
           >
             <Phone className="w-4 h-4 mr-2" />
             9865440099
           </a>
-          <Button asChild className="bg-primary hover:bg-primary/90 rounded-full font-bold">
+          <Button asChild className="bg-primary hover:bg-primary/90 rounded-full font-bold px-6">
             <Link href="/contact">Enquire Now</Link>
           </Button>
         </div>
 
         {/* Mobile Nav */}
-        <div className="lg:hidden flex items-center space-x-4">
-           <a href="tel:9865440099" className="text-secondary">
+        <div className="lg:hidden flex items-center space-x-3">
+           <a href="tel:9865440099" className="text-secondary p-2">
              <Phone className="w-5 h-5" />
            </a>
            <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="p-0">
                 <Menu className="w-6 h-6" />
               </Button>
             </SheetTrigger>
