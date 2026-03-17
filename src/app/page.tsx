@@ -66,11 +66,11 @@ const COURSES = [
 ];
 
 const STARS = [
-  { name: 'Anish Kumar', exam: 'JEE Mains', result: '99.8 Percentile', batch: '2024', image: 'https://picsum.photos/seed/s1/300/300' },
-  { name: 'Ayesha Mariam', exam: 'NEET', result: '685/720', batch: '2024', image: 'https://picsum.photos/seed/s2/300/300' },
-  { name: 'Raghav Ganesh', exam: 'JEE Advanced', result: 'AIR 1204', batch: '2023', image: 'https://picsum.photos/seed/s3/300/300' },
-  { name: 'Shruthika', exam: 'NEET', result: '672/720', batch: '2024', image: 'https://picsum.photos/seed/s4/300/300' },
-  { name: 'Josalin Mattews', exam: 'CUET', result: '99.5 %ile', batch: '2023', image: 'https://picsum.photos/seed/s5/300/300' },
+  { name: 'Anish Kumar', exam: 'JEE Mains', result: '99.8 Percentile', batch: '2024', image: null },
+  { name: 'Ayesha Mariam', exam: 'NEET', result: '685/720', batch: '2024', image: null },
+  { name: 'Raghav Ganesh', exam: 'JEE Advanced', result: 'AIR 1204', batch: '2023', image: null },
+  { name: 'Shruthika', exam: 'NEET', result: '672/720', batch: '2024', image: null },
+  { name: 'Josalin Mattews', exam: 'CUET', result: '99.5 %ile', batch: '2023', image: null },
 ];
 
 const WHY_ACHARYA = [
@@ -112,26 +112,51 @@ const TESTIMONIALS = [
 ];
 
 export default function Home() {
-  const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
+  const [heroApi, setHeroApi] = useState<CarouselApi>();
+  const [heroCurrent, setHeroCurrent] = useState(0);
+  const [starsApi, setStarsApi] = useState<CarouselApi>();
+  const [starsCurrent, setStarsCurrent] = useState(0);
+  const [isStarsPaused, setIsStarsPaused] = useState(false);
   const [courseFilter, setCourseFilter] = useState('all');
 
   useEffect(() => {
-    if (!api) return;
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap());
+    if (!heroApi) return;
+    heroApi.on("select", () => {
+      setHeroCurrent(heroApi.selectedScrollSnap());
     });
-  }, [api]);
+  }, [heroApi]);
+
+  useEffect(() => {
+    if (!starsApi) return;
+    starsApi.on("select", () => {
+      setStarsCurrent(starsApi.selectedScrollSnap());
+    });
+  }, [starsApi]);
+
+  // Auto-scroll for Stars Carousel
+  useEffect(() => {
+    if (!starsApi || isStarsPaused) return;
+    const interval = setInterval(() => {
+      const nextIndex = (starsCurrent + 1) % STARS.length;
+      starsApi.scrollTo(nextIndex);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [starsApi, starsCurrent, isStarsPaused]);
 
   const filteredCourses = courseFilter === 'all' 
     ? COURSES 
     : COURSES.filter(c => c.category === courseFilter);
 
+  const getInitials = (name: string) => {
+    return name.split(" ").map(n => n[0]).join("");
+  };
+
   return (
     <div className="flex flex-col w-full">
       {/* 1. HERO SECTION */}
       <section id="hero" className="relative w-full pt-0">
-        <Carousel setApi={setApi} opts={{ loop: true }} className="w-full">
+        <Carousel setApi={setHeroApi} opts={{ loop: true }} className="w-full">
           <CarouselContent>
             {HERO_BANNERS.map((banner, index) => (
               <CarouselItem key={index}>
@@ -175,10 +200,10 @@ export default function Home() {
             {HERO_BANNERS.map((_, i) => (
               <button
                 key={i}
-                onClick={() => api?.scrollTo(i)}
+                onClick={() => heroApi?.scrollTo(i)}
                 className={cn(
                   "w-3 h-3 rounded-full transition-all",
-                  current === i ? "bg-white w-10" : "bg-white/40"
+                  heroCurrent === i ? "bg-white w-10" : "bg-white/40"
                 )}
               />
             ))}
@@ -264,29 +289,69 @@ export default function Home() {
             <p className="text-muted-foreground">Top rankers from Madurai who realized their dreams with Acharya.</p>
           </div>
 
-          <Carousel opts={{ align: "start", loop: true }} className="w-full">
-            <CarouselContent>
-              {STARS.map((star, i) => (
-                <CarouselItem key={i} className="md:basis-1/3 lg:basis-1/4 pl-6">
-                  <div className="bg-white rounded-3xl overflow-hidden border shadow-sm group hover:border-primary transition-all">
-                    <div className="relative aspect-[3/4] overflow-hidden">
-                      <Image src={star.image} alt={star.name} fill className="object-cover group-hover:scale-105 transition-transform" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                      <div className="absolute bottom-6 left-6 text-white text-left">
-                        <p className="text-xl font-bold">{star.name}</p>
-                        <p className="text-sm opacity-80 uppercase tracking-widest">{star.exam}</p>
+          <div 
+            className="w-full relative"
+            onMouseEnter={() => setIsStarsPaused(true)}
+            onMouseLeave={() => setIsStarsPaused(false)}
+          >
+            <Carousel setApi={setStarsApi} opts={{ align: "start", loop: true }} className="w-full">
+              <CarouselContent>
+                {STARS.map((star, i) => (
+                  <CarouselItem key={i} className="md:basis-1/3 lg:basis-1/4 pl-6">
+                    <div className="flex flex-col items-center group cursor-pointer">
+                      <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-md transition-transform duration-300 group-hover:scale-105 border">
+                        {star.image ? (
+                          <Image 
+                            src={star.image} 
+                            alt={star.name} 
+                            fill 
+                            className="object-cover" 
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-[#1A237E] to-[#D32F2F] flex items-center justify-center">
+                            <span className="text-white text-4xl font-bold">
+                              {getInitials(star.name)}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {/* Overlay Name + Exam */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-4 py-3 backdrop-blur-sm">
+                          <p className="text-white font-bold text-sm leading-tight">
+                            {star.name}
+                          </p>
+                          <p className="text-gray-300 text-[10px] uppercase tracking-widest mt-0.5">
+                            {star.exam}
+                          </p>
+                        </div>
                       </div>
+                      
+                      {/* Score below card */}
+                      <p className="text-[#D32F2F] font-bold text-xl text-center mt-4">
+                        {star.result}
+                      </p>
                     </div>
-                    <div className="p-6 text-center">
-                      <div className="text-primary font-bold text-2xl">{star.result}</div>
-                    </div>
-                  </div>
-                </CarouselItem>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="-left-12 hidden lg:flex" />
+              <CarouselNext className="-right-12 hidden lg:flex" />
+            </Carousel>
+            
+            {/* Dots navigation */}
+            <div className="flex justify-center gap-2 mt-10">
+              {STARS.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => starsApi?.scrollTo(i)}
+                  className={cn(
+                    "w-2 h-2 rounded-full transition-all",
+                    starsCurrent === i ? "bg-primary w-6" : "bg-gray-300"
+                  )}
+                />
               ))}
-            </CarouselContent>
-            <CarouselPrevious className="-left-12 hidden lg:flex" />
-            <CarouselNext className="-right-12 hidden lg:flex" />
-          </Carousel>
+            </div>
+          </div>
         </div>
       </section>
 
