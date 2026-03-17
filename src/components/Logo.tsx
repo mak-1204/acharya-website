@@ -2,67 +2,27 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 
 interface LogoProps {
   className?: string;
   light?: boolean;
 }
 
+/**
+ * Renders the Acharya Education logo using the static PNG asset.
+ * The height is controlled by the passed className (e.g., h-12).
+ */
 export const Logo = ({ className = "h-10 md:h-14", light = false }: LogoProps) => {
-  const primaryColor = light ? "#FFFFFF" : "#1A237E";
-  const accentColor = "#D32F2F";
-
   return (
-    <div className={`flex items-center ${className}`}>
-      <svg
-        viewBox="0 0 240 70"
-        className="h-full w-auto"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        {/* ACH */}
-        <text
-          x="5"
-          y="40"
-          className="font-bold"
-          fill={primaryColor}
-          style={{ fontSize: '38px', fontFamily: 'Arial, sans-serif' }}
-        >
-          ACH
-        </text>
-        
-        {/* Red Triangle/Delta */}
-        <path
-          d="M98 40L112 12L126 40H98Z"
-          fill={accentColor}
-        />
-        <path
-          d="M106 40L112 28L118 40H106Z"
-          fill={light ? primaryColor : "white"}
-        />
-
-        {/* ARYA */}
-        <text
-          x="130"
-          y="40"
-          className="font-bold"
-          fill={primaryColor}
-          style={{ fontSize: '38px', fontFamily: 'Arial, sans-serif' }}
-        >
-          ARYA
-        </text>
-
-        {/* EDUCATION */}
-        <text
-          x="5"
-          y="65"
-          className="font-bold"
-          fill={primaryColor}
-          style={{ fontSize: '20px', fontFamily: 'Arial, sans-serif', letterSpacing: '4px' }}
-        >
-          EDUCATION
-        </text>
-      </svg>
+    <div className={`relative flex items-center ${className} aspect-[240/70]`}>
+      <Image 
+        src="/logo.png" 
+        alt="Acharya Education Logo" 
+        fill
+        className="object-contain"
+        priority
+      />
     </div>
   );
 };
