@@ -66,15 +66,6 @@ const COURSES = [
   { id: 'tuition', title: 'State Board Tuitions', target: 'Class 9 - 12', mode: 'Offline', icon: <Users className="w-6 h-6" />, category: 'tuition' },
 ];
 
-const STARS = [
-  { name: 'Anish Kumar', exam: 'JEE Mains', result: 'AIR 50', batch: '2024', image: null, category: 'JEE Adv. \'25', course: 'Classroom Program' },
-  { name: 'Ayesha Mariam', exam: 'NEET-UG', result: 'AIR 74', batch: '2024', image: null, category: 'NEET-UG \'25', course: 'Classroom Program' },
-  { name: 'Raghav Ganesh', exam: 'JEE Advanced', result: 'AIR 395', batch: '2023', image: null, category: 'JEE Adv. \'25', course: 'Integrated Program' },
-  { name: 'Shruthika', exam: 'NEET', result: 'AIR 1341', batch: '2024', image: null, category: 'NEET-UG \'25', course: 'Classroom Program' },
-  { name: 'Charuvrat Bains', exam: 'IESO 2025', result: 'Silver Medal', batch: '2023', image: null, category: 'IESO 2025', course: 'Foundation Batch' },
-  { name: 'Aabhineet Patn...', exam: 'CBSE 10th', result: '99.4%', batch: '2024', image: null, category: 'CBSE 10th, \'25', course: 'Tuition Batch' },
-];
-
 const WHY_ACHARYA = [
   { title: 'Experienced Faculty', desc: 'Expert mentors with 15+ years of success stories.', icon: <Award className="text-primary" /> },
   { title: 'Small Batches', desc: 'Strict limit of 15 students per batch for personalized focus.', icon: <Users className="text-secondary" /> },
@@ -116,9 +107,6 @@ const TESTIMONIALS = [
 export default function Home() {
   const [heroApi, setHeroApi] = useState<CarouselApi>();
   const [heroCurrent, setHeroCurrent] = useState(0);
-  const [starsApi, setStarsApi] = useState<CarouselApi>();
-  const [starsCurrent, setStarsCurrent] = useState(0);
-  const [isStarsPaused, setIsStarsPaused] = useState(false);
   const [courseFilter, setCourseFilter] = useState('all');
 
   useEffect(() => {
@@ -128,30 +116,9 @@ export default function Home() {
     });
   }, [heroApi]);
 
-  useEffect(() => {
-    if (!starsApi) return;
-    starsApi.on("select", () => {
-      setStarsCurrent(starsApi.selectedScrollSnap());
-    });
-  }, [starsApi]);
-
-  // Continuous Auto-scroll logic
-  useEffect(() => {
-    if (!starsApi || isStarsPaused) return;
-    const interval = setInterval(() => {
-      starsApi.scrollNext();
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [starsApi, starsCurrent, isStarsPaused]);
-
   const filteredCourses = courseFilter === 'all' 
     ? COURSES 
     : COURSES.filter(c => c.category === courseFilter);
-
-  const getInitials = (name: string) => {
-    return name.split(" ").map(n => n[0]).join("");
-  };
 
   return (
     <div className="flex flex-col w-full">
@@ -280,87 +247,31 @@ export default function Home() {
 
       <div className="section-divider mx-auto max-w-4xl opacity-20"></div>
 
-      {/* 4. STARS CAROUSEL - MODERN SPLIT DESIGN */}
+      {/* 4. MEET OUR STARS SECTION - STATIC EMPTY STATE */}
       <section id="results" className="py-24 bg-white scroll-mt-16 relative overflow-hidden">
-        {/* Edge Fade Gradients */}
-        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none hidden md:block"></div>
-        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none hidden md:block"></div>
-
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-secondary mb-4 flex items-center justify-center gap-3">
-              Meet Our Stars <Star className="text-yellow-400 fill-yellow-400 animate-pulse" />
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-bold text-secondary mb-8">
+              Meet Our Stars <span className="text-[#FFC107]">✦</span>
             </h2>
-            <p className="text-muted-foreground text-lg">Acharya's legacy of excellence, one student at a time.</p>
-          </div>
-
-          <div 
-            className="w-full relative px-4"
-            onMouseEnter={() => setIsStarsPaused(true)}
-            onMouseLeave={() => setIsStarsPaused(false)}
-          >
-            <Carousel setApi={setStarsApi} opts={{ align: "start", loop: true }} className="w-full">
-              <CarouselContent className="-ml-6">
-                {STARS.map((star, i) => (
-                  <CarouselItem key={i} className="md:basis-1/3 lg:basis-1/4 pl-6">
-                    <div className="bg-white rounded-3xl border shadow-sm overflow-hidden flex flex-col group hover:shadow-2xl transition-all duration-500 cursor-pointer hover:-translate-y-2 h-full">
-                      {/* Top Area: Initial Placeholder or Photo */}
-                      <div className="relative pt-8 px-6 pb-6 bg-primary/5 group-hover:bg-primary/10 transition-colors">
-                        <div className="relative aspect-square w-full rounded-2xl overflow-hidden flex items-end justify-center bg-white shadow-inner">
-                           {star.image ? (
-                             <Image src={star.image} alt={star.name} fill className="object-cover" />
-                           ) : (
-                             <div className="w-full h-full flex flex-col items-center justify-center">
-                               <div className="w-24 h-24 rounded-full bg-gradient-to-br from-secondary to-primary/80 flex items-center justify-center text-white mb-2 shadow-lg">
-                                 <span className="text-4xl font-black">
-                                   {getInitials(star.name)}
-                                 </span>
-                               </div>
-                             </div>
-                           )}
-                        </div>
-                        {/* Exam Ribbon Banner */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-secondary py-2.5 px-4 text-center transform translate-y-1/2 mx-6 rounded-xl shadow-lg z-20">
-                           <span className="text-white text-xs font-black uppercase tracking-widest">
-                             {star.category}
-                           </span>
-                        </div>
-                      </div>
-
-                      {/* Details Area */}
-                      <div className="p-8 pt-10 bg-white flex-1 flex flex-col text-center">
-                        <h4 className="text-xl font-bold text-secondary mb-1 truncate">{star.name}</h4>
-                        <p className="text-xs font-semibold text-muted-foreground mb-4 uppercase tracking-tighter">{star.course}</p>
-                        
-                        <div className="mt-auto">
-                           <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 group-hover:border-primary/30 transition-all">
-                             <p className="text-xs font-bold text-muted-foreground uppercase mb-1">{star.exam} '{star.batch.slice(-2)}</p>
-                             <span className="text-3xl font-black text-primary tracking-tight">
-                               {star.result}
-                             </span>
-                           </div>
-                        </div>
-                      </div>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="-left-4 h-12 w-12 bg-white shadow-xl border-none hover:bg-muted" />
-              <CarouselNext className="-right-4 h-12 w-12 bg-white shadow-xl border-none hover:bg-muted" />
-            </Carousel>
             
-            {/* Nav Dots */}
-            <div className="flex justify-center gap-3 mt-12">
-              {STARS.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => starsApi?.scrollTo(i)}
-                  className={cn(
-                    "h-2 rounded-full transition-all duration-500",
-                    starsCurrent === i ? "bg-primary w-10" : "bg-gray-200 w-2 hover:bg-gray-400"
-                  )}
-                />
-              ))}
+            {/* Visual Tabs Only */}
+            <div className="flex flex-wrap justify-center gap-3 mb-12">
+              <button className="px-6 py-2 rounded-full border-2 border-[#1A237E] text-[#1A237E] bg-white font-bold text-xs uppercase tracking-wider">ALL</button>
+              <button className="px-6 py-2 rounded-full border-2 border-gray-200 text-gray-400 bg-white font-bold text-xs uppercase tracking-wider">NEET</button>
+              <button className="px-6 py-2 rounded-full border-2 border-gray-200 text-gray-400 bg-white font-bold text-xs uppercase tracking-wider">JEE</button>
+              <button className="px-6 py-2 rounded-full border-2 border-gray-200 text-gray-400 bg-white font-bold text-xs uppercase tracking-wider">CLASSES 6-10</button>
+            </div>
+
+            {/* Empty State */}
+            <div className="text-center py-16 bg-muted/20 rounded-[3rem] border-2 border-dashed border-gray-200">
+              <p className="text-6xl mb-6">🏆</p>
+              <p className="text-2xl font-bold text-[#1A237E] uppercase tracking-tight">
+                Our Stars Are On Their Way!
+              </p>
+              <p className="text-gray-500 mt-3 text-base max-w-xs mx-auto">
+                Results will be updated soon. Stay tuned to witness the success of our elite aspirants!
+              </p>
             </div>
           </div>
         </div>
