@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -15,7 +14,7 @@ const NAV_LINKS = [
   { name: 'Home', href: '#hero' },
   { name: 'All Courses', href: '/courses', isExternal: true },
   { name: 'About', href: '#about' },
-  { name: 'Results', href: '#results' },
+  { name: 'Results', href: '#stars' },
   { name: 'Gallery', href: '#gallery' },
   { name: 'Scholarship', href: '#scholarship' },
   { name: 'Contact', href: '#contact' },
@@ -45,7 +44,7 @@ export const Navbar = () => {
     };
 
     const observer = new IntersectionObserver(handleIntersect, observerOptions);
-    const sections = ['hero', 'courses', 'stars', 'why', 'journey', 'mode', 'about', 'results', 'gallery', 'scholarship', 'testimonials', 'enquire', 'contact'];
+    const sections = ['hero', 'courses', 'stars', 'why', 'journey', 'mode', 'about', 'gallery', 'scholarship', 'testimonials', 'enquire', 'contact'];
     
     sections.forEach((id) => {
       const el = document.getElementById(id);
@@ -158,7 +157,7 @@ export const Navbar = () => {
               onClick={(e) => handleLinkClick(e, link.href, link.isExternal)}
               className={cn(
                 'text-base font-bold flex items-center justify-between border-b pb-2 uppercase tracking-wide',
-                (isHomePage && activeSection === link.href.substring(1)) || (pathname === link.href)
+                (isHomePage && (activeSection === link.href.substring(1) || (link.name === 'Results' && activeSection === 'stars'))) || (pathname === link.href)
                   ? 'text-[#D32F2F] border-[#D32F2F]' 
                   : 'text-foreground/80 border-border'
               )}

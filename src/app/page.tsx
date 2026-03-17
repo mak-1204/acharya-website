@@ -391,31 +391,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 9. RESULTS SECTION */}
-      <section id="results" className="py-24 bg-muted/30 scroll-mt-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-secondary mb-16">Outstanding Results 2024</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {[
-              { name: "Anish Kumar", exam: "JEE Mains", res: "99.8 %ile" },
-              { name: "Ayesha Mariam", exam: "NEET", res: "685/720" },
-              { name: "Shruthika", exam: "NEET", res: "672/720" },
-              { name: "Raghav Ganesh", exam: "JEE Adv", res: "AIR 1204" }
-            ].map((r, i) => (
-              <div key={i} className="bg-white p-8 rounded-3xl border shadow-sm flex flex-col items-center">
-                <div className="w-20 h-20 rounded-full bg-secondary/5 flex items-center justify-center text-secondary mb-4">
-                  <Trophy className="w-10 h-10" />
-                </div>
-                <h4 className="text-xl font-bold text-secondary">{r.name}</h4>
-                <p className="text-sm font-semibold text-muted-foreground uppercase">{r.exam}</p>
-                <p className="text-2xl font-bold text-primary mt-2">{r.res}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 10. GALLERY SECTION */}
+      {/* 9. GALLERY SECTION */}
       <section id="gallery" className="py-24 bg-white scroll-mt-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -437,7 +413,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 11. SCHOLARSHIP SECTION */}
+      {/* 10. SCHOLARSHIP SECTION */}
       <section id="scholarship" className="py-24 bg-primary text-white overflow-hidden relative scroll-mt-16">
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
@@ -468,7 +444,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 12. TESTIMONIALS SECTION */}
+      {/* 11. TESTIMONIALS SECTION */}
       <section id="testimonials" className="py-24 bg-white scroll-mt-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-16">What Our Students Say</h2>
@@ -485,7 +461,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 13. ENQUIRE FORM SECTION */}
+      {/* 12. ENQUIRE FORM SECTION */}
       <section id="enquire" className="py-24 bg-primary relative overflow-hidden scroll-mt-16">
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto">
@@ -498,7 +474,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 14. CONTACT SECTION */}
+      {/* 13. CONTACT SECTION */}
       <section id="contact" className="py-24 bg-white scroll-mt-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
