@@ -123,15 +123,6 @@ const JOURNEY_STEPS = [
   { title: 'Success', desc: 'Regular testing and mentoring leading to top ranks.', icon: <Trophy className="w-8 h-8" /> },
 ];
 
-const GALLERY_IMAGES = [
-  { url: 'https://picsum.photos/seed/g1/600/400', title: 'Interactive Sessions' },
-  { url: 'https://picsum.photos/seed/g2/600/400', title: 'Annual Celebration' },
-  { url: 'https://picsum.photos/seed/g3/600/400', title: 'Biology Lab' },
-  { url: 'https://picsum.photos/seed/g4/600/400', title: 'Study Hall' },
-  { url: 'https://picsum.photos/seed/g5/600/400', title: 'Result Day' },
-  { url: 'https://picsum.photos/seed/g6/600/400', title: 'Faculty Training' },
-];
-
 const TESTIMONIALS = [
   { name: 'Karthick R.', text: 'The 15-student batch size made a huge difference. Every doubt was cleared instantly.', role: 'JEE Aspirant' },
   { name: 'Meera S.', text: 'The NCERT intensive program for NEET is precisely what I needed to clear 650+.', role: 'Medical Student' },
@@ -256,12 +247,6 @@ export default function Home() {
               </Card>
             ))}
           </div>
-          
-          <div className="mt-12 md:mt-16 text-center">
-             <Button asChild variant="link" className="text-primary text-base md:text-lg font-bold">
-               <Link href="/courses">View All Detailed Courses ➔</Link>
-             </Button>
-          </div>
         </div>
       </section>
 
@@ -338,7 +323,6 @@ export default function Home() {
         <div className="container mx-auto px-4 max-w-7xl">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-secondary mb-12 md:mb-20">Your Path to Excellence</h2>
           
-          {/* Desktop/Tablet Horizontal Stepper */}
           <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 relative">
             <div className="hidden md:block absolute top-10 left-0 w-full h-1 bg-muted -translate-y-1/2 z-0"></div>
             {JOURNEY_STEPS.map((step, i) => (
@@ -352,7 +336,6 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Mobile Vertical Stepper */}
           <div className="flex sm:hidden flex-col gap-8 relative">
             <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-muted -translate-x-1/2"></div>
             {JOURNEY_STEPS.map((step, i) => (
@@ -431,7 +414,7 @@ export default function Home() {
                  ))}
               </div>
               <Button asChild size="lg" className="w-full sm:w-auto rounded-full bg-secondary h-12 md:h-14">
-                <Link href="#contact">Visit Our Center</Link>
+                <Link href="#enquire">Visit Our Center</Link>
               </Button>
             </div>
           </div>
@@ -466,47 +449,6 @@ export default function Home() {
               <p className="text-lg md:text-xl opacity-80">Click below to fill out our official admission enquiry form.</p>
             </div>
             <EnquiryForm source="home_enquire_section" title="Quick Admission Enquiry" />
-          </div>
-        </div>
-      </section>
-
-      {/* 11. CONTACT SECTION */}
-      <section id="contact" className="py-16 md:py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center">
-            <div className="space-y-8 md:space-y-12 order-2 lg:order-1">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary">Visit Our Center</h2>
-              <div className="space-y-6 md:space-y-8">
-                <div className="flex gap-4 md:gap-6 items-start">
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center text-primary shrink-0"><MapPin className="w-5 h-5 md:w-6 md:h-6" /></div>
-                  <div>
-                    <h4 className="font-bold text-lg md:text-xl mb-1">Our Location</h4>
-                    <p className="text-sm md:text-base text-muted-foreground">No. 207, 8th St, Muthuramalingapuram, Karpaga Nagar, K. Pudur, Madurai - 625007</p>
-                  </div>
-                </div>
-                <div className="flex gap-4 md:gap-6 items-start">
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center text-primary shrink-0"><Phone className="w-5 h-5 md:w-6 md:h-6" /></div>
-                  <div>
-                    <h4 className="font-bold text-lg md:text-xl mb-1">Direct Line</h4>
-                    <p className="text-sm md:text-base text-muted-foreground">9865440099</p>
-                  </div>
-                </div>
-                <div className="flex gap-4 md:gap-6 items-start">
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center text-primary shrink-0"><Calendar className="w-5 h-5 md:w-6 md:h-6" /></div>
-                  <div>
-                    <h4 className="font-bold text-lg md:text-xl mb-1">Working Hours</h4>
-                    <p className="text-sm md:text-base text-muted-foreground">Mon - Sat: 9:00 AM - 7:00 PM</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="h-[250px] sm:h-[300px] md:h-[400px] w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border grayscale opacity-80 hover:grayscale-0 transition-all order-1 lg:order-2">
-              <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3929.982548485292!2d78.1481132!3d9.935406!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOcKwNTYnMDEuNSJOIDc4wrAwOCU1My4yIkU!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" 
-                className="w-full h-full border-0" 
-                loading="lazy"
-              ></iframe>
-            </div>
           </div>
         </div>
       </section>
