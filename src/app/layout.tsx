@@ -3,7 +3,6 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
-import { ChatBot } from '@/components/ChatBot';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
@@ -27,14 +26,13 @@ export default function RootLayout({
         <Navbar />
         <main className="pt-16 md:pt-16 lg:pt-16">{children}</main>
         <Footer />
-        <ChatBot />
         <Toaster />
-        <div className="fixed bottom-6 left-6 z-50">
+        <div className="fixed bottom-6 right-6 z-50">
           <a
             href="tel:9865440099"
-            className="flex items-center gap-2 bg-secondary text-white px-4 py-2 rounded-full shadow-lg hover:bg-secondary/90 transition-all font-semibold"
+            className="flex items-center gap-2 bg-secondary text-white px-6 py-3 rounded-full shadow-2xl hover:bg-secondary/90 hover:scale-110 transition-all font-bold text-lg border-2 border-white/20"
           >
-            <span className="bg-white/20 p-1 rounded-full">📞</span>
+            <span className="bg-white/20 p-1.5 rounded-full flex items-center justify-center">📞</span>
             Call Now
           </a>
         </div>
