@@ -41,23 +41,6 @@
   }
 }
 
-.announcement-ticker {
-  display: flex;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.announcement-ticker div {
-  display: inline-block;
-  padding-left: 100%;
-  animation: ticker 30s linear infinite;
-}
-
-@keyframes ticker {
-  0% { transform: translate3d(0, 0, 0); }
-  100% { transform: translate3d(-100%, 0, 0); }
-}
-
 .hero-gradient {
   background: linear-gradient(135deg, #D32F2F 0%, #1A237E 100%);
 }
