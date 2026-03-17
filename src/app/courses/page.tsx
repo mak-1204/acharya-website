@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -89,16 +88,6 @@ const COURSES_DATA = [
     desc: 'Dedicated program for drop-year students. Intensive focus on bridging gaps and mastering high-difficulty concepts to secure top ranks.',
     highlights: ['Concept Reinforcement', 'Strict Discipline & Routine', 'Frequent Full-Length Tests', 'Psychological Motivation', 'Fast-Track Error Correction']
   },
-  {
-    id: 'crash',
-    title: 'JEE/NEET Crash Course',
-    audience: 'Class 12 Appearing',
-    duration: '45 - 60 Days',
-    badge: 'Last Minute Revision',
-    icon: <Zap className="w-6 h-6" />,
-    desc: 'High-yield revision just before the main exams. Focus on most expected questions, formulas, and time-saving shortcuts.',
-    highlights: ['Daily Full Mock Tests', 'Weightage-based Revision', 'Shortcut Mastery', 'Last Minute Performance Tuning', 'Formula Quick-Reference']
-  },
 ];
 
 export default function CoursesPage() {
@@ -108,7 +97,7 @@ export default function CoursesPage() {
     setActiveCourse(id);
     const element = document.getElementById(id);
     if (element) {
-      const offset = 100; // Account for fixed navbar
+      const offset = 100;
       const elementPosition = element.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({
         top: elementPosition - offset,
@@ -118,7 +107,6 @@ export default function CoursesPage() {
   };
 
   useEffect(() => {
-    // Handle fragment on load
     const hash = window.location.hash.replace('#', '');
     if (hash) {
       setTimeout(() => scrollToSection(hash), 500);
@@ -127,23 +115,18 @@ export default function CoursesPage() {
 
   return (
     <div className="bg-background min-h-screen">
-      {/* Hero Section */}
       <section className="bg-secondary text-white py-16 relative overflow-hidden">
         <div className="container mx-auto px-4 text-center relative z-10">
           <Badge className="bg-primary/20 text-white mb-4 border-none px-4 py-1 uppercase tracking-widest">Admissions Open 2025-26</Badge>
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight">Our Academic Programs</h1>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight">Detailed Programs</h1>
           <p className="text-white/70 max-w-2xl mx-auto text-lg leading-relaxed">
-            From Foundation to Professional Entrances, we provide a structured path to success with expert mentorship and personalized care.
+            From Foundation to Professional Entrances, we provide a structured path to success with expert mentorship.
           </p>
         </div>
-        {/* Abstract Background */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4"></div>
       </section>
 
       <div className="container mx-auto px-4 py-12">
         <div className="flex flex-col lg:flex-row gap-12">
-          {/* Sidebar Navigation */}
           <aside className="lg:w-1/4 lg:sticky lg:top-28 h-fit">
              <div className="bg-white p-6 rounded-3xl shadow-sm border border-border">
                 <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-6 px-2">Navigate Programs</h4>
@@ -164,17 +147,9 @@ export default function CoursesPage() {
                     </button>
                   ))}
                 </div>
-                <div className="mt-8 p-4 bg-muted/50 rounded-2xl">
-                   <p className="text-xs font-bold text-secondary mb-2">Need guidance?</p>
-                   <p className="text-[10px] text-muted-foreground mb-4">Talk to our experts for a personalized roadmap.</p>
-                   <Button asChild size="sm" className="w-full bg-secondary text-white font-bold rounded-xl h-9">
-                      <a href="tel:9865440099">Call Support</a>
-                   </Button>
-                </div>
              </div>
           </aside>
 
-          {/* Detailed Course Sections */}
           <div className="lg:w-3/4 space-y-12">
              {COURSES_DATA.map((course) => (
                <section key={course.id} id={course.id} className="scroll-mt-32">
@@ -204,9 +179,6 @@ export default function CoursesPage() {
                              <Button asChild className="bg-primary hover:bg-primary/90 h-12 px-8 rounded-full font-bold shadow-lg">
                                <a href="#admission-enquiry">Enroll Now</a>
                              </Button>
-                             <Button variant="outline" className="border-secondary text-secondary h-12 px-8 rounded-full font-bold">
-                               Download Brochure
-                             </Button>
                           </div>
                        </div>
                        
@@ -224,13 +196,12 @@ export default function CoursesPage() {
                </section>
              ))}
 
-             {/* Integrated Final Form Section */}
              <div id="admission-enquiry" className="pt-24 pb-12">
                 <div className="text-center mb-12">
-                   <h2 className="text-4xl font-bold text-secondary mb-4">Ready to Start Your Journey?</h2>
-                   <p className="text-muted-foreground">Fill out the form below and we'll help you pick the right batch.</p>
+                   <h2 className="text-4xl font-bold text-secondary mb-4">Ready to Start?</h2>
+                   <p className="text-muted-foreground">Apply today for the 2025-26 academic session.</p>
                 </div>
-                <EnquiryForm source="courses_scrolling_page" title="Apply for Admission" />
+                <EnquiryForm source="courses_page" title="Apply for Admission" />
              </div>
           </div>
         </div>
