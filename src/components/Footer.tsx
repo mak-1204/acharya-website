@@ -1,5 +1,7 @@
+
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Facebook, Youtube, Instagram, Mail, Phone, MapPin } from 'lucide-react';
 
 export const Footer = () => {
@@ -9,13 +11,14 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="space-y-6">
-            <Link href="/" className="flex flex-col leading-tight">
-              <span className="text-3xl font-bold tracking-tighter">
-                <span className="text-white">ACHARYA</span>
-              </span>
-              <span className="text-xs font-semibold text-white/60 uppercase tracking-[0.2em]">
-                EDUCATION
-              </span>
+            <Link href="/" className="inline-block bg-white p-2 rounded-lg">
+              <Image 
+                src="/logo.png" 
+                alt="Acharya Education" 
+                width={180} 
+                height={50} 
+                className="h-auto w-40 object-contain"
+              />
             </Link>
             <p className="text-white/70 leading-relaxed">
               Guiding Students to IIT, NEET & Beyond Since 2007. Madurai's most trusted partner in academic excellence.

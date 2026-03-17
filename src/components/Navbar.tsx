@@ -1,7 +1,9 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Phone, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -76,15 +78,16 @@ export const Navbar = () => {
     <Link 
       href={isHomePage ? "#hero" : "/"} 
       onClick={(e) => handleLinkClick(e, "#hero")}
-      className="flex flex-col shrink-0 text-left"
+      className="flex items-center shrink-0"
     >
-      <div className="flex items-center text-lg md:text-2xl font-bold tracking-tighter leading-none font-headline">
-        <span className="text-[#D32F2F] uppercase">ACHARYA</span>
-        <span className="text-[#1A237E] uppercase ml-1">EDUCATION</span>
-      </div>
-      <span className="text-[10px] md:text-xs font-semibold text-muted-foreground uppercase tracking-[0.15em] mt-0.5 leading-none">
-        SINCE 2007 • MADURAI
-      </span>
+      <Image 
+        src="/logo.png" 
+        alt="Acharya Education" 
+        width={200} 
+        height={60} 
+        className="h-10 md:h-12 w-auto object-contain"
+        priority
+      />
     </Link>
   );
 
