@@ -9,6 +9,9 @@ interface LogoProps {
 }
 
 export const Logo = ({ className = "h-10 md:h-14", light = false }: LogoProps) => {
+  const primaryColor = light ? "#FFFFFF" : "#1A237E";
+  const accentColor = "#D32F2F";
+
   return (
     <div className={`flex items-center ${className}`}>
       <svg
@@ -21,7 +24,8 @@ export const Logo = ({ className = "h-10 md:h-14", light = false }: LogoProps) =
         <text
           x="5"
           y="40"
-          className="font-bold fill-[#1A237E]"
+          className="font-bold"
+          fill={primaryColor}
           style={{ fontSize: '38px', fontFamily: 'Arial, sans-serif' }}
         >
           ACH
@@ -30,18 +34,19 @@ export const Logo = ({ className = "h-10 md:h-14", light = false }: LogoProps) =
         {/* Red Triangle/Delta */}
         <path
           d="M98 40L112 12L126 40H98Z"
-          className="fill-[#D32F2F]"
+          fill={accentColor}
         />
         <path
           d="M106 40L112 28L118 40H106Z"
-          className="fill-white"
+          fill={light ? primaryColor : "white"}
         />
 
         {/* ARYA */}
         <text
           x="130"
           y="40"
-          className="font-bold fill-[#1A237E]"
+          className="font-bold"
+          fill={primaryColor}
           style={{ fontSize: '38px', fontFamily: 'Arial, sans-serif' }}
         >
           ARYA
@@ -51,7 +56,8 @@ export const Logo = ({ className = "h-10 md:h-14", light = false }: LogoProps) =
         <text
           x="5"
           y="65"
-          className="font-bold fill-[#1A237E]"
+          className="font-bold"
+          fill={primaryColor}
           style={{ fontSize: '20px', fontFamily: 'Arial, sans-serif', letterSpacing: '4px' }}
         >
           EDUCATION
