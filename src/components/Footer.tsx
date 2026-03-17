@@ -1,10 +1,18 @@
 
-import React from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Youtube, Instagram, Mail, Phone, MapPin } from 'lucide-react';
 
 export const Footer = () => {
+  const [year, setYear] = useState("2025");
+
+  useEffect(() => {
+    setYear(new Date().getFullYear().toString());
+  }, []);
+
   return (
     <footer className="bg-secondary text-white pt-12 md:pt-16 pb-8">
       <div className="container mx-auto px-4">
@@ -87,7 +95,7 @@ export const Footer = () => {
         </div>
 
         <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs md:text-sm text-white/50 text-center md:text-left">
-          <p>© 2025 Acharya Education. All rights reserved.</p>
+          <p>© {year} Acharya Education. All rights reserved.</p>
           <div className="flex space-x-6">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
