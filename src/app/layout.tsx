@@ -17,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="scroll-smooth">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -26,7 +26,7 @@ export default function RootLayout({
       <body className="font-body antialiased selection:bg-primary/20">
         <AnnouncementBar />
         <Navbar />
-        <main>{children}</main>
+        <main className="pt-16 md:pt-16 lg:pt-16">{children}</main>
         <Footer />
         <ChatBot />
         <Toaster />
@@ -38,9 +38,6 @@ export default function RootLayout({
             <span className="bg-white/20 p-1 rounded-full">📞</span>
             Call Now
           </a>
-        </div>
-        <div className="fixed bottom-6 right-6 z-40">
-           {/* Chatbot is here, we push it up if needed or let it float */}
         </div>
       </body>
     </html>
