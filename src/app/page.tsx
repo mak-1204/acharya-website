@@ -1,7 +1,6 @@
-
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -10,17 +9,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EnquiryForm } from '@/components/EnquiryForm';
 import { 
-  CheckCircle2, Star, BookOpen, Target, Award, Users, 
+  CheckCircle2, BookOpen, Target, Award, Users, 
   ShieldCheck, Zap, ChevronRight, GraduationCap, MapPin, 
-  Calendar, Quote, Camera, Trophy, Gift, ArrowRight, Phone, ExternalLink,
-  ChevronLeft
+  Calendar, Quote, Camera, Trophy, Gift, ArrowRight, Phone, ExternalLink
 } from 'lucide-react';
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { cn } from '@/lib/utils';
@@ -147,9 +143,8 @@ export default function Home() {
   const [heroCurrent, setHeroCurrent] = useState(0);
   const [courseFilter, setCourseFilter] = useState('all');
   
-  // Stars Carousel State
+  // Stars Marquee State
   const [starsFilter, setStarsFilter] = useState('ALL');
-  const [starsCurrent, setStarsCurrent] = useState(0);
   const [isStarsPaused, setIsStarsPaused] = useState(false);
 
   useEffect(() => {
@@ -163,26 +158,14 @@ export default function Home() {
     ? COURSES 
     : COURSES.filter(c => c.category === courseFilter);
 
+  // Marquee Data Logic
   const filteredStars = starsFilter === 'ALL'
     ? STARS_DATA
     : STARS_DATA.filter(s => s.category === starsFilter);
 
-  // Auto-scroll logic for stars
-  useEffect(() => {
-    if (isStarsPaused || filteredStars.length <= 1) return;
-    const interval = setInterval(() => {
-      setStarsCurrent(prev => (prev >= filteredStars.length - 1 ? 0 : prev + 1));
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [isStarsPaused, filteredStars.length]);
-
-  // Reset stars carousel on filter change
-  useEffect(() => {
-    setStarsCurrent(0);
-  }, [starsFilter]);
-
-  const nextStar = () => setStarsCurrent(prev => Math.min(filteredStars.length - 1, prev + 1));
-  const prevStar = () => setStarsCurrent(prev => Math.max(0, prev - 1));
+  // Double the array for seamless infinite marquee loop
+  const loopedStars = [...filteredStars, ...filteredStars];
+  const starsDuration = filteredStars.length <= 3 ? "12s" : "20s";
 
   return (
     <div className="flex flex-col w-full">
@@ -311,7 +294,7 @@ export default function Home() {
 
       <div className="section-divider mx-auto max-w-4xl opacity-20"></div>
 
-      {/* 4. MEET OUR STARS SECTION */}
+      {/* 4. MEET OUR STARS SECTION (Infinite Marquee) */}
       <section id="stars" className="py-24 bg-white scroll-mt-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -337,80 +320,49 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Carousel with Faded Edges */}
-            <div className="relative group">
-              {/* Arrows */}
-              <div className="absolute top-1/2 -left-4 lg:-left-12 -translate-y-1/2 z-20 flex gap-2">
-                <button 
-                  onClick={prevStar}
-                  className="w-10 h-10 rounded-full border border-gray-300 bg-white flex items-center justify-center hover:border-[#1A237E] hover:text-[#1A237E] transition-all shadow-sm"
-                >
-                  <ChevronLeft className="w-5 h-5" />
-                </button>
-              </div>
-              <div className="absolute top-1/2 -right-4 lg:-right-12 -translate-y-1/2 z-20">
-                <button 
-                  onClick={nextStar}
-                  className="w-10 h-10 rounded-full border border-gray-300 bg-white flex items-center justify-center hover:border-[#1A237E] hover:text-[#1A237E] transition-all shadow-sm"
-                >
-                  <ChevronRight className="w-5 h-5" />
-                </button>
-              </div>
-
+            {/* Infinite Marquee Wrapper */}
+            <div 
+              className="relative overflow-hidden group"
+              onMouseEnter={() => setIsStarsPaused(true)}
+              onMouseLeave={() => setIsStarsPaused(false)}
+            >
               {/* Faded Edge Overlays */}
               <div className="absolute left-0 top-0 bottom-0 w-20 lg:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
               <div className="absolute right-0 top-0 bottom-0 w-20 lg:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
 
-              {/* Scrolling cards track */}
+              {/* Scrolling Track */}
               <div 
-                className="overflow-hidden px-4"
-                onMouseEnter={() => setIsStarsPaused(true)}
-                onMouseLeave={() => setIsStarsPaused(false)}
+                className="flex gap-6 w-max"
+                style={{
+                  animation: `marquee ${starsDuration} linear infinite`,
+                  animationPlayState: isStarsPaused ? 'paused' : 'running'
+                }}
               >
-                <div 
-                  className="flex gap-6 transition-transform duration-500 ease-in-out"
-                  style={{ transform: `translateX(-${starsCurrent * (180 + 24)}px)` }}
-                >
-                  {filteredStars.map((star, idx) => (
-                    <div 
-                      key={idx} 
-                      className="min-w-[180px] bg-white rounded-2xl shadow-md overflow-hidden flex-shrink-0 hover:scale-105 transition-transform duration-300 cursor-pointer border border-border"
-                    >
-                      {/* Photo placeholder — gradient with initials */}
-                      <div className="h-44 bg-gradient-to-br from-[#1A237E] to-[#D32F2F] flex items-center justify-center relative">
-                        <span className="text-white text-4xl font-bold">{star.initials}</span>
-                        {/* Exam badge strip */}
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1.5 px-2 text-center">
-                          <span className="text-white text-[10px] font-bold uppercase tracking-wider">
-                            {star.exam}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Card bottom */}
-                      <div className="p-4 text-left">
-                        <p className="font-bold text-[#1C1C1C] text-sm truncate">{star.name}</p>
-                        <p className="text-muted-foreground text-[10px] mt-0.5">Classroom Course</p>
-                        <p className="text-[#D32F2F] font-bold text-lg mt-3">{star.score}</p>
+                {loopedStars.map((star, idx) => (
+                  <div 
+                    key={idx} 
+                    className="min-w-[180px] bg-white rounded-2xl shadow-md overflow-hidden flex-shrink-0 hover:scale-105 transition-transform duration-300 cursor-pointer border border-border"
+                  >
+                    {/* Photo placeholder — gradient with initials */}
+                    <div className="h-44 bg-gradient-to-br from-[#1A237E] to-[#D32F2F] flex items-center justify-center relative">
+                      <span className="text-white text-4xl font-bold">{star.initials}</span>
+                      {/* Exam badge strip */}
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1.5 px-2 text-center">
+                        <span className="text-white text-[10px] font-bold uppercase tracking-wider">
+                          {star.exam}
+                        </span>
                       </div>
                     </div>
-                  ))}
-                </div>
+
+                    {/* Card bottom */}
+                    <div className="p-4 text-left">
+                      <p className="font-bold text-[#1C1C1C] text-sm truncate">{star.name}</p>
+                      <p className="text-muted-foreground text-[10px] mt-0.5">Classroom Course</p>
+                      <p className="text-[#D32F2F] font-bold text-lg mt-3">{star.score}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-            
-            {/* Dots */}
-            <div className="mt-8 flex justify-center gap-1.5">
-              {filteredStars.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setStarsCurrent(i)}
-                  className={cn(
-                    "w-2 h-2 rounded-full transition-all",
-                    starsCurrent === i ? "bg-[#1A237E] w-6" : "bg-gray-200"
-                  )}
-                />
-              ))}
             </div>
           </div>
         </div>
@@ -644,4 +596,3 @@ export default function Home() {
     </div>
   );
 }
-

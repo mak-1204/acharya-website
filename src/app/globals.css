@@ -41,6 +41,15 @@
   }
 }
 
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 .hero-gradient {
   background: linear-gradient(135deg, #D32F2F 0%, #1A237E 100%);
 }
