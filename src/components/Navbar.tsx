@@ -3,11 +3,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { Logo } from './Logo';
 
 const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
 
@@ -74,27 +74,16 @@ export const Navbar = () => {
     }
   };
 
-  const Logo = () => (
-    <Link 
-      href={isHomePage ? "#hero" : "/"} 
-      onClick={(e) => handleLinkClick(e, "#hero")}
-      className="flex items-center shrink-0"
-    >
-      <Image 
-        src="/logo.png" 
-        alt="Acharya Education" 
-        width={220} 
-        height={65} 
-        className="h-8 sm:h-10 md:h-12 lg:h-14 w-auto object-contain"
-        priority
-      />
-    </Link>
-  );
-
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md border-t-4 border-[#D32F2F]">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-        <Logo />
+        <Link 
+          href={isHomePage ? "#hero" : "/"} 
+          onClick={(e) => handleLinkClick(e, "#hero")}
+          className="flex items-center shrink-0 bg-white p-1 rounded-lg"
+        >
+          <Logo className="h-8 sm:h-10 md:h-12" />
+        </Link>
 
         {/* Desktop Nav Links (lg+) */}
         <div className="hidden lg:flex items-center gap-6 xl:gap-8 flex-1 justify-center px-4">
