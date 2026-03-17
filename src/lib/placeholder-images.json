@@ -1,3 +1,40 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero-student",
+      "description": "Happy student at Acharya",
+      "imageUrl": "https://picsum.photos/seed/acharya1/1200/600",
+      "imageHint": "student studying"
+    },
+    {
+      "id": "anish-kumar",
+      "description": "Anish Kumar JEE Result",
+      "imageUrl": "https://picsum.photos/seed/student1/300/400",
+      "imageHint": "student portrait"
+    },
+    {
+      "id": "ayesha-mariam",
+      "description": "Ayesha Mariam NEET Result",
+      "imageUrl": "https://picsum.photos/seed/student2/300/400",
+      "imageHint": "student portrait"
+    },
+    {
+      "id": "shruthika",
+      "description": "Shruthika JEE Result",
+      "imageUrl": "https://picsum.photos/seed/student3/300/400",
+      "imageHint": "student portrait"
+    },
+    {
+      "id": "classroom",
+      "description": "Modern classroom at Acharya",
+      "imageUrl": "https://picsum.photos/seed/classroom1/800/600",
+      "imageHint": "modern classroom"
+    },
+    {
+      "id": "faculty",
+      "description": "Expert faculty member",
+      "imageUrl": "https://picsum.photos/seed/faculty1/400/500",
+      "imageHint": "teacher classroom"
+    }
+  ]
 }
