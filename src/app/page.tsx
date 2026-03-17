@@ -142,9 +142,6 @@ const TESTIMONIALS = [
 export default function Home() {
   const [heroApi, setHeroApi] = useState<CarouselApi>();
   const [heroCurrent, setHeroCurrent] = useState(0);
-  const [courseFilter, setCourseFilter] = useState('all');
-  
-  // Stars Marquee State
   const [isStarsPaused, setIsStarsPaused] = useState(false);
 
   useEffect(() => {
@@ -154,39 +151,35 @@ export default function Home() {
     });
   }, [heroApi]);
 
-  const filteredCourses = courseFilter === 'all' 
-    ? COURSES 
-    : COURSES.filter(c => c.category === courseFilter);
-
   // Double the array for seamless infinite marquee loop
   const loopedStars = [...STARS_DATA, ...STARS_DATA];
   const starsDuration = STARS_DATA.length <= 3 ? "12s" : "20s";
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full overflow-x-hidden">
       {/* 1. HERO SECTION */}
       <section id="hero" className="relative w-full pt-0">
         <Carousel setApi={setHeroApi} opts={{ loop: true }} className="w-full">
           <CarouselContent>
             {HERO_BANNERS.map((banner, index) => (
               <CarouselItem key={index}>
-                <div className={cn("relative w-full h-[450px] md:h-[650px] flex items-center overflow-hidden", banner.color)}>
+                <div className={cn("relative w-full min-h-[500px] md:h-[650px] flex items-center overflow-hidden py-12 md:py-0", banner.color)}>
                   <div className="container mx-auto px-4 z-10 grid grid-cols-1 lg:grid-cols-2 items-center gap-8 text-left">
-                    <div className="text-white space-y-6">
-                      <Badge className="bg-white/20 text-white border-none px-4 py-1.5 uppercase tracking-wider">
+                    <div className="text-white space-y-4 md:space-y-6">
+                      <Badge className="bg-white/20 text-white border-none px-4 py-1.5 uppercase tracking-wider text-[10px] md:text-xs">
                         {banner.badge}
                       </Badge>
-                      <h1 className="text-4xl md:text-7xl font-bold tracking-tight leading-tight">
+                      <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight leading-tight">
                         {banner.title}
                       </h1>
-                      <p className="text-lg md:text-xl text-white/80 max-w-lg">
+                      <p className="text-base md:text-xl text-white/80 max-w-lg">
                         {banner.subtitle}
                       </p>
-                      <div className="flex flex-wrap gap-4 pt-4">
-                        <Button asChild size="lg" className="bg-white text-secondary hover:bg-white/90 font-bold rounded-full px-10">
+                      <div className="flex flex-wrap gap-3 md:gap-4 pt-4">
+                        <Button asChild size="lg" className="w-full sm:w-auto bg-white text-secondary hover:bg-white/90 font-bold rounded-full px-10">
                           <a href={banner.link} target="_blank" rel="noopener noreferrer">{banner.cta}</a>
                         </Button>
-                        <Button asChild size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 font-bold rounded-full px-10">
+                        <Button asChild size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-white text-white hover:bg-white/10 font-bold rounded-full px-10">
                           <a href="tel:9865440099">Call Counselor</a>
                         </Button>
                       </div>
@@ -206,14 +199,14 @@ export default function Home() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+          <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex gap-2 z-20">
             {HERO_BANNERS.map((_, i) => (
               <button
                 key={i}
                 onClick={() => heroApi?.scrollTo(i)}
                 className={cn(
-                  "w-3 h-3 rounded-full transition-all",
-                  heroCurrent === i ? "bg-white w-10" : "bg-white/40"
+                  "w-2 h-2 md:w-3 md:h-3 rounded-full transition-all",
+                  heroCurrent === i ? "bg-white w-6 md:w-10" : "bg-white/40"
                 )}
               />
             ))}
@@ -222,16 +215,16 @@ export default function Home() {
       </section>
 
       {/* 2. STATS STRIP */}
-      <section id="stats" className="bg-white py-12 border-b relative z-30 -mt-10 mx-4 md:mx-12 lg:mx-24 rounded-3xl shadow-xl border">
+      <section id="stats" className="bg-white py-8 md:py-12 border-b relative z-30 -mt-6 md:-mt-10 mx-4 md:mx-12 lg:mx-24 rounded-2xl md:rounded-3xl shadow-xl border">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 text-center">
             {IMPULSE_STATS.map((stat, i) => (
               <div key={i} className="flex flex-col items-center group">
-                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-3 md:mb-4 group-hover:bg-primary group-hover:text-white transition-all duration-300">
                   {stat.icon}
                 </div>
-                <div className="text-3xl md:text-4xl font-bold text-secondary">{stat.value}</div>
-                <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{stat.label}</div>
+                <div className="text-2xl md:text-4xl font-bold text-secondary">{stat.value}</div>
+                <div className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -239,77 +232,59 @@ export default function Home() {
       </section>
 
       {/* 3. COURSES SECTION */}
-      <section id="courses" className="py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4 text-left">
-          <div className="text-center mb-12">
+      <section id="courses" className="py-16 md:py-24 bg-white scroll-mt-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-10 md:mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-4">Our Impulse</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto italic">Guiding Madurai's brightest minds towards excellence.</p>
+            <p className="text-muted-foreground max-w-2xl mx-auto italic text-sm md:text-base">Guiding Madurai's brightest minds towards excellence.</p>
           </div>
 
-          <Tabs defaultValue="all" onValueChange={setCourseFilter} className="w-full flex flex-col items-center">
-            <TabsList className="bg-muted p-1 rounded-full mb-12 h-auto flex flex-wrap justify-center border">
-              {['all', 'jee', 'neet', 'clat', 'foundation'].map((tab) => (
-                <TabsTrigger 
-                  key={tab} value={tab} 
-                  className="rounded-full px-8 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-white font-bold uppercase text-xs"
-                >
-                  {tab}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
-              {filteredCourses.map((course) => (
-                <Card key={course.id} className="group hover:shadow-2xl transition-all duration-500 border rounded-3xl overflow-hidden bg-white">
-                  <CardContent className="p-8">
-                    <div className="w-16 h-16 rounded-2xl bg-secondary/5 flex items-center justify-center text-secondary mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
-                      {course.icon}
-                    </div>
-                    <h3 className="text-2xl font-bold mb-2 text-secondary">{course.title}</h3>
-                    <p className="text-muted-foreground text-sm mb-4">{course.target}</p>
-                    <div className="flex items-center gap-2 mb-6">
-                      <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20">{course.mode}</Badge>
-                    </div>
-                    <Button asChild className="w-full bg-secondary hover:bg-secondary/90 text-white rounded-xl h-12">
-                      <Link href={`/courses#${course.id}`}>Explore Program <ArrowRight className="w-4 h-4 ml-2" /></Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-            
-            <div className="mt-16 text-center">
-               <Button asChild variant="link" className="text-primary text-lg font-bold">
-                 <Link href="/courses">View All Detailed Courses ➔</Link>
-               </Button>
-            </div>
-          </Tabs>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 w-full">
+            {COURSES.map((course) => (
+              <Card key={course.id} className="group hover:shadow-2xl transition-all duration-500 border rounded-2xl md:rounded-3xl overflow-hidden bg-white">
+                <CardContent className="p-6 md:p-8">
+                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-secondary/5 flex items-center justify-center text-secondary mb-4 md:mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
+                    {course.icon}
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-bold mb-2 text-secondary">{course.title}</h3>
+                  <p className="text-muted-foreground text-xs md:text-sm mb-4">{course.target}</p>
+                  <div className="flex items-center gap-2 mb-6">
+                    <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 text-[10px] md:text-xs">{course.mode}</Badge>
+                  </div>
+                  <Button asChild className="w-full bg-secondary hover:bg-secondary/90 text-white rounded-xl h-10 md:h-12 text-sm">
+                    <Link href={`/courses#${course.id}`}>Explore Program <ArrowRight className="w-4 h-4 ml-2" /></Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          
+          <div className="mt-12 md:mt-16 text-center">
+             <Button asChild variant="link" className="text-primary text-base md:text-lg font-bold">
+               <Link href="/courses">View All Detailed Courses ➔</Link>
+             </Button>
+          </div>
         </div>
       </section>
 
-      <div className="section-divider mx-auto max-w-4xl opacity-20"></div>
-
       {/* 4. MEET OUR STARS SECTION (Infinite Marquee) */}
-      <section id="stars" className="py-24 bg-white scroll-mt-16">
+      <section id="stars" className="py-16 md:py-24 bg-white scroll-mt-16 overflow-hidden">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#1C1C1C] mb-8 font-headline">
+          <div className="text-center">
+            <h2 className="text-3xl md:text-5xl font-bold text-[#1C1C1C] mb-8 md:mb-12 font-headline">
               Meet Our Stars <span className="text-[#FFC107]">✦</span>
             </h2>
 
-            {/* Infinite Marquee Wrapper */}
             <div 
-              className="relative overflow-hidden group"
+              className="relative overflow-hidden group py-4"
               onMouseEnter={() => setIsStarsPaused(true)}
               onMouseLeave={() => setIsStarsPaused(false)}
             >
-              {/* Faded Edge Overlays */}
-              <div className="absolute left-0 top-0 bottom-0 w-20 lg:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-              <div className="absolute right-0 top-0 bottom-0 w-20 lg:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+              <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+              <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
 
-              {/* Scrolling Track */}
               <div 
-                className="flex gap-6 w-max"
+                className="flex gap-4 md:gap-6 w-max"
                 style={{
                   animation: `marquee ${starsDuration} linear infinite`,
                   animationPlayState: isStarsPaused ? 'paused' : 'running'
@@ -318,24 +293,21 @@ export default function Home() {
                 {loopedStars.map((star, idx) => (
                   <div 
                     key={idx} 
-                    className="min-w-[180px] bg-white rounded-2xl shadow-md overflow-hidden flex-shrink-0 hover:scale-105 transition-transform duration-300 cursor-pointer border border-border"
+                    className="w-[150px] md:w-[180px] bg-white rounded-xl md:rounded-2xl shadow-md overflow-hidden flex-shrink-0 hover:scale-105 transition-transform duration-300 cursor-pointer border border-border"
                   >
-                    {/* Photo placeholder — gradient with initials */}
-                    <div className="h-44 bg-gradient-to-br from-[#1A237E] to-[#D32F2F] flex items-center justify-center relative">
-                      <span className="text-white text-4xl font-bold">{star.initials}</span>
-                      {/* Exam badge strip */}
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1.5 px-2 text-center">
-                        <span className="text-white text-[10px] font-bold uppercase tracking-wider">
+                    <div className="h-32 md:h-44 bg-gradient-to-br from-[#1A237E] to-[#D32F2F] flex items-center justify-center relative">
+                      <span className="text-white text-2xl md:text-4xl font-bold">{star.initials}</span>
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1 px-2 text-center">
+                        <span className="text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider">
                           {star.exam}
                         </span>
                       </div>
                     </div>
 
-                    {/* Card bottom */}
-                    <div className="p-4 text-left">
-                      <p className="font-bold text-[#1C1C1C] text-sm truncate">{star.name}</p>
-                      <p className="text-muted-foreground text-[10px] mt-0.5">Classroom Course</p>
-                      <p className="text-[#D32F2F] font-bold text-lg mt-3">{star.score}</p>
+                    <div className="p-3 md:p-4 text-left">
+                      <p className="font-bold text-[#1C1C1C] text-xs md:text-sm truncate">{star.name}</p>
+                      <p className="text-muted-foreground text-[8px] md:text-[10px] mt-0.5">Classroom Course</p>
+                      <p className="text-[#D32F2F] font-bold text-base md:text-lg mt-2 md:mt-3">{star.score}</p>
                     </div>
                   </div>
                 ))}
@@ -346,17 +318,17 @@ export default function Home() {
       </section>
 
       {/* 5. WHY ACHARYA */}
-      <section id="why" className="py-24 bg-secondary text-white scroll-mt-16">
+      <section id="why" className="py-16 md:py-24 bg-secondary text-white scroll-mt-16">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl md:text-5xl font-bold mb-16">Why Madurai Trusts Us?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <h2 className="text-3xl md:text-5xl font-bold mb-10 md:mb-16">Why Madurai Trusts Us?</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {WHY_ACHARYA.map((feature, i) => (
-              <div key={i} className="bg-white/5 border border-white/10 p-10 rounded-3xl hover:bg-white/10 transition-all text-left">
-                <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-6">
+              <div key={i} className="bg-white/5 border border-white/10 p-6 md:p-10 rounded-2xl md:rounded-3xl hover:bg-white/10 transition-all text-left">
+                <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl bg-white flex items-center justify-center mb-4 md:mb-6">
                   {feature.icon}
                 </div>
-                <h3 className="text-2xl font-bold mb-4">{feature.title}</h3>
-                <p className="text-white/70 leading-relaxed">{feature.desc}</p>
+                <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">{feature.title}</h3>
+                <p className="text-white/70 leading-relaxed text-sm md:text-base">{feature.desc}</p>
               </div>
             ))}
           </div>
@@ -364,18 +336,18 @@ export default function Home() {
       </section>
 
       {/* 6. JOURNEY STEPPER */}
-      <section id="journey" className="py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4 text-left">
-          <h2 className="text-3xl md:text-5xl font-bold text-center text-secondary mb-20">Your Path to Excellence</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+      <section id="journey" className="py-16 md:py-24 bg-white scroll-mt-16">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-5xl font-bold text-center text-secondary mb-12 md:mb-20">Your Path to Excellence</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 relative">
             <div className="hidden md:block absolute top-10 left-0 w-full h-1 bg-muted -translate-y-1/2 z-0"></div>
             {JOURNEY_STEPS.map((step, i) => (
               <div key={i} className="relative z-10 flex flex-col items-center text-center group">
-                <div className="w-20 h-20 rounded-full bg-primary text-white flex items-center justify-center mb-6 shadow-xl border-8 border-white group-hover:scale-110 transition-transform">
-                  <div className="w-8 h-8">{step.icon}</div>
+                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary text-white flex items-center justify-center mb-4 md:mb-6 shadow-xl border-4 md:border-8 border-white group-hover:scale-110 transition-transform">
+                  <div className="w-6 h-6 md:w-8 md:h-8">{step.icon}</div>
                 </div>
-                <h3 className="text-xl font-bold text-secondary mb-2">{step.title}</h3>
-                <p className="text-muted-foreground text-sm px-4">{step.desc}</p>
+                <h3 className="text-lg md:text-xl font-bold text-secondary mb-1 md:mb-2">{step.title}</h3>
+                <p className="text-muted-foreground text-xs md:text-sm px-4">{step.desc}</p>
               </div>
             ))}
           </div>
@@ -383,29 +355,29 @@ export default function Home() {
       </section>
 
       {/* 7. MODE SECTION */}
-      <section id="mode" className="py-24 bg-primary text-white scroll-mt-16">
-        <div className="container mx-auto px-4 text-left">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-6">
-              <h2 className="text-4xl md:text-5xl font-bold">Learn the Way You Want</h2>
-              <p className="text-xl text-white/80">We offer flexible learning models to suit every student's lifestyle and academic needs.</p>
-              <div className="space-y-4 pt-4">
+      <section id="mode" className="py-16 md:py-24 bg-primary text-white scroll-mt-16">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
+            <div className="space-y-4 md:space-y-6">
+              <h2 className="text-3xl md:text-5xl font-bold">Learn the Way You Want</h2>
+              <p className="text-lg md:text-xl text-white/80">We offer flexible learning models to suit every student's lifestyle and academic needs.</p>
+              <div className="space-y-3 md:space-y-4 pt-2 md:pt-4">
                 {[
                   "Offline Classes: Immersive classroom experience in Madurai.",
                   "Online Classes: Live interactive sessions from anywhere.",
                   "Hybrid Model: Best of both worlds for maximum flexibility."
                 ].map((txt, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <CheckCircle2 className="text-white fill-white/20" />
-                    <span className="font-semibold text-lg">{txt}</span>
+                  <div key={i} className="flex items-center gap-3 md:gap-4">
+                    <CheckCircle2 className="text-white fill-white/20 shrink-0" />
+                    <span className="font-semibold text-base md:text-lg">{txt}</span>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="bg-white/10 p-10 rounded-3xl backdrop-blur-sm border border-white/20">
-               <h4 className="text-2xl font-bold mb-6">Which mode suits you?</h4>
-               <p className="mb-8 opacity-80">Connect with our counselors to understand the best methodology for your success.</p>
-               <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 font-bold rounded-full w-full">
+            <div className="bg-white/10 p-6 md:p-10 rounded-2xl md:rounded-3xl backdrop-blur-sm border border-white/20">
+               <h4 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">Which mode suits you?</h4>
+               <p className="mb-6 md:mb-8 opacity-80 text-sm md:text-base">Connect with our counselors to understand the best methodology for your success.</p>
+               <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 font-bold rounded-full w-full h-12 md:h-14">
                  <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Consult an Expert</a>
                </Button>
             </div>
@@ -414,19 +386,19 @@ export default function Home() {
       </section>
 
       {/* 8. ABOUT SECTION */}
-      <section id="about" className="py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4 text-left">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
+      <section id="about" className="py-16 md:py-24 bg-white scroll-mt-16">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
+            <div className="relative h-[300px] md:h-[500px] rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl order-2 lg:order-1">
               <Image src="https://picsum.photos/seed/about/800/1000" alt="Campus" fill className="object-cover" />
             </div>
-            <div>
-              <Badge className="bg-primary mb-4">Established 2007</Badge>
-              <h2 className="text-4xl md:text-5xl font-bold text-secondary mb-6 leading-tight">Madurai's Legacy of Academic Excellence</h2>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+            <div className="order-1 lg:order-2">
+              <Badge className="bg-primary mb-4 text-[10px] md:text-xs">Established 2007</Badge>
+              <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-4 md:mb-6 leading-tight">Madurai's Legacy of Academic Excellence</h2>
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-6">
                 Acharya Education has been empowering students for nearly two decades. Our philosophy is simple: limited batch size, expert faculty, and personalized care for every student.
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 md:mb-10">
                  {[
                    "PhD/Expert Faculty",
                    "Batch size of 15",
@@ -434,12 +406,12 @@ export default function Home() {
                    "Doubt Clearance Desk"
                  ].map((item, i) => (
                    <div key={i} className="flex items-center gap-3">
-                     <CheckCircle2 className="text-primary w-5 h-5" />
-                     <span className="font-bold text-secondary">{item}</span>
+                     <CheckCircle2 className="text-primary w-5 h-5 shrink-0" />
+                     <span className="font-bold text-secondary text-sm md:text-base">{item}</span>
                    </div>
                  ))}
               </div>
-              <Button asChild size="lg" className="rounded-full bg-secondary">
+              <Button asChild size="lg" className="w-full sm:w-auto rounded-full bg-secondary h-12">
                 <Link href="#contact">Visit Our Center</Link>
               </Button>
             </div>
@@ -448,20 +420,20 @@ export default function Home() {
       </section>
 
       {/* 9. GALLERY SECTION */}
-      <section id="gallery" className="py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4 text-left">
-          <div className="text-center mb-16">
+      <section id="gallery" className="py-16 md:py-24 bg-white scroll-mt-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-10 md:mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-4 flex items-center justify-center gap-3">
-              <Camera className="text-primary" /> Life at Acharya
+              <Camera className="text-primary w-6 h-6 md:w-8 md:h-8" /> Life at Acharya
             </h2>
-            <p className="text-muted-foreground">Glimpses of our vibrant learning environment.</p>
+            <p className="text-muted-foreground text-sm md:text-base">Glimpses of our vibrant learning environment.</p>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {GALLERY_IMAGES.map((img, i) => (
-              <div key={i} className="relative group overflow-hidden rounded-3xl shadow-lg aspect-video">
+              <div key={i} className="relative group overflow-hidden rounded-xl md:rounded-3xl shadow-lg aspect-[4/3] md:aspect-video">
                 <Image src={img.url} alt={img.title} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
-                <div className="absolute inset-0 bg-secondary/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                  <p className="font-bold text-lg">{img.title}</p>
+                <div className="absolute inset-0 bg-secondary/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white p-2 text-center">
+                  <p className="font-bold text-xs md:text-lg">{img.title}</p>
                 </div>
               </div>
             ))}
@@ -470,29 +442,29 @@ export default function Home() {
       </section>
 
       {/* 10. SCHOLARSHIP SECTION */}
-      <section id="scholarship" className="py-24 bg-primary text-white overflow-hidden relative scroll-mt-16">
-        <div className="container mx-auto px-4 relative z-10 text-left">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="space-y-8">
-              <Badge className="bg-white/20 mb-4 border-none text-white py-1 px-4">AEST 2025</Badge>
+      <section id="scholarship" className="py-16 md:py-24 bg-primary text-white overflow-hidden relative scroll-mt-16">
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center">
+            <div className="space-y-6 md:space-y-8">
+              <Badge className="bg-white/20 mb-2 border-none text-white py-1 px-4 text-[10px] md:text-xs">AEST 2025</Badge>
               <h2 className="text-4xl md:text-7xl font-bold">Win Up to 100% Scholarship</h2>
-              <p className="text-xl text-white/80">Secure your premium coaching with the Acharya Excellence Scholarship Test. Registrations open soon for Class 6-12.</p>
-              <div className="flex gap-10">
+              <p className="text-lg md:text-xl text-white/80">Secure your premium coaching with the Acharya Excellence Scholarship Test. Registrations open soon for Class 6-12.</p>
+              <div className="flex gap-6 md:gap-10">
                 <div className="text-center">
-                   <div className="text-4xl font-bold">50k+</div>
-                   <div className="text-xs uppercase opacity-60">Participants</div>
+                   <div className="text-2xl md:text-4xl font-bold">50k+</div>
+                   <div className="text-[10px] uppercase opacity-60">Participants</div>
                 </div>
                 <div className="text-center">
-                   <div className="text-4xl font-bold">1Cr+</div>
-                   <div className="text-xs uppercase opacity-60">Rewards Given</div>
+                   <div className="text-2xl md:text-4xl font-bold">1Cr+</div>
+                   <div className="text-[10px] uppercase opacity-60">Rewards Given</div>
                 </div>
               </div>
             </div>
-            <div className="bg-white text-secondary p-12 rounded-[3rem] shadow-2xl relative">
-               <Gift className="absolute -top-10 -right-10 w-24 h-24 text-white opacity-20 rotate-12" />
-               <h3 className="text-3xl font-bold mb-6">Pre-Register Now</h3>
-               <p className="mb-8 text-muted-foreground">Register your interest today and be the first to know when AEST 2025 slots are available.</p>
-               <Button asChild size="lg" className="w-full bg-primary hover:bg-primary/90 h-14 text-xl rounded-2xl">
+            <div className="bg-white text-secondary p-8 md:p-12 rounded-2xl md:rounded-[3rem] shadow-2xl relative">
+               <Gift className="absolute -top-6 -right-6 md:-top-10 md:-right-10 w-16 h-16 md:w-24 md:h-24 text-white opacity-20 rotate-12" />
+               <h3 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6">Pre-Register Now</h3>
+               <p className="mb-6 md:mb-8 text-sm md:text-base text-muted-foreground">Register your interest today and be the first to know when AEST 2025 slots are available.</p>
+               <Button asChild size="lg" className="w-full bg-primary hover:bg-primary/90 h-12 md:h-14 text-lg md:text-xl rounded-xl md:rounded-2xl">
                  <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Register Interest</a>
                </Button>
             </div>
@@ -501,16 +473,18 @@ export default function Home() {
       </section>
 
       {/* 11. TESTIMONIALS SECTION */}
-      <section id="testimonials" className="py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-16">What Our Students Say</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <section id="testimonials" className="py-16 md:py-24 bg-white scroll-mt-16">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-12 md:mb-16 text-center">What Our Students Say</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {TESTIMONIALS.map((t, i) => (
-              <Card key={i} className="border-none shadow-xl rounded-3xl p-10 bg-muted/30">
-                <Quote className="w-10 h-10 text-primary mb-6 opacity-20 mx-auto" />
-                <p className="text-lg italic text-secondary mb-8 text-center">"{t.text}"</p>
-                <h4 className="font-bold text-secondary">{t.name}</h4>
-                <p className="text-xs text-muted-foreground uppercase mt-1 tracking-widest">{t.role}</p>
+              <Card key={i} className="border-none shadow-xl rounded-2xl md:rounded-3xl p-6 md:p-10 bg-muted/30">
+                <Quote className="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6 opacity-20 mx-auto" />
+                <p className="text-base md:text-lg italic text-secondary mb-6 md:mb-8 text-center">"{t.text}"</p>
+                <div className="text-center">
+                  <h4 className="font-bold text-secondary text-sm md:text-base">{t.name}</h4>
+                  <p className="text-[10px] md:text-xs text-muted-foreground uppercase mt-1 tracking-widest">{t.role}</p>
+                </div>
               </Card>
             ))}
           </div>
@@ -518,12 +492,12 @@ export default function Home() {
       </section>
 
       {/* 12. ENQUIRE FORM SECTION */}
-      <section id="enquire" className="py-24 bg-primary relative overflow-hidden scroll-mt-16">
+      <section id="enquire" className="py-16 md:py-24 bg-primary relative overflow-hidden scroll-mt-16">
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-12 text-white">
-              <h2 className="text-4xl md:text-6xl font-bold mb-4">Start Your Journey</h2>
-              <p className="text-xl opacity-80">Click below to fill out our official admission enquiry form.</p>
+            <div className="text-center mb-10 md:mb-12 text-white">
+              <h2 className="text-3xl md:text-6xl font-bold mb-4">Start Your Journey</h2>
+              <p className="text-lg md:text-xl opacity-80">Click below to fill out our official admission enquiry form.</p>
             </div>
             <EnquiryForm source="home_enquire_section" title="Quick Admission Enquiry" />
           </div>
@@ -531,36 +505,36 @@ export default function Home() {
       </section>
 
       {/* 13. CONTACT SECTION */}
-      <section id="contact" className="py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4 text-left">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="space-y-12">
-              <h2 className="text-4xl md:text-5xl font-bold text-secondary">Visit Our Center</h2>
-              <div className="space-y-8">
-                <div className="flex gap-6 items-start">
-                  <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shrink-0"><MapPin /></div>
+      <section id="contact" className="py-16 md:py-24 bg-white scroll-mt-16">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center">
+            <div className="space-y-8 md:space-y-12">
+              <h2 className="text-3xl md:text-5xl font-bold text-secondary">Visit Our Center</h2>
+              <div className="space-y-6 md:space-y-8">
+                <div className="flex gap-4 md:gap-6 items-start">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center text-primary shrink-0"><MapPin className="w-5 h-5 md:w-6 md:h-6" /></div>
                   <div>
-                    <h4 className="font-bold text-xl mb-1">Our Location</h4>
-                    <p className="text-muted-foreground">No. 207, 8th St, Muthuramalingapuram, Karpaga Nagar, K. Pudur, Madurai - 625007</p>
+                    <h4 className="font-bold text-lg md:text-xl mb-1">Our Location</h4>
+                    <p className="text-sm md:text-base text-muted-foreground">No. 207, 8th St, Muthuramalingapuram, Karpaga Nagar, K. Pudur, Madurai - 625007</p>
                   </div>
                 </div>
-                <div className="flex gap-6 items-start">
-                  <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shrink-0"><Phone /></div>
+                <div className="flex gap-4 md:gap-6 items-start">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center text-primary shrink-0"><Phone className="w-5 h-5 md:w-6 md:h-6" /></div>
                   <div>
-                    <h4 className="font-bold text-xl mb-1">Direct Line</h4>
-                    <p className="text-muted-foreground">9865440099</p>
+                    <h4 className="font-bold text-lg md:text-xl mb-1">Direct Line</h4>
+                    <p className="text-sm md:text-base text-muted-foreground">9865440099</p>
                   </div>
                 </div>
-                <div className="flex gap-6 items-start">
-                  <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary shrink-0"><Calendar /></div>
+                <div className="flex gap-4 md:gap-6 items-start">
+                  <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/10 rounded-xl md:rounded-2xl flex items-center justify-center text-primary shrink-0"><Calendar className="w-5 h-5 md:w-6 md:h-6" /></div>
                   <div>
-                    <h4 className="font-bold text-xl mb-1">Working Hours</h4>
-                    <p className="text-muted-foreground">Mon - Sat: 9:00 AM - 7:00 PM</p>
+                    <h4 className="font-bold text-lg md:text-xl mb-1">Working Hours</h4>
+                    <p className="text-sm md:text-base text-muted-foreground">Mon - Sat: 9:00 AM - 7:00 PM</p>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="h-[400px] w-full rounded-3xl overflow-hidden shadow-2xl border grayscale opacity-80 hover:grayscale-0 transition-all">
+            <div className="h-[300px] md:h-[400px] w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border grayscale opacity-80 hover:grayscale-0 transition-all">
               <iframe 
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3929.982548485292!2d78.1481132!3d9.935406!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOcKwNTYnMDEuNSJOIDc4wrAwOCU1My4yIkU!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" 
                 className="w-full h-full border-0" 
@@ -573,4 +547,3 @@ export default function Home() {
     </div>
   );
 }
-

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -84,7 +85,7 @@ export const Navbar = () => {
         alt="Acharya Education" 
         width={220} 
         height={65} 
-        className="h-10 md:h-12 lg:h-14 w-auto object-contain"
+        className="h-8 sm:h-10 md:h-12 lg:h-14 w-auto object-contain"
         priority
       />
     </Link>
@@ -96,14 +97,14 @@ export const Navbar = () => {
         <Logo />
 
         {/* Desktop Nav Links */}
-        <div className="hidden lg:flex items-center gap-8 flex-1 justify-center px-4">
+        <div className="hidden lg:flex items-center gap-6 xl:gap-8 flex-1 justify-center px-4">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.name}
               href={isHomePage || link.isExternal ? link.href : `/${link.href}`}
               onClick={(e) => handleLinkClick(e, link.href, link.isExternal)}
               className={cn(
-                'text-sm font-bold transition-colors hover:text-[#D32F2F] whitespace-nowrap uppercase tracking-wider',
+                'text-xs xl:text-sm font-bold transition-colors hover:text-[#D32F2F] whitespace-nowrap uppercase tracking-wider',
                 (isHomePage && activeSection === link.href.substring(1)) || (pathname === link.href)
                   ? 'text-[#D32F2F]' 
                   : 'text-foreground/80'
@@ -115,29 +116,30 @@ export const Navbar = () => {
         </div>
 
         {/* Desktop Action Buttons */}
-        <div className="hidden lg:flex items-center gap-6 shrink-0">
+        <div className="hidden lg:flex items-center gap-4 xl:gap-6 shrink-0">
           <a
             href="tel:9865440099"
-            className="flex items-center text-sm font-bold text-[#1A237E] hover:text-[#D32F2F] transition-colors"
+            className="flex items-center text-xs xl:text-sm font-bold text-[#1A237E] hover:text-[#D32F2F] transition-colors"
           >
             <Phone className="w-4 h-4 mr-2" />
             9865440099
           </a>
-          <Button asChild className="bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-full font-bold px-6 h-10 text-white shadow-lg">
+          <Button asChild className="bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-full font-bold px-4 xl:px-6 h-9 xl:h-10 text-xs xl:text-sm text-white shadow-lg">
             <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Enquire Now</a>
           </Button>
         </div>
 
         {/* Tablet/Mobile Controls */}
-        <div className="flex lg:hidden items-center gap-3">
-          <Button asChild className="hidden sm:flex bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-full font-bold px-4 h-9 text-xs shadow-md text-white">
+        <div className="flex lg:hidden items-center gap-2 sm:gap-3">
+          <Button asChild className="hidden xs:flex bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-full font-bold px-3 sm:px-4 h-8 sm:h-9 text-[10px] sm:text-xs shadow-md text-white">
             <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Enquire</a>
           </Button>
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="p-2 text-foreground hover:bg-muted rounded-md transition-colors"
+            aria-label="Toggle navigation menu"
           >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
           </button>
         </div>
       </div>
@@ -145,36 +147,42 @@ export const Navbar = () => {
       {/* Mobile Menu Drawer */}
       <div 
         className={cn(
-          "absolute top-full left-0 w-full bg-white shadow-2xl transition-all duration-300 overflow-hidden border-l-4 border-[#D32F2F] lg:hidden",
-          isMenuOpen ? "max-h-[90vh] opacity-100" : "max-h-0 opacity-0"
+          "fixed inset-0 top-16 w-full bg-white z-[60] transition-all duration-300 lg:hidden transform",
+          isMenuOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
         )}
       >
-        <div className="flex flex-col p-6 gap-4 text-left">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.name}
-              href={isHomePage || link.isExternal ? link.href : `/${link.href}`}
-              onClick={(e) => handleLinkClick(e, link.href, link.isExternal)}
-              className={cn(
-                'text-base font-bold flex items-center justify-between border-b pb-2 uppercase tracking-wide',
-                (isHomePage && (activeSection === link.href.substring(1) || (link.name === 'Results' && activeSection === 'stars'))) || (pathname === link.href)
-                  ? 'text-[#D32F2F] border-[#D32F2F]' 
-                  : 'text-foreground/80 border-border'
-              )}
-            >
-              {link.name}
-            </Link>
-          ))}
-          <div className="pt-4 flex flex-col gap-4">
-            <a
-              href="tel:9865440099"
-              className="flex items-center justify-center gap-2 text-lg font-bold text-[#1A237E] py-2 bg-muted rounded-xl"
-            >
-              <Phone className="w-5 h-5" />
-              9865440099
-            </a>
-            <Button asChild className="w-full bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-xl h-12 text-lg font-bold shadow-lg text-white">
-              <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Enquire Now</a>
+        <div className="flex flex-col p-6 h-full overflow-y-auto">
+          <div className="space-y-1">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.name}
+                href={isHomePage || link.isExternal ? link.href : `/${link.href}`}
+                onClick={(e) => handleLinkClick(e, link.href, link.isExternal)}
+                className={cn(
+                  'text-sm font-bold flex items-center justify-between py-4 border-b border-muted uppercase tracking-wide',
+                  (isHomePage && (activeSection === link.href.substring(1) || (link.name === 'Results' && activeSection === 'stars'))) || (pathname === link.href)
+                    ? 'text-[#D32F2F]' 
+                    : 'text-foreground/80'
+                )}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
+          
+          <div className="mt-auto pt-8 pb-12 space-y-4">
+            <div className="p-4 bg-muted rounded-2xl flex flex-col items-center gap-2">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Support Line</p>
+              <a
+                href="tel:9865440099"
+                className="flex items-center gap-3 text-xl font-bold text-[#1A237E]"
+              >
+                <Phone className="w-5 h-5" />
+                9865440099
+              </a>
+            </div>
+            <Button asChild className="w-full bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-xl h-14 text-lg font-bold shadow-lg text-white">
+              <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Admission Enquiry</a>
             </Button>
           </div>
         </div>
