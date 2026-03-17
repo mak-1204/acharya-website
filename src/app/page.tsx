@@ -11,7 +11,7 @@ import { EnquiryForm } from '@/components/EnquiryForm';
 import { 
   CheckCircle2, Star, BookOpen, Target, Award, Users, 
   ShieldCheck, Zap, ChevronRight, GraduationCap, MapPin, 
-  Calendar, Quote, Camera, Trophy, Gift, ArrowRight, Phone
+  Calendar, Quote, Camera, Trophy, Gift, ArrowRight, Phone, ExternalLink
 } from 'lucide-react';
 import {
   Carousel,
@@ -23,13 +23,15 @@ import {
 } from "@/components/ui/carousel";
 import { cn } from '@/lib/utils';
 
+const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
+
 const HERO_BANNERS = [
   {
     title: "JEE Mains 2025 Crash Course",
     subtitle: "Madurai's Most Intensive Revision Program. 45 Days to Success.",
     image: "https://picsum.photos/seed/hero1/1200/450",
     cta: "Enroll Now",
-    link: "/courses",
+    link: GOOGLE_FORM_URL,
     badge: "Limited Seats",
     color: "bg-[#1A237E]"
   },
@@ -38,7 +40,7 @@ const HERO_BANNERS = [
     subtitle: "Complete NCERT Coverage with Daily Doubt Solving Sessions.",
     image: "https://picsum.photos/seed/hero2/1200/450",
     cta: "Join Now",
-    link: "/courses",
+    link: GOOGLE_FORM_URL,
     badge: "Admissions Open",
     color: "bg-[#D32F2F]"
   },
@@ -46,8 +48,8 @@ const HERO_BANNERS = [
     title: "CLAT Legal Edge",
     subtitle: "Join Madurai's #1 Dedicated Batch for Law Aspirants.",
     image: "https://picsum.photos/seed/hero3/1200/450",
-    cta: "Explore More",
-    link: "/courses",
+    cta: "Apply Now",
+    link: GOOGLE_FORM_URL,
     badge: "New Batch",
     color: "bg-[#1A237E]"
   }
@@ -87,10 +89,10 @@ const IMPULSE_STATS = [
 ];
 
 const JOURNEY_STEPS = [
-  { title: 'Counseling', desc: 'Personalized guidance to pick the right academic path.', icon: <Users /> },
-  { title: 'Admission', desc: 'Smooth enrollment into Madurai’s most elite batches.', icon: <CheckCircle2 /> },
-  { title: 'Learning', desc: 'Rigorous training with PhD/Expert faculty members.', icon: <BookOpen /> },
-  { title: 'Success', desc: 'Regular testing and mentoring leading to top ranks.', icon: <Trophy /> },
+  { title: 'Counseling', desc: 'Personalized guidance to pick the right academic path.', icon: <Users className="w-8 h-8" /> },
+  { title: 'Admission', desc: 'Smooth enrollment into Madurai’s most elite batches.', icon: <CheckCircle2 className="w-8 h-8" /> },
+  { title: 'Learning', desc: 'Rigorous training with PhD/Expert faculty members.', icon: <BookOpen className="w-8 h-8" /> },
+  { title: 'Success', desc: 'Regular testing and mentoring leading to top ranks.', icon: <Trophy className="w-8 h-8" /> },
 ];
 
 const GALLERY_IMAGES = [
@@ -132,7 +134,7 @@ export default function Home() {
           <CarouselContent>
             {HERO_BANNERS.map((banner, index) => (
               <CarouselItem key={index}>
-                <div className={cn("relative w-full h-[400px] md:h-[600px] flex items-center overflow-hidden", banner.color)}>
+                <div className={cn("relative w-full h-[450px] md:h-[650px] flex items-center overflow-hidden", banner.color)}>
                   <div className="container mx-auto px-4 z-10 grid grid-cols-1 lg:grid-cols-2 items-center gap-8">
                     <div className="text-white space-y-6">
                       <Badge className="bg-white/20 text-white border-none px-4 py-1.5 uppercase tracking-wider">
@@ -146,14 +148,14 @@ export default function Home() {
                       </p>
                       <div className="flex flex-wrap gap-4 pt-4">
                         <Button asChild size="lg" className="bg-white text-secondary hover:bg-white/90 font-bold rounded-full px-10">
-                          <Link href={banner.link}>{banner.cta}</Link>
+                          <a href={banner.link} target="_blank" rel="noopener noreferrer">{banner.cta}</a>
                         </Button>
                         <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10 font-bold rounded-full px-10">
                           <a href="tel:9865440099">Call Counselor</a>
                         </Button>
                       </div>
                     </div>
-                    <div className="hidden lg:block relative h-full">
+                    <div className="hidden lg:block relative h-[500px]">
                       <Image 
                         src={banner.image} 
                         alt={banner.title} 
@@ -186,9 +188,9 @@ export default function Home() {
       {/* 2. STATS STRIP */}
       <section id="stats" className="bg-white py-12 border-b relative z-30 -mt-10 mx-4 md:mx-12 lg:mx-24 rounded-3xl shadow-xl border">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
             {IMPULSE_STATS.map((stat, i) => (
-              <div key={i} className="flex flex-col items-center text-center group">
+              <div key={i} className="flex flex-col items-center group">
                 <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:bg-primary group-hover:text-white transition-all duration-300">
                   {stat.icon}
                 </div>
@@ -201,11 +203,11 @@ export default function Home() {
       </section>
 
       {/* 3. COURSES SECTION */}
-      <section id="courses" className="py-24 bg-white">
+      <section id="courses" className="py-24 bg-white scroll-mt-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-4">Find Your Course</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Expertly crafted programs for every stage of your academic journey in Madurai.</p>
+            <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-4">Our Impulse</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto italic">Guiding Madurai's brightest minds towards excellence.</p>
           </div>
 
           <Tabs defaultValue="all" onValueChange={setCourseFilter} className="w-full flex flex-col items-center">
@@ -249,18 +251,16 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="section-divider"></div>
+      <div className="section-divider mx-auto max-w-4xl opacity-20"></div>
 
       {/* 4. STARS CAROUSEL */}
-      <section id="stars" className="py-24 bg-muted/30">
+      <section id="stars" className="py-24 bg-muted/30 scroll-mt-16">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-            <div>
-              <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-4 flex items-center gap-3">
-                Meet Our Stars <Star className="text-yellow-400 fill-yellow-400" />
-              </h2>
-              <p className="text-muted-foreground">Top rankers from Madurai who realized their dreams with Acharya.</p>
-            </div>
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-4 flex items-center justify-center gap-3">
+              Meet Our Stars <Star className="text-yellow-400 fill-yellow-400" />
+            </h2>
+            <p className="text-muted-foreground">Top rankers from Madurai who realized their dreams with Acharya.</p>
           </div>
 
           <Carousel opts={{ align: "start", loop: true }} className="w-full">
@@ -271,7 +271,7 @@ export default function Home() {
                     <div className="relative aspect-[3/4] overflow-hidden">
                       <Image src={star.image} alt={star.name} fill className="object-cover group-hover:scale-105 transition-transform" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                      <div className="absolute bottom-6 left-6 text-white">
+                      <div className="absolute bottom-6 left-6 text-white text-left">
                         <p className="text-xl font-bold">{star.name}</p>
                         <p className="text-sm opacity-80 uppercase tracking-widest">{star.exam}</p>
                       </div>
@@ -290,7 +290,7 @@ export default function Home() {
       </section>
 
       {/* 5. WHY ACHARYA */}
-      <section id="why" className="py-24 bg-secondary text-white relative">
+      <section id="why" className="py-24 bg-secondary text-white scroll-mt-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl md:text-5xl font-bold mb-16">Why Madurai Trusts Us?</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -308,15 +308,15 @@ export default function Home() {
       </section>
 
       {/* 6. JOURNEY STEPPER */}
-      <section id="journey" className="py-24 bg-white">
+      <section id="journey" className="py-24 bg-white scroll-mt-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-5xl font-bold text-center text-secondary mb-20">Your Path to Excellence</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
-            <div className="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-muted -translate-y-1/2 z-0"></div>
+            <div className="hidden md:block absolute top-10 left-0 w-full h-1 bg-muted -translate-y-1/2 z-0"></div>
             {JOURNEY_STEPS.map((step, i) => (
               <div key={i} className="relative z-10 flex flex-col items-center text-center group">
                 <div className="w-20 h-20 rounded-full bg-primary text-white flex items-center justify-center mb-6 shadow-xl border-8 border-white group-hover:scale-110 transition-transform">
-                  {step.icon}
+                  <div className="w-8 h-8">{step.icon}</div>
                 </div>
                 <h3 className="text-xl font-bold text-secondary mb-2">{step.title}</h3>
                 <p className="text-muted-foreground text-sm px-4">{step.desc}</p>
@@ -327,10 +327,10 @@ export default function Home() {
       </section>
 
       {/* 7. MODE SECTION */}
-      <section id="mode" className="py-24 bg-primary text-white">
+      <section id="mode" className="py-24 bg-primary text-white scroll-mt-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-6">
+            <div className="space-y-6 text-left">
               <h2 className="text-4xl md:text-5xl font-bold">Learn the Way You Want</h2>
               <p className="text-xl text-white/80">We offer flexible learning models to suit every student's lifestyle and academic needs.</p>
               <div className="space-y-4 pt-4">
@@ -346,11 +346,11 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            <div className="bg-white/10 p-10 rounded-3xl backdrop-blur-sm border border-white/20">
+            <div className="bg-white/10 p-10 rounded-3xl backdrop-blur-sm border border-white/20 text-left">
                <h4 className="text-2xl font-bold mb-6">Which mode suits you?</h4>
-               <p className="mb-8 opacity-80">Talk to our counselor to understand which learning methodology will help you secure a top rank.</p>
-               <Button asChild size="lg" className="bg-white text-primary font-bold rounded-full w-full">
-                 <Link href="#enquire">Talk to Counselor</Link>
+               <p className="mb-8 opacity-80">Connect with our counselors to understand the best methodology for your success.</p>
+               <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 font-bold rounded-full w-full">
+                 <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Consult an Expert</a>
                </Button>
             </div>
           </div>
@@ -358,13 +358,13 @@ export default function Home() {
       </section>
 
       {/* 8. ABOUT SECTION */}
-      <section id="about" className="py-24 bg-white">
+      <section id="about" className="py-24 bg-white scroll-mt-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
               <Image src="https://picsum.photos/seed/about/800/1000" alt="Campus" fill className="object-cover" />
             </div>
-            <div>
+            <div className="text-left">
               <Badge className="bg-primary mb-4">Established 2007</Badge>
               <h2 className="text-4xl md:text-5xl font-bold text-secondary mb-6 leading-tight">Madurai's Legacy of Academic Excellence</h2>
               <p className="text-lg text-muted-foreground leading-relaxed mb-6">
@@ -392,7 +392,7 @@ export default function Home() {
       </section>
 
       {/* 9. RESULTS SECTION */}
-      <section id="results" className="py-24 bg-muted/30">
+      <section id="results" className="py-24 bg-muted/30 scroll-mt-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-secondary mb-16">Outstanding Results 2024</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -416,7 +416,7 @@ export default function Home() {
       </section>
 
       {/* 10. GALLERY SECTION */}
-      <section id="gallery" className="py-24 bg-white">
+      <section id="gallery" className="py-24 bg-white scroll-mt-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-4 flex items-center justify-center gap-3">
@@ -438,10 +438,10 @@ export default function Home() {
       </section>
 
       {/* 11. SCHOLARSHIP SECTION */}
-      <section id="scholarship" className="py-24 bg-primary text-white overflow-hidden relative">
+      <section id="scholarship" className="py-24 bg-primary text-white overflow-hidden relative scroll-mt-16">
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="space-y-8">
+            <div className="space-y-8 text-left">
               <Badge className="bg-white/20 mb-4 border-none text-white py-1 px-4">AEST 2025</Badge>
               <h2 className="text-4xl md:text-7xl font-bold">Win Up to 100% Scholarship</h2>
               <p className="text-xl text-white/80">Secure your premium coaching with the Acharya Excellence Scholarship Test. Registrations open soon for Class 6-12.</p>
@@ -456,12 +456,12 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <div className="bg-white text-secondary p-12 rounded-[3rem] shadow-2xl relative">
+            <div className="bg-white text-secondary p-12 rounded-[3rem] shadow-2xl relative text-left">
                <Gift className="absolute -top-10 -right-10 w-24 h-24 text-white opacity-20 rotate-12" />
                <h3 className="text-3xl font-bold mb-6">Pre-Register Now</h3>
                <p className="mb-8 text-muted-foreground">Register your interest today and be the first to know when AEST 2025 slots are available.</p>
                <Button asChild size="lg" className="w-full bg-primary hover:bg-primary/90 h-14 text-xl rounded-2xl">
-                 <Link href="#enquire">Notify Me</Link>
+                 <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Register Interest</a>
                </Button>
             </div>
           </div>
@@ -469,7 +469,7 @@ export default function Home() {
       </section>
 
       {/* 12. TESTIMONIALS SECTION */}
-      <section id="testimonials" className="py-24 bg-white">
+      <section id="testimonials" className="py-24 bg-white scroll-mt-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-16">What Our Students Say</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -486,12 +486,12 @@ export default function Home() {
       </section>
 
       {/* 13. ENQUIRE FORM SECTION */}
-      <section id="enquire" className="py-24 bg-primary relative overflow-hidden">
+      <section id="enquire" className="py-24 bg-primary relative overflow-hidden scroll-mt-16">
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-3xl mx-auto">
             <div className="text-center mb-12 text-white">
-              <h2 className="text-4xl md:text-6xl font-bold mb-4">Ready to Accelerate?</h2>
-              <p className="text-xl opacity-80">Fill in your details and our counselor will call you back within 24 hours.</p>
+              <h2 className="text-4xl md:text-6xl font-bold mb-4">Start Your Journey</h2>
+              <p className="text-xl opacity-80">Click below to fill out our official admission enquiry form.</p>
             </div>
             <EnquiryForm source="home_enquire_section" title="Quick Admission Enquiry" />
           </div>
@@ -499,10 +499,10 @@ export default function Home() {
       </section>
 
       {/* 14. CONTACT SECTION */}
-      <section id="contact" className="py-24 bg-white">
+      <section id="contact" className="py-24 bg-white scroll-mt-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div className="space-y-12">
+            <div className="space-y-12 text-left">
               <h2 className="text-4xl md:text-5xl font-bold text-secondary">Visit Our Center</h2>
               <div className="space-y-8">
                 <div className="flex gap-6 items-start">

@@ -4,8 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EnquiryForm } from '@/components/EnquiryForm';
-import { Target, CheckCircle2, Monitor, GraduationCap, Zap, BookOpen, Scale, Layers, Laptop, Building2, Calculator, Atom, Microscope, Trophy } from 'lucide-react';
+import { Target, CheckCircle2, Monitor, GraduationCap, Zap, BookOpen, Scale, Layers, Laptop, Building2, Calculator, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
 
 const COURSES_DATA = [
   {
@@ -153,7 +155,7 @@ export default function CoursesPage() {
           <div className="lg:w-3/4 space-y-12">
              {COURSES_DATA.map((course) => (
                <section key={course.id} id={course.id} className="scroll-mt-32">
-                 <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-border group hover:shadow-2xl transition-all duration-500 overflow-hidden relative">
+                 <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-border group hover:shadow-2xl transition-all duration-500 overflow-hidden relative text-left">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-muted/20 rounded-bl-[100px] flex items-center justify-center -translate-y-4 translate-x-4">
                        <span className="text-primary/20">{course.icon}</span>
                     </div>
@@ -177,7 +179,7 @@ export default function CoursesPage() {
                           </p>
                           <div className="flex gap-4">
                              <Button asChild className="bg-primary hover:bg-primary/90 h-12 px-8 rounded-full font-bold shadow-lg">
-                               <a href="#admission-enquiry">Enroll Now</a>
+                               <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Enroll via Google Forms <ExternalLink className="ml-2 w-4 h-4" /></a>
                              </Button>
                           </div>
                        </div>
@@ -197,10 +199,6 @@ export default function CoursesPage() {
              ))}
 
              <div id="admission-enquiry" className="pt-24 pb-12">
-                <div className="text-center mb-12">
-                   <h2 className="text-4xl font-bold text-secondary mb-4">Ready to Start?</h2>
-                   <p className="text-muted-foreground">Apply today for the 2025-26 academic session.</p>
-                </div>
                 <EnquiryForm source="courses_page" title="Apply for Admission" />
              </div>
           </div>

@@ -7,6 +7,8 @@ import { Menu, X, Phone, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
+
 const NAV_LINKS = [
   { name: 'Home', href: '#hero' },
   { name: 'All Courses', href: '/courses', isExternal: true },
@@ -23,7 +25,6 @@ export const Navbar = () => {
   const pathname = usePathname();
   const isHomePage = pathname === '/';
 
-  // Active link detection based on intersection observer
   useEffect(() => {
     if (!isHomePage) return;
 
@@ -62,7 +63,7 @@ export const Navbar = () => {
       const elem = document.getElementById(targetId);
       if (elem) {
         window.scrollTo({
-          top: elem.offsetTop - 64, // 64px is h-16
+          top: elem.offsetTop - 64,
           behavior: 'smooth'
         });
       }
@@ -75,7 +76,7 @@ export const Navbar = () => {
     <Link 
       href={isHomePage ? "#hero" : "/"} 
       onClick={(e) => handleLinkClick(e, "#hero")}
-      className="flex flex-col shrink-0"
+      className="flex flex-col shrink-0 text-left"
     >
       <div className="flex items-center text-lg md:text-2xl font-bold tracking-tighter leading-none font-headline">
         <span className="text-[#D32F2F] uppercase">ACHARYA</span>
@@ -90,10 +91,8 @@ export const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md border-t-4 border-[#D32F2F]">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-        {/* Logo */}
         <Logo />
 
-        {/* Desktop Nav Links (lg and above) */}
         <div className="hidden lg:flex items-center gap-8 flex-1 justify-center px-4">
           {NAV_LINKS.map((link) => (
             <Link
@@ -112,7 +111,6 @@ export const Navbar = () => {
           ))}
         </div>
 
-        {/* Desktop Right Side (lg and above) */}
         <div className="hidden lg:flex items-center gap-6 shrink-0">
           <a
             href="tel:9865440099"
@@ -122,14 +120,13 @@ export const Navbar = () => {
             9865440099
           </a>
           <Button asChild className="bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-full font-bold px-6 h-10 text-white shadow-lg">
-            <Link href={isHomePage ? "#enquire" : "/#enquire"} onClick={(e) => handleLinkClick(e, "#enquire")}>Enquire Now</Link>
+            <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Enquire Now</a>
           </Button>
         </div>
 
-        {/* Tablet & Mobile Right Side */}
         <div className="flex lg:hidden items-center gap-3">
           <Button asChild className="bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-full font-bold px-4 h-9 text-xs shadow-md">
-            <Link href={isHomePage ? "#enquire" : "/#enquire"} onClick={(e) => handleLinkClick(e, "#enquire")}>Enquire</Link>
+            <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Enquire</a>
           </Button>
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -140,14 +137,13 @@ export const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile/Tablet Drawer */}
       <div 
         className={cn(
           "absolute top-full left-0 w-full bg-white shadow-2xl transition-all duration-300 overflow-hidden border-l-4 border-[#D32F2F] lg:hidden",
-          isMenuOpen ? "max-h-[80vh] opacity-100" : "max-h-0 opacity-0"
+          isMenuOpen ? "max-h-[90vh] opacity-100" : "max-h-0 opacity-0"
         )}
       >
-        <div className="flex flex-col p-6 gap-4">
+        <div className="flex flex-col p-6 gap-4 text-left">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.name}
@@ -172,7 +168,7 @@ export const Navbar = () => {
               9865440099
             </a>
             <Button asChild className="w-full bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-xl h-12 text-lg font-bold shadow-lg">
-              <Link href={isHomePage ? "#enquire" : "/#enquire"} onClick={(e) => handleLinkClick(e, "#enquire")}>Enquire Now</Link>
+              <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Enquire Now</a>
             </Button>
           </div>
         </div>
