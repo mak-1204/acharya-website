@@ -1,75 +1,93 @@
+
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EnquiryForm } from '@/components/EnquiryForm';
-import { Target, CheckCircle2, Monitor, GraduationCap, MapPin } from 'lucide-react';
+import { Target, CheckCircle2, Monitor, GraduationCap, Zap, BookOpen, Scale, Layers, Laptop, Building2, Calculator, Atom, Microscope, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const COURSES_DATA = [
+  {
+    id: 'neet',
+    title: 'NEET Medical',
+    audience: 'Class 11, 12 & Repeaters',
+    duration: '1 to 2 Years',
+    badge: 'Success Focused',
+    icon: <Zap className="w-6 h-6" />,
+    desc: 'Comprehensive NEET coaching focusing on NCERT mastery, bio-visual aids, and rigorous test series. Specialized batches for droppers and Class 11/12 students.',
+    highlights: ['NCERT Intensive Program', 'Daily Practice Papers (DPPs)', 'Weekly All-India Level Tests', '24/7 Doubt Desk Support', 'Personalized Performance Reports']
+  },
+  {
+    id: 'jee',
+    title: 'JEE Main & Advanced',
+    audience: 'Class 11, 12 & Repeaters',
+    duration: '1 to 2 Years',
+    badge: 'Elite Training',
+    icon: <Laptop className="w-6 h-6" />,
+    desc: 'Advanced problem-solving techniques for JEE. Our phase-wise completion ensures students are ready for both Mains and Advanced levels with high speed and accuracy.',
+    highlights: ['Phase-wise Syllabus Completion', 'Advanced Problem Solving Sessions', 'Mock CBT (Computer Based Tests)', 'Formula & Concept Workshops', 'Individual Rank Analysis']
+  },
   {
     id: 'foundation',
     title: 'JEE-NEET Foundation',
     audience: 'Class 6 - 10',
     duration: '1 to 5 Years',
     badge: 'Building Blocks',
-    desc: 'Our foundation program focuses on strengthening core concepts in Physics, Chemistry, Biology, and Mathematics. We aim to develop logical reasoning and analytical thinking from an early age.',
-    highlights: ['Focus on NTSE/Olympiads', 'Mental Ability Training', 'School Syllabus Coverage', 'Conceptual Clarity', 'Early Competitive Edge']
-  },
-  {
-    id: 'jee-2year',
-    title: 'JEE 2 Year Program',
-    audience: 'Class 11 Students',
-    duration: '2 Years',
-    badge: 'Most Comprehensive',
-    desc: 'Exhaustive coaching for Class 11 and 12 targeting JEE Mains & Advanced. Includes regular test series and detailed rank analysis.',
-    highlights: ['Phase-wise Completion', 'All India Test Series', 'Daily Practice Papers', 'Detailed Solution Sets', 'Individual Mentoring']
-  },
-  {
-    id: 'neet-1year',
-    title: 'NEET 1 Year Program',
-    audience: 'Class 12 Students',
-    duration: '1 Year',
-    badge: 'Targeted Prep',
-    desc: 'Accelerated program for Class 12 students focusing on NEET medical entrance. Intensive biology coverage along with high-yield physics and chemistry topics.',
-    highlights: ['NCERT Based Training', 'Weekly Full Length Tests', 'Error Analysis Sessions', 'Bio-Visual Aids', 'Olympiad Support']
+    icon: <BookOpen className="w-6 h-6" />,
+    desc: 'Strengthening core concepts in Science and Maths from an early age. We develop logical reasoning and analytical thinking to prepare students for future hurdles.',
+    highlights: ['Focus on NTSE/Olympiads', 'Mental Ability Training', 'School Syllabus Synchronization', 'Early Competitive Exposure', 'Strong Conceptual Clarity']
   },
   {
     id: 'cuet',
-    title: 'CUET 1 Year Program',
-    audience: 'Class 12 Students',
+    title: 'CUET Program',
+    audience: 'Class 12 Passed',
     duration: '1 Year',
-    badge: 'New & Trending',
-    desc: 'Comprehensive training for Central University Entrance Test. Covers both Domain subjects and General Test sections.',
-    highlights: ['Pattern-wise Mock Tests', 'Language Skill Labs', 'Logical Reasoning Mastery', 'Quantitative Aptitude', 'Domain Specific Focus']
+    badge: 'Central University Prep',
+    icon: <GraduationCap className="w-6 h-6" />,
+    desc: 'Gateway to top central universities like DU, BHU, and JNU. Focus on Domain Subjects, General Test (GT), and Language Sections.',
+    highlights: ['Pattern-based Mock Tests', 'General Test Mastery', 'Language Lab Sessions', 'Domain Specific In-depth Study', '100th Percentile Focus']
   },
   {
     id: 'clat',
-    title: 'CLAT 1 Year Program',
+    title: 'CLAT (Law Entrance)',
     audience: 'Class 11 & 12',
     duration: '1 Year',
     badge: 'Legal Edge',
-    desc: 'Expert legal reasoning and logical aptitude training for CLAT aspirants. Madurai\'s first dedicated CLAT batch with premium resources.',
-    highlights: ['Legal Awareness Sessions', 'Current Affairs Hub', 'Daily Vocab Exercises', 'Speed Reading Techniques', 'Legal Reasoning Drills']
+    icon: <Scale className="w-6 h-6" />,
+    desc: 'Expert training for Law entrances including CLAT and AILET. Specialized modules for Legal Reasoning and Logical Aptitude.',
+    highlights: ['Legal Awareness Sessions', 'Current Affairs Hub', 'Daily Vocab & Speed Reading', 'Legal Reasoning Drills', 'Law Topper Mentorship']
   },
   {
     id: 'integrated',
     title: 'Integrated School Programs',
     audience: 'Class 11 & 12',
-    duration: 'School Tie-up',
+    duration: 'School Hours',
     badge: 'Efficiency First',
-    desc: 'A synchronized approach where coaching happens during school hours. Zero travel time and integrated syllabus coverage.',
-    highlights: ['Synergized Learning', 'Time Management Edge', 'Dual Focus Approach', 'In-School Mentors', 'Reduced Stress Levels']
+    icon: <Building2 className="w-6 h-6" />,
+    desc: 'Synchronized coaching directly within your school campus. We save 4+ hours of travel daily by providing JEE/NEET training during school hours.',
+    highlights: ['Zero Travel Time', 'Synchronized Board & Entrance Prep', 'In-School Mentors', 'Unified Testing Platform', 'Reduced Academic Stress']
+  },
+  {
+    id: 'tuition',
+    title: 'Intensive Tuition (10, 11, 12)',
+    audience: 'Board Aspirants',
+    duration: 'Academic Year',
+    badge: 'Subject Mastery',
+    icon: <Calculator className="w-6 h-6" />,
+    desc: 'Targeted academic support for Board Exams in Maths, Physics, Chemistry, and Biology. Focus on deep subject understanding for 95%+ scores.',
+    highlights: ['Maths: Calculus & Algebra', 'Physics: Mechanics & EM', 'Chemistry: Organic & Physical', 'Biology: NCERT Coverage', 'Previous Year Paper Mastery']
   },
   {
     id: 'repeaters',
     title: 'JEE/NEET Repeaters Batch',
     audience: '12th Passed',
     duration: '1 Year',
-    badge: 'Full Focus',
-    desc: 'Dedicated program for drop-year students. Focuses on bridging gaps, increasing speed, and mastering high-difficulty concepts.',
-    highlights: ['Concept Reinforcement', 'Rank Improvement Focus', 'Doubt Counter Facility', 'Psychological Support', 'Rigorous Test Cycle']
+    badge: 'Rank Boost',
+    icon: <Layers className="w-6 h-6" />,
+    desc: 'Dedicated program for drop-year students. Intensive focus on bridging gaps and mastering high-difficulty concepts to secure top ranks.',
+    highlights: ['Concept Reinforcement', 'Strict Discipline & Routine', 'Frequent Full-Length Tests', 'Psychological Motivation', 'Fast-Track Error Correction']
   },
   {
     id: 'crash',
@@ -77,8 +95,9 @@ const COURSES_DATA = [
     audience: 'Class 12 Appearing',
     duration: '45 - 60 Days',
     badge: 'Last Minute Revision',
-    desc: 'Intensive revision program just before the main exams. Focuses on weightage-based topics and formula mastery.',
-    highlights: ['Quick Revision Nodes', 'Time-Saving Shortcuts', 'High-Yield Topics', 'Daily Full Mock Tests', 'Performance Tuning']
+    icon: <Zap className="w-6 h-6" />,
+    desc: 'High-yield revision just before the main exams. Focus on most expected questions, formulas, and time-saving shortcuts.',
+    highlights: ['Daily Full Mock Tests', 'Weightage-based Revision', 'Shortcut Mastery', 'Last Minute Performance Tuning', 'Formula Quick-Reference']
   },
 ];
 
@@ -89,84 +108,129 @@ export default function CoursesPage() {
     setActiveCourse(id);
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const offset = 100; // Account for fixed navbar
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: elementPosition - offset,
+        behavior: 'smooth'
+      });
     }
   };
 
+  useEffect(() => {
+    // Handle fragment on load
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      setTimeout(() => scrollToSection(hash), 500);
+    }
+  }, []);
+
   return (
     <div className="bg-background min-h-screen">
-      {/* Hero */}
-      <section className="bg-secondary text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Our Coaching Programs</h1>
-          <p className="text-white/70 max-w-2xl mx-auto">Structured, result-oriented coaching for every competitive exam hurdle.</p>
+      {/* Hero Section */}
+      <section className="bg-secondary text-white py-16 relative overflow-hidden">
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <Badge className="bg-primary/20 text-white mb-4 border-none px-4 py-1 uppercase tracking-widest">Admissions Open 2025-26</Badge>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight">Our Academic Programs</h1>
+          <p className="text-white/70 max-w-2xl mx-auto text-lg leading-relaxed">
+            From Foundation to Professional Entrances, we provide a structured path to success with expert mentorship and personalized care.
+          </p>
         </div>
+        {/* Abstract Background */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4"></div>
       </section>
 
       <div className="container mx-auto px-4 py-12">
         <div className="flex flex-col lg:flex-row gap-12">
-          {/* Sidebar Nav */}
-          <aside className="lg:w-1/4 lg:sticky lg:top-32 h-fit space-y-2">
-             <div className="bg-white p-4 rounded-2xl shadow-sm border border-border">
-                <h4 className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-4 px-4">Available Courses</h4>
-                <div className="flex flex-col">
+          {/* Sidebar Navigation */}
+          <aside className="lg:w-1/4 lg:sticky lg:top-28 h-fit">
+             <div className="bg-white p-6 rounded-3xl shadow-sm border border-border">
+                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-6 px-2">Navigate Programs</h4>
+                <div className="flex flex-col gap-2">
                   {COURSES_DATA.map((c) => (
                     <button
                       key={c.id}
                       onClick={() => scrollToSection(c.id)}
                       className={cn(
-                        "text-left px-4 py-3 rounded-xl transition-all font-semibold text-sm",
+                        "text-left px-4 py-3 rounded-xl transition-all font-bold text-sm flex items-center gap-3",
                         activeCourse === c.id 
                           ? "bg-primary text-white shadow-lg" 
                           : "text-secondary hover:bg-muted"
                       )}
                     >
-                      {c.title}
+                      <span className={cn("shrink-0", activeCourse === c.id ? "text-white" : "text-primary")}>{c.icon}</span>
+                      <span className="truncate">{c.title}</span>
                     </button>
                   ))}
+                </div>
+                <div className="mt-8 p-4 bg-muted/50 rounded-2xl">
+                   <p className="text-xs font-bold text-secondary mb-2">Need guidance?</p>
+                   <p className="text-[10px] text-muted-foreground mb-4">Talk to our experts for a personalized roadmap.</p>
+                   <Button asChild size="sm" className="w-full bg-secondary text-white font-bold rounded-xl h-9">
+                      <a href="tel:9865440099">Call Support</a>
+                   </Button>
                 </div>
              </div>
           </aside>
 
-          {/* Main Content */}
-          <div className="lg:w-3/4 space-y-16">
+          {/* Detailed Course Sections */}
+          <div className="lg:w-3/4 space-y-12">
              {COURSES_DATA.map((course) => (
                <section key={course.id} id={course.id} className="scroll-mt-32">
-                 <div className="bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-border group hover:shadow-xl transition-all duration-500">
-                    <div className="flex flex-col md:flex-row justify-between gap-6 mb-8">
-                      <div>
-                        <Badge className="bg-secondary mb-4">{course.badge}</Badge>
-                        <h2 className="text-3xl font-bold text-secondary mb-2">{course.title}</h2>
-                        <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                          <span className="flex items-center gap-1"><GraduationCap className="w-4 h-4" /> {course.audience}</span>
-                          <span className="flex items-center gap-1"><Target className="w-4 h-4" /> {course.duration}</span>
-                          <span className="flex items-center gap-1"><Monitor className="w-4 h-4" /> Online/Offline</span>
-                        </div>
-                      </div>
-                      <Button asChild className="bg-primary hover:bg-primary/90 h-12 px-8 rounded-full">
-                         <a href="#enquiry-form">Enquire Now</a>
-                      </Button>
+                 <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-border group hover:shadow-2xl transition-all duration-500 overflow-hidden relative">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-muted/20 rounded-bl-[100px] flex items-center justify-center -translate-y-4 translate-x-4">
+                       <span className="text-primary/20">{course.icon}</span>
                     </div>
 
-                    <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                      {course.desc}
-                    </p>
+                    <div className="flex flex-col md:flex-row justify-between gap-6 mb-10 relative z-10">
+                      <div>
+                        <Badge className="bg-secondary mb-4 px-4 py-1">{course.badge}</Badge>
+                        <h2 className="text-3xl md:text-4xl font-bold text-secondary mb-3 leading-tight">{course.title}</h2>
+                        <div className="flex flex-wrap gap-4 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                          <span className="flex items-center gap-1.5 bg-muted px-3 py-1.5 rounded-full"><GraduationCap className="w-4 h-4 text-primary" /> {course.audience}</span>
+                          <span className="flex items-center gap-1.5 bg-muted px-3 py-1.5 rounded-full"><Target className="w-4 h-4 text-primary" /> {course.duration}</span>
+                          <span className="flex items-center gap-1.5 bg-muted px-3 py-1.5 rounded-full"><Monitor className="w-4 h-4 text-primary" /> Live/Offline</span>
+                        </div>
+                      </div>
+                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                       {course.highlights.map((h, i) => (
-                         <div key={i} className="flex items-center gap-3 bg-muted/30 p-4 rounded-xl">
-                           <CheckCircle2 className="text-primary w-5 h-5" />
-                           <span className="font-semibold text-secondary">{h}</span>
-                         </div>
-                       ))}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-10">
+                       <div className="space-y-6">
+                          <p className="text-lg text-muted-foreground leading-relaxed">
+                            {course.desc}
+                          </p>
+                          <div className="flex gap-4">
+                             <Button asChild className="bg-primary hover:bg-primary/90 h-12 px-8 rounded-full font-bold shadow-lg">
+                               <a href="#admission-enquiry">Enroll Now</a>
+                             </Button>
+                             <Button variant="outline" className="border-secondary text-secondary h-12 px-8 rounded-full font-bold">
+                               Download Brochure
+                             </Button>
+                          </div>
+                       </div>
+                       
+                       <div className="space-y-3">
+                          <h4 className="text-sm font-bold text-secondary uppercase tracking-widest mb-4">Program Highlights</h4>
+                          {course.highlights.map((h, i) => (
+                            <div key={i} className="flex items-center gap-4 bg-muted/30 p-4 rounded-2xl border border-transparent hover:border-primary/20 hover:bg-white transition-all">
+                              <CheckCircle2 className="text-primary w-5 h-5 shrink-0" />
+                              <span className="font-bold text-secondary text-sm">{h}</span>
+                            </div>
+                          ))}
+                       </div>
                     </div>
                  </div>
                </section>
              ))}
 
-             {/* Full Enquiry Form */}
-             <div id="enquiry-form" className="pt-20">
-                <EnquiryForm source="courses_page" title="Apply for Admission" />
+             {/* Integrated Final Form Section */}
+             <div id="admission-enquiry" className="pt-24 pb-12">
+                <div className="text-center mb-12">
+                   <h2 className="text-4xl font-bold text-secondary mb-4">Ready to Start Your Journey?</h2>
+                   <p className="text-muted-foreground">Fill out the form below and we'll help you pick the right batch.</p>
+                </div>
+                <EnquiryForm source="courses_scrolling_page" title="Apply for Admission" />
              </div>
           </div>
         </div>

@@ -8,12 +8,6 @@ import { Menu, X, Phone, ChevronRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 const NAV_LINKS = [
   { name: 'Home', href: '/' },
@@ -25,12 +19,12 @@ const NAV_LINKS = [
 ];
 
 const COURSE_LINKS = [
-  { name: 'NEET', href: '/courses/neet' },
-  { name: 'JEE', href: '/courses/jee' },
-  { name: 'CUET', href: '/courses/cuet' },
-  { name: 'CLAT', href: '/courses/clat' },
-  { name: 'Integrated School', href: '/courses/integrated' },
-  { name: 'Intensive Tuition', href: '/courses/tuition' },
+  { name: 'NEET', href: '/courses#neet' },
+  { name: 'JEE', href: '/courses#jee' },
+  { name: 'CUET', href: '/courses#cuet' },
+  { name: 'CLAT', href: '/courses#clat' },
+  { name: 'Integrated School', href: '/courses#integrated' },
+  { name: 'Intensive Tuition', href: '/courses#tuition' },
 ];
 
 export const Navbar = () => {
@@ -49,61 +43,55 @@ export const Navbar = () => {
     <nav
       className={cn(
         'sticky top-0 z-50 w-full transition-all duration-300 border-b bg-white',
-        isScrolled ? 'shadow-md py-2' : 'py-4'
+        isScrolled ? 'shadow-md py-2' : 'py-3'
       )}
     >
       <div className="container mx-auto px-4 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex flex-col justify-center shrink-0">
-          <div className="flex items-center gap-1.5 leading-none">
-            <span className="text-xl md:text-2xl font-bold tracking-tighter">
-              <span className="text-primary">ACHARYA</span>{' '}
-              <span className="text-secondary">EDUCATION</span>
+        {/* Logo and Home Link Group */}
+        <div className="flex items-center gap-6">
+          <Link href="/" className="flex flex-col justify-center shrink-0">
+            <div className="flex items-center gap-1.5 leading-none">
+              <span className="text-xl md:text-2xl font-bold tracking-tighter">
+                <span className="text-primary uppercase">Acharya</span>{' '}
+                <span className="text-secondary uppercase">Education</span>
+              </span>
+            </div>
+            <span className="text-[9px] md:text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em] mt-0.5 leading-none">
+              Since 2007 • Madurai
             </span>
-          </div>
-          <span className="text-[9px] md:text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em] mt-0.5 leading-none">
-            Since 2007 • Madurai
-          </span>
-        </Link>
+          </Link>
+
+          {/* Home Link (As shown in your image, close to logo) */}
+          <Link
+            href="/"
+            className={cn(
+              'hidden lg:block text-sm font-bold transition-colors hover:text-primary whitespace-nowrap',
+              pathname === '/' ? 'text-primary' : 'text-foreground'
+            )}
+          >
+            Home
+          </Link>
+        </div>
 
         {/* Desktop Links */}
         <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
-          {NAV_LINKS.slice(0, 1).map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className={cn(
-                'text-sm font-semibold transition-colors hover:text-primary whitespace-nowrap',
-                pathname === link.href ? 'text-primary' : 'text-foreground'
-              )}
-            >
-              {link.name}
-            </Link>
-          ))}
-
-          {/* Courses Dropdown */}
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-1 text-sm font-semibold transition-colors hover:text-primary outline-none whitespace-nowrap">
-              All Courses <ChevronDown className="w-4 h-4 opacity-50" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="rounded-xl p-2 w-56">
-              {COURSE_LINKS.map((link) => (
-                <DropdownMenuItem key={link.href} asChild className="rounded-lg cursor-pointer py-2.5">
-                  <Link href={link.href} className="font-semibold text-secondary w-full block">{link.name}</Link>
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuItem asChild className="rounded-lg cursor-pointer py-2.5 border-t mt-1">
-                <Link href="/courses" className="font-bold text-primary w-full block">View All Categories</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          {/* Courses Dropdown Link */}
+          <Link 
+            href="/courses"
+            className={cn(
+              'flex items-center gap-1 text-sm font-bold transition-colors hover:text-primary whitespace-nowrap',
+              pathname === '/courses' ? 'text-primary' : 'text-foreground'
+            )}
+          >
+            All Courses <ChevronDown className="w-4 h-4 opacity-50" />
+          </Link>
 
           {NAV_LINKS.slice(1).map((link) => (
             <Link
               key={link.name}
               href={link.href}
               className={cn(
-                'text-sm font-semibold transition-colors hover:text-primary whitespace-nowrap',
+                'text-sm font-bold transition-colors hover:text-primary whitespace-nowrap',
                 pathname === link.href ? 'text-primary' : 'text-foreground'
               )}
             >
@@ -112,16 +100,16 @@ export const Navbar = () => {
           ))}
         </div>
 
-        {/* CTAs */}
+        {/* Right Section: Phone and CTA */}
         <div className="hidden lg:flex items-center space-x-6 shrink-0">
           <a
             href="tel:9865440099"
             className="flex items-center text-sm font-bold text-secondary hover:text-primary transition-colors whitespace-nowrap"
           >
-            <Phone className="w-4 h-4 mr-2" />
+            <Phone className="w-4 h-4 mr-1" />
             9865440099
           </a>
-          <Button asChild className="bg-primary hover:bg-primary/90 rounded-full font-bold px-6">
+          <Button asChild className="bg-primary hover:bg-primary/90 rounded-full font-bold px-8 h-10">
             <Link href="/contact">Enquire Now</Link>
           </Button>
         </div>
@@ -142,7 +130,7 @@ export const Navbar = () => {
                 <Link href="/" className="text-lg font-semibold flex items-center justify-between">Home <ChevronRight className="w-4 h-4 opacity-50" /></Link>
                 
                 <div className="space-y-4">
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-1">Courses</p>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-1">Programs</p>
                   <div className="grid grid-cols-1 gap-3">
                     {COURSE_LINKS.map((link) => (
                       <Link key={link.href} href={link.href} className="text-sm font-bold text-secondary bg-muted/50 p-3 rounded-xl flex justify-between items-center">
