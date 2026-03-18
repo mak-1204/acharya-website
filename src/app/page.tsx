@@ -150,9 +150,8 @@ export default function Home() {
     });
   }, [heroApi]);
 
-  // Quadruple the data and use exact width items for a perfect infinite loop
   const loopedStars = [...STARS_DATA, ...STARS_DATA, ...STARS_DATA, ...STARS_DATA];
-  const starsDuration = "30s"; // Smoother, slower scroll
+  const starsDuration = "30s";
 
   return (
     <div className="flex flex-col w-full overflow-x-hidden">
@@ -162,29 +161,29 @@ export default function Home() {
           <CarouselContent>
             {HERO_BANNERS.map((banner, index) => (
               <CarouselItem key={index}>
-                <div className={cn("relative w-full min-h-[500px] md:h-[700px] flex items-center overflow-hidden py-12 md:py-0", banner.color)}>
+                <div className={cn("relative w-full min-h-[500px] md:h-[600px] flex items-center overflow-hidden py-12 md:py-0", banner.color)}>
                   <div className="container mx-auto px-4 z-10 grid grid-cols-1 lg:grid-cols-2 items-center gap-12 text-left">
-                    <div className="text-white space-y-4 md:space-y-8">
+                    <div className="text-white space-y-4 md:space-y-6">
                       <Badge className="bg-white/20 text-white border-none px-4 py-1.5 uppercase tracking-wider text-[10px] md:text-xs">
                         {banner.badge}
                       </Badge>
-                      <h1 className="text-4xl sm:text-5xl lg:text-8xl font-bold tracking-tight leading-tight">
+                      <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-tight">
                         {banner.title}
                       </h1>
-                      <p className="text-base md:text-2xl text-white/80 max-lg:mx-auto">
+                      <p className="text-base md:text-xl text-white/80 max-lg:mx-auto">
                         {banner.subtitle}
                       </p>
-                      <div className="flex flex-col sm:flex-row gap-3 md:gap-6 pt-4">
-                        <Button asChild size="lg" className="w-full sm:w-auto bg-white text-secondary hover:bg-white/90 font-bold rounded-full px-12 h-12 md:h-16 text-lg">
+                      <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-4">
+                        <Button asChild size="lg" className="w-full sm:w-auto bg-white text-secondary hover:bg-white/90 font-bold rounded-full px-12 h-12 md:h-14 text-lg">
                           <a href={banner.link} target="_blank" rel="noopener noreferrer">{banner.cta}</a>
                         </Button>
-                        <Button asChild size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-white text-white hover:bg-white/10 font-bold rounded-full px-12 h-12 md:h-16 text-lg">
+                        <Button asChild size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-white text-white hover:bg-white/10 font-bold rounded-full px-12 h-12 md:h-14 text-lg">
                           <a href="tel:9865440099">Call Counselor</a>
                         </Button>
                       </div>
                     </div>
-                    <div className="hidden lg:block relative h-[550px] w-full max-w-2xl ml-auto">
-                      <div className="relative w-full h-full rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white/10 group">
+                    <div className="hidden lg:block relative h-[450px] w-full max-w-xl ml-auto">
+                      <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl border-4 border-white/10 group">
                         <Image 
                           src={banner.image} 
                           alt={banner.title} 
@@ -484,4 +483,3 @@ export default function Home() {
     </div>
   );
 }
-
