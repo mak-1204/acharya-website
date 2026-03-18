@@ -1,41 +1,31 @@
+
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { 
   LayoutDashboard, 
-  Users, 
-  BookOpen, 
-  Settings, 
-  LogOut,
-  ChevronRight
+  LayoutTemplate, 
+  Image as ImageIcon, 
+  MessageSquare, 
+  Star,
+  ChevronRight,
+  LogOut
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Logo } from './Logo';
 
 const ADMIN_LINKS = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-  { name: 'Enquiries', href: '/admin/enquiries', icon: Users },
-  { name: 'Courses', href: '/admin/courses', icon: BookOpen },
-  { name: 'Settings', href: '/admin/settings', icon: Settings },
+  { name: 'Courses & Banners', href: '/admin/courses-banners', icon: LayoutTemplate },
+  { name: 'Gallery', href: '/admin/gallery', icon: ImageIcon },
+  { name: 'Testimonials', href: '/admin/testimonials', icon: MessageSquare },
+  { name: 'Our Stars', href: '/admin/stars', icon: Star },
 ];
 
 export const AdminSidebar = () => {
   const pathname = usePathname();
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      router.push('/admin/login');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  };
 
   return (
     <aside className="w-64 h-screen bg-secondary text-white flex flex-col fixed left-0 top-0 z-40 border-r border-white/10">
@@ -70,14 +60,13 @@ export const AdminSidebar = () => {
       </nav>
 
       <div className="p-4 border-t border-white/10">
-        <Button 
-          onClick={handleLogout}
-          variant="ghost" 
-          className="w-full justify-start gap-3 px-4 py-3 text-white/70 hover:text-white hover:bg-destructive/10 hover:text-destructive rounded-xl"
+        <Link 
+          href="/"
+          className="flex items-center gap-3 px-4 py-3 text-white/70 hover:text-white rounded-xl transition-colors"
         >
           <LogOut className="w-5 h-5" />
-          <span>Logout</span>
-        </Button>
+          <span>Exit Admin</span>
+        </Link>
       </div>
     </aside>
   );
