@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -27,7 +28,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
 };
 
 export default function CoursesPage() {
-  const [activeCourse, setActiveCourse] = useState('all');
+  const [activeCategory, setActiveCategory] = useState('all');
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -45,8 +46,8 @@ export default function CoursesPage() {
     fetchCourses();
   }, []);
 
-  const handleFilterChange = (id: string) => {
-    setActiveCourse(id);
+  const handleFilterChange = (category: string) => {
+    setActiveCategory(category);
     if (window.innerWidth < 1024) {
       window.scrollTo({
         top: 200,
@@ -58,16 +59,25 @@ export default function CoursesPage() {
   useEffect(() => {
     const hash = window.location.hash.replace('#', '');
     if (hash) {
-      setActiveCourse(hash);
+      // Check if the hash matches a category or a slug
+      setActiveCategory(hash);
     }
   }, [courses]);
 
-  const displayCourses = activeCourse === 'all' 
+  // Derive unique categories from the course list
+  const uniqueCategories = Array.from(new Set(courses.map(c => c.category).filter(Boolean))) as string[];
+
+  const displayCourses = activeCategory === 'all' 
     ? courses 
-    : courses.filter(c => c.slug === activeCourse || c.category === activeCourse);
+    : courses.filter(c => c.category?.toLowerCase() === activeCategory.toLowerCase() || c.slug === activeCategory);
 
   const getCourseIcon = (course: any) => {
-    return ICON_MAP[course.slug] || ICON_MAP[course.category] || <BookOpen className="w-6 h-6" />;
+    const key = (course.category || course.slug || '').toLowerCase();
+    return ICON_MAP[key] || <BookOpen className="w-6 h-6" />;
+  };
+
+  const getCategoryIcon = (category: string) => {
+    return ICON_MAP[category.toLowerCase()] || <BookOpen className="w-6 h-6" />;
   };
 
   return (
@@ -87,34 +97,36 @@ export default function CoursesPage() {
           {/* Sidebar Navigation */}
           <aside className="lg:w-1/4 lg:sticky lg:top-24 h-fit z-20">
              <div className="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-border">
-                <h4 className="hidden lg:block text-xs font-bold text-muted-foreground uppercase tracking-widest mb-6 px-2">Filter Programs</h4>
+                <h4 className="hidden lg:block text-xs font-bold text-muted-foreground uppercase tracking-widest mb-6 px-2">Program Categories</h4>
                 <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 no-scrollbar scroll-smooth">
                   <button
                     onClick={() => handleFilterChange('all')}
                     className={cn(
-                      "text-left px-4 py-2.5 rounded-xl transition-all font-bold text-xs md:text-sm flex items-center gap-3 whitespace-nowrap lg:whitespace-normal text-left",
-                      activeCourse === 'all' 
+                      "text-left px-4 py-2.5 rounded-xl transition-all font-bold text-xs md:text-sm flex items-center gap-3 whitespace-nowrap lg:whitespace-normal",
+                      activeCategory === 'all' 
                         ? "bg-primary text-white shadow-lg lg:translate-x-1" 
                         : "text-secondary hover:bg-muted"
                     )}
                   >
-                    <LayoutGrid className={cn("shrink-0 w-6 h-6", activeCourse === 'all' ? "text-white" : "text-primary")} />
+                    <LayoutGrid className={cn("shrink-0 w-6 h-6", activeCategory === 'all' ? "text-white" : "text-primary")} />
                     <span>All Programs</span>
                   </button>
                   
-                  {courses.map((c) => (
+                  {uniqueCategories.map((category) => (
                     <button
-                      key={c.id}
-                      onClick={() => handleFilterChange(c.slug)}
+                      key={category}
+                      onClick={() => handleFilterChange(category)}
                       className={cn(
                         "text-left px-4 py-2.5 rounded-xl transition-all font-bold text-xs md:text-sm flex items-center gap-3 whitespace-nowrap lg:whitespace-normal",
-                        activeCourse === c.slug 
+                        activeCategory.toLowerCase() === category.toLowerCase()
                           ? "bg-primary text-white shadow-lg lg:translate-x-1" 
                           : "text-secondary hover:bg-muted"
                       )}
                     >
-                      <span className={cn("shrink-0", activeCourse === c.slug ? "text-white" : "text-primary")}>{getCourseIcon(c)}</span>
-                      <span className="truncate">{c.title}</span>
+                      <span className={cn("shrink-0", activeCategory.toLowerCase() === category.toLowerCase() ? "text-white" : "text-primary")}>
+                        {getCategoryIcon(category)}
+                      </span>
+                      <span className="truncate uppercase">{category}</span>
                     </button>
                   ))}
                 </div>
@@ -127,7 +139,7 @@ export default function CoursesPage() {
                <div className="flex justify-center py-20"><Loader2 className="animate-spin w-12 h-12 text-primary" /></div>
              ) : displayCourses.length > 0 ? (
                displayCourses.map((course) => (
-                 <section key={course.id} id={course.slug} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                 <section key={course.id} id={course.slug} className="animate-in fade-in slide-in-from-bottom-4 duration-500 scroll-mt-24">
                    <div className="bg-white rounded-3xl md:rounded-[2.5rem] p-6 md:p-12 shadow-sm border border-border group hover:shadow-2xl transition-all duration-500 overflow-hidden relative text-left">
                       <div className="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-muted/20 rounded-bl-[60px] md:rounded-bl-[100px] flex items-center justify-center -translate-y-4 translate-x-4">
                          <span className="text-primary/20">{getCourseIcon(course)}</span>
