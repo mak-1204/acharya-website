@@ -10,7 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { EnquiryForm } from '@/components/EnquiryForm';
 import Autoplay from 'embla-carousel-autoplay';
 import { 
-  CheckCircle2, BookOpen, Target, Award, Users, 
+  CircleCheckBig, BookOpen, Target, Award, Users, 
   ShieldCheck, Zap, GraduationCap, MapPin, 
   Calendar, Quote, Trophy, ArrowRight
 } from 'lucide-react';
@@ -115,7 +115,7 @@ const WHY_ACHARYA = [
   { title: 'Small Batches', desc: 'Strict limit of 15 students per batch for personalized focus.', icon: <Users className="text-secondary" /> },
   { title: 'Study Material', desc: 'Research-backed modules tailored for competitive exams.', icon: <BookOpen className="text-primary" /> },
   { title: 'Regular Assessment', desc: 'Weekly tests and detailed performance analysis.', icon: <Target className="text-secondary" /> },
-  { title: 'Personalized Care', desc: 'Regular PTMs and individualized doubt-clearing sessions.', icon: <CheckCircle2 className="text-primary" /> },
+  { title: 'Personalized Care', desc: 'Regular PTMs and individualized doubt-clearing sessions.', icon: <CircleCheckBig className="text-primary" /> },
   { title: 'Proven Results', desc: 'Legacy of top rankers in Madurai since 2007.', icon: <Zap className="text-secondary" /> },
 ];
 
@@ -128,7 +128,7 @@ const IMPULSE_STATS = [
 
 const JOURNEY_STEPS = [
   { title: 'Counseling', desc: 'Personalized guidance to pick the right academic path.', icon: <Users className="w-8 h-8" /> },
-  { title: 'Admission', desc: 'Smooth enrollment into Madurai’s most elite batches.', icon: <CheckCircle2 className="w-8 h-8" /> },
+  { title: 'Admission', desc: 'Smooth enrollment into Madurai’s most elite batches.', icon: <CircleCheckBig className="w-8 h-8" /> },
   { title: 'Learning', desc: 'Rigorous training with PhD/Expert faculty members.', icon: <BookOpen className="w-8 h-8" /> },
   { title: 'Success', desc: 'Regular testing and mentoring leading to top ranks.', icon: <Trophy className="w-8 h-8" /> },
 ];
@@ -177,7 +177,7 @@ export default function Home() {
                       <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-tight">
                         {banner.title}
                       </h1>
-                      <p className="text-base md:text-xl text-white/80 max-lg:mx-auto">
+                      <p className="text-base md:text-xl text-white/80">
                         {banner.subtitle}
                       </p>
                       <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-4">
@@ -189,7 +189,7 @@ export default function Home() {
                         </Button>
                       </div>
                     </div>
-                    <div className="hidden lg:block relative h-[450px] w-full max-w-xl ml-auto">
+                    <div className="hidden lg:block relative h-[400px] w-full max-w-xl ml-auto">
                       <div className="relative w-full h-full rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white/10 group">
                         <Image 
                           src={banner.image} 
@@ -199,7 +199,6 @@ export default function Home() {
                           priority
                           data-ai-hint="education banner"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
                       </div>
                     </div>
                   </div>
@@ -347,7 +346,7 @@ export default function Home() {
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary leading-tight">Your Path to Excellence</h2>
           </div>
           
-          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-20 relative">
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-20 relative">
             <div className="hidden lg:block absolute top-12 left-[12%] right-[12%] h-0.5 bg-muted -translate-y-1/2 z-0"></div>
             {JOURNEY_STEPS.map((step, i) => (
               <div key={i} className="relative z-10 flex flex-col items-center text-center group">
@@ -359,16 +358,11 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-bold text-secondary mb-3">{step.title}</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed max-w-[240px] px-4 md:px-0">{step.desc}</p>
-                {i < JOURNEY_STEPS.length - 1 && (
-                  <div className="lg:hidden absolute -bottom-12 flex justify-center w-full">
-                    <ArrowRight className="w-5 h-5 text-primary rotate-90" />
-                  </div>
-                )}
               </div>
             ))}
           </div>
 
-          <div className="flex sm:hidden flex-col gap-16 relative">
+          <div className="flex md:hidden flex-col gap-12 relative">
             <div className="absolute left-1/2 top-10 bottom-10 w-0.5 bg-muted -translate-x-1/2 z-0"></div>
             {JOURNEY_STEPS.map((step, i) => (
               <div key={i} className="relative z-10 flex flex-col items-center text-center px-6">
@@ -380,11 +374,6 @@ export default function Home() {
                 </div>
                 <h3 className="text-lg font-bold text-secondary mb-2">{step.title}</h3>
                 <p className="text-muted-foreground text-[12px] leading-relaxed px-10">{step.desc}</p>
-                {i < JOURNEY_STEPS.length - 1 && (
-                  <div className="mt-6 animate-bounce">
-                    <ArrowRight className="w-5 h-5 text-primary rotate-90" />
-                  </div>
-                )}
               </div>
             ))}
           </div>
@@ -405,7 +394,7 @@ export default function Home() {
                   "Hybrid Model: Best of both worlds for maximum flexibility."
                 ].map((txt, i) => (
                   <div key={i} className="flex items-center gap-3 md:gap-4">
-                    <CheckCircle2 className="text-white fill-white/20 shrink-0" />
+                    <CircleCheckBig className="text-white fill-white/20 shrink-0" />
                     <span className="font-semibold text-base md:text-lg">{txt}</span>
                   </div>
                 ))}
@@ -443,7 +432,7 @@ export default function Home() {
                    "Doubt Clearance Desk"
                  ].map((item, i) => (
                    <div key={i} className="flex items-center gap-3">
-                     <CheckCircle2 className="text-primary w-5 h-5 shrink-0" />
+                     <CircleCheckBig className="text-primary w-5 h-5 shrink-0" />
                      <span className="font-bold text-secondary text-sm md:text-base">{item}</span>
                    </div>
                  ))}

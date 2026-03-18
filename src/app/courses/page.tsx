@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EnquiryForm } from '@/components/EnquiryForm';
-import { Target, CheckCircle2, Monitor, GraduationCap, Zap, BookOpen, Scale, Layers, Laptop, Building2, Calculator, ExternalLink } from 'lucide-react';
+import { Target, CircleCheckBig, Monitor, GraduationCap, Zap, BookOpen, Scale, Layers, Laptop, Building2, Calculator, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
@@ -192,7 +192,7 @@ export default function CoursesPage() {
                           <div className="grid grid-cols-1 gap-3">
                             {course.highlights.map((h, i) => (
                               <div key={i} className="flex items-center gap-3 bg-muted/30 p-3 md:p-4 rounded-xl md:rounded-2xl border border-transparent hover:border-primary/20 hover:bg-white transition-all">
-                                <CheckCircle2 className="text-primary w-4 h-4 md:w-5 md:h-5 shrink-0" />
+                                <CircleCheckBig className="text-primary w-4 h-4 md:w-5 md:h-5 shrink-0" />
                                 <span className="font-bold text-secondary text-xs md:text-sm">{h}</span>
                               </div>
                             ))}
