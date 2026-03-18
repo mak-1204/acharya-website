@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, doc, serverTimestamp, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import { db } from '@/lib/firebase';
+import { collection, doc, addDoc, updateDoc, deleteDoc, getDocs, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,160 +11,177 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader2, Star as StarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const getInitials = (name: string) => {
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .substring(0, 2);
-};
-
 export default function StarsAdminPage() {
-  const { firestore } = useFirestore();
-  const { toast } = useToast();
-  
-  const starsRef = useMemoFirebase(() => firestore ? collection(firestore, 'stars') : null, [firestore]);
-  const { data: items, isLoading } = useCollection(starsRef);
-
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
-  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
+  // Form states
+  const [name, setName] = useState('');
+  const [photo, setPhoto] = useState('');
+  const [score, setScore] = useState('');
+  const [exam, setExam] = useState('');
+  const [rank, setRank] = useState('');
+  const [courseName, setCourseName] = useState('');
+  const [quote, setQuote] = useState('');
+  const [isPublished, setIsPublished] = useState(true);
+  const [order, setOrder] = useState('0');
+
+  const fetchItems = async () => {
+    setLoading(true);
+    try {
+      const snap = await getDocs(query(collection(db, 'stars'), orderBy('order', 'asc')));
+      setItems(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    } catch (err: any) {
+      console.error(err);
+      toast({ title: 'Error fetching', description: err.message, variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  const resetForm = () => {
+    setName('');
+    setPhoto('');
+    setScore('');
+    setExam('');
+    setRank('');
+    setCourseName('');
+    setQuote('');
+    setIsPublished(true);
+    setOrder('0');
+    setEditingItem(null);
+  };
+
+  const handleEdit = (item: any) => {
+    setEditingItem(item);
+    setName(item.name || '');
+    setPhoto(item.photo || '');
+    setScore(item.score || '');
+    setExam(item.exam || '');
+    setRank(item.rank || '');
+    setCourseName(item.courseName || '');
+    setQuote(item.quote || '');
+    setIsPublished(item.isPublished ?? true);
+    setOrder(String(item.order || 0));
+    setIsOpen(true);
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!starsRef) return;
-
-    setIsSubmitting(true);
-    const formData = new FormData(e.currentTarget);
+    setSubmitting(true);
     const data = {
-      name: formData.get('name') as string,
-      photo: formData.get('photo') as string,
-      score: formData.get('score') as string,
-      exam: formData.get('exam') as string,
-      rank: formData.get('rank') as string,
-      courseName: formData.get('courseName') as string,
-      quote: formData.get('quote') as string,
-      order: Number(formData.get('order')),
-      isPublished: formData.get('isPublished') === 'on',
-      updatedAt: serverTimestamp(),
+      name, photo, score, exam, rank, courseName, quote, 
+      isPublished, 
+      order: Number(order),
+      updatedAt: serverTimestamp()
     };
 
     try {
       if (editingItem) {
-        await updateDoc(doc(starsRef, editingItem.id), data);
-        toast({ title: "Updated", description: "Star student updated successfully." });
+        await updateDoc(doc(db, 'stars', editingItem.id), data);
+        toast({ title: 'Success', description: 'Student profile updated.' });
       } else {
-        await addDoc(starsRef, { ...data, createdAt: serverTimestamp() });
-        toast({ title: "Created", description: "New star added to the hall of fame." });
+        await addDoc(collection(db, 'stars'), { ...data, createdAt: serverTimestamp() });
+        toast({ title: 'Success', description: 'New star added successfully.' });
       }
       setIsOpen(false);
-      setEditingItem(null);
-    } catch (error: any) {
-      console.error("Error saving star:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message || "Failed to save the student. Please try again.",
-      });
+      resetForm();
+      fetchItems();
+    } catch (err: any) {
+      console.error(err);
+      toast({ title: 'Error saving', description: err.message, variant: 'destructive' });
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Remove this star student from the list?")) return;
-    if (!starsRef) return;
-
-    setIsSubmitting(true);
+    if (!confirm('Are you sure you want to remove this student?')) return;
     try {
-      await deleteDoc(doc(starsRef, id));
-      toast({ title: "Deleted", variant: "destructive" });
-    } catch (error: any) {
-      console.error("Error deleting star:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message || "Could not delete the item.",
-      });
-    } finally {
-      setIsSubmitting(false);
+      await deleteDoc(doc(db, 'stars', id));
+      setItems(prev => prev.filter(i => i.id !== id));
+      toast({ title: 'Deleted', description: 'Student profile removed.' });
+    } catch (err: any) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
     }
   };
 
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-secondary">Our Stars</h1>
-          <p className="text-muted-foreground">Celebrate your top achieving students.</p>
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold text-secondary flex items-center gap-2">
+            <StarIcon className="text-primary w-8 h-8" />
+            Our Star Performers
+          </h1>
+          <p className="text-muted-foreground italic">Highlight your students' academic achievements.</p>
         </div>
-        <Dialog open={isOpen} onOpenChange={(v) => { setIsOpen(v); if(!v) setEditingItem(null); }}>
+        <Dialog open={isOpen} onOpenChange={(v) => { setIsOpen(v); if(!v) resetForm(); }}>
           <DialogTrigger asChild>
-            <Button className="rounded-xl gap-2 bg-secondary hover:bg-secondary/90"><Plus className="w-4 h-4" /> Add Star</Button>
+            <Button className="rounded-xl gap-2 h-11 px-6 shadow-lg"><Plus className="w-5 h-5" /> Add New Star</Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingItem ? 'Edit Star Student' : 'Add New Star'}</DialogTitle>
+              <DialogTitle className="text-2xl font-bold">{editingItem ? 'Edit Star Student' : 'Add New Star'}</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSave} className="space-y-4 pt-4 text-left">
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSave} className="space-y-6 pt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Student Name</Label>
-                  <Input id="name" name="name" defaultValue={editingItem?.name} required disabled={isSubmitting} />
+                  <Label>Student Name</Label>
+                  <Input value={name} onChange={e => setName(e.target.value)} required placeholder="e.g. John Doe" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="exam">Exam Name</Label>
-                  <Input id="exam" name="exam" defaultValue={editingItem?.exam} placeholder="NEET-UG '26" required disabled={isSubmitting} />
+                  <Label>Exam Name</Label>
+                  <Input value={exam} onChange={e => setExam(e.target.value)} required placeholder="e.g. NEET-UG '26" />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="score">Score / Marks</Label>
-                  <Input id="score" name="score" defaultValue={editingItem?.score} placeholder="672 / 720" required disabled={isSubmitting} />
+                  <Label>Score / Marks</Label>
+                  <Input value={score} onChange={e => setScore(e.target.value)} required placeholder="672 / 720" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="rank">Rank (Optional)</Label>
-                  <Input id="rank" name="rank" defaultValue={editingItem?.rank} placeholder="AIR 1204" disabled={isSubmitting} />
+                  <Label>Rank (Optional)</Label>
+                  <Input value={rank} onChange={e => setRank(e.target.value)} placeholder="e.g. AIR 1204" />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="courseName">Course Name</Label>
-                <Input id="courseName" name="courseName" defaultValue={editingItem?.courseName} placeholder="Classroom Course" required disabled={isSubmitting} />
+                <Label>Course Name</Label>
+                <Input value={courseName} onChange={e => setCourseName(e.target.value)} required placeholder="e.g. 2-Year Classroom Course" />
               </div>
-              
               <div className="space-y-2">
-                <Label htmlFor="photo">Student Photo URL</Label>
-                <Input id="photo" name="photo" defaultValue={editingItem?.photo} placeholder="https://..." disabled={isSubmitting} />
+                <Label>Student Photo URL</Label>
+                <Input value={photo} onChange={e => setPhoto(e.target.value)} placeholder="https://..." />
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="quote">Inspirational Quote</Label>
-                <Textarea id="quote" name="quote" defaultValue={editingItem?.quote} placeholder="Consistency is the key to success..." className="h-20" disabled={isSubmitting} />
+                <Label>Inspirational Quote</Label>
+                <Textarea value={quote} onChange={e => setQuote(e.target.value)} placeholder="Consistency is the key..." className="h-24" />
               </div>
-              <div className="grid grid-cols-2 gap-4 items-center pt-2">
+              <div className="grid grid-cols-2 gap-6 items-center border-t pt-4">
                 <div className="space-y-2">
-                  <Label htmlFor="star-order">Order</Label>
-                  <Input id="star-order" name="order" type="number" defaultValue={editingItem?.order || 0} required disabled={isSubmitting} />
+                  <Label>Display Order (Lower comes first)</Label>
+                  <Input type="number" value={order} onChange={e => setOrder(e.target.value)} required />
                 </div>
-                <div className="flex items-center gap-2 pt-6">
-                  <Switch 
-                    id="isPublished" 
-                    name="isPublished"
-                    defaultChecked={editingItem?.isPublished ?? true}
-                    disabled={isSubmitting}
-                  />
-                  <Label htmlFor="isPublished">Visible on Site</Label>
+                <div className="flex items-center gap-3">
+                  <Switch checked={isPublished} onCheckedChange={setIsPublished} />
+                  <Label>Visible on Site</Label>
                 </div>
               </div>
-              <DialogFooter className="pt-4">
-                <Button type="submit" className="w-full bg-secondary" disabled={isSubmitting}>
-                  {isSubmitting ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null}
-                  Save Star Student
+              <DialogFooter className="pt-2">
+                <Button type="submit" className="w-full h-12 text-lg font-bold" disabled={submitting}>
+                  {submitting ? <Loader2 className="animate-spin mr-2" /> : null}
+                  {editingItem ? 'Update Student' : 'Save Student'}
                 </Button>
               </DialogFooter>
             </form>
@@ -172,41 +189,40 @@ export default function StarsAdminPage() {
         </Dialog>
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center py-20"><Loader2 className="animate-spin text-primary" /></div>
+      {loading ? (
+        <div className="flex justify-center py-20"><Loader2 className="animate-spin w-12 h-12 text-primary" /></div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {items?.map((star) => (
-            <Card key={star.id} className="border-none shadow-sm overflow-hidden group">
-              <div className="h-40 bg-gradient-to-br from-secondary to-primary relative overflow-hidden flex items-center justify-center">
-                {star.photo ? (
-                  <img src={star.photo} alt="" className="w-full h-full object-cover" />
+          {items.map((item) => (
+            <Card key={item.id} className="border-none shadow-sm overflow-hidden group">
+              <div className="h-44 bg-muted relative">
+                {item.photo ? (
+                  <img src={item.photo} alt={item.name} className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-white text-4xl font-bold">{getInitials(star.name)}</span>
+                  <div className="w-full h-full flex items-center justify-center bg-secondary text-white text-3xl font-bold">
+                    {item.name?.charAt(0)}
+                  </div>
                 )}
-                <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
-                  <Badge variant={star.isPublished ? "default" : "secondary"}>
-                    {star.isPublished ? 'Public' : 'Draft'}
-                  </Badge>
-                  <Badge className="bg-white text-secondary font-bold">#{star.order}</Badge>
+                <div className="absolute top-2 right-2 flex flex-col gap-2 items-end">
+                  <Badge variant={item.isPublished ? 'default' : 'secondary'}>{item.isPublished ? 'Public' : 'Draft'}</Badge>
+                  <Badge className="bg-white/90 text-secondary border-none">Order: {item.order}</Badge>
                 </div>
               </div>
-              <CardContent className="p-4 space-y-3">
-                <div className="space-y-1 text-left">
-                  <h3 className="font-bold text-secondary text-lg leading-tight truncate">{star.name}</h3>
-                  <p className="text-primary font-bold text-sm">{star.exam}</p>
+              <CardContent className="p-5 space-y-3">
+                <div className="space-y-1">
+                  <h3 className="font-bold text-secondary truncate">{item.name}</h3>
+                  <p className="text-primary font-bold text-xs uppercase tracking-wider">{item.exam}</p>
                 </div>
-                <div className="space-y-1 text-left">
-                  <p className="text-xs font-bold text-muted-foreground uppercase">{star.courseName}</p>
-                  <p className="text-secondary font-bold text-lg">{star.score}</p>
-                  {star.rank && <p className="text-primary font-bold text-xs">{star.rank}</p>}
+                <div className="space-y-1">
+                  <p className="text-xl font-black text-secondary">{item.score}</p>
+                  {item.rank && <p className="text-xs font-bold text-muted-foreground">{item.rank}</p>}
                 </div>
-                <div className="flex gap-2 pt-2">
-                  <Button variant="outline" size="sm" className="flex-1" onClick={() => { setEditingItem(star); setIsOpen(true); }} disabled={isSubmitting}>
-                    <Edit className="w-3 h-3 mr-2" /> Edit
+                <div className="flex gap-2 pt-2 border-t">
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => handleEdit(item)}>
+                    <Edit className="w-4 h-4 mr-2" /> Edit
                   </Button>
-                  <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-destructive hover:bg-destructive/10" onClick={() => handleDelete(star.id)} disabled={isSubmitting}>
-                    <Trash2 className="w-3 h-3" />
+                  <Button variant="outline" size="sm" className="w-10 p-0 text-destructive border-destructive/20 hover:bg-destructive/10" onClick={() => handleDelete(item.id)}>
+                    <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
               </CardContent>
