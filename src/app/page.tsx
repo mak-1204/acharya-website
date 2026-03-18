@@ -18,6 +18,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { cn } from '@/lib/utils';
@@ -163,7 +165,7 @@ export default function Home() {
           setApi={setHeroApi} 
           opts={{ loop: true }} 
           plugins={[autoplay.current]}
-          className="w-full"
+          className="w-full relative group"
         >
           <CarouselContent>
             {HERO_BANNERS.map((banner, index) => (
@@ -206,6 +208,10 @@ export default function Home() {
               </CarouselItem>
             ))}
           </CarouselContent>
+          
+          <CarouselPrevious className="hidden md:flex left-4 lg:left-8 bg-white/20 hover:bg-white/40 border-none text-white h-12 w-12 lg:h-14 lg:w-14 shadow-2xl transition-opacity opacity-0 group-hover:opacity-100 z-30" />
+          <CarouselNext className="hidden md:flex right-4 lg:right-8 bg-white/20 hover:bg-white/40 border-none text-white h-12 w-12 lg:h-14 lg:w-14 shadow-2xl transition-opacity opacity-0 group-hover:opacity-100 z-30" />
+
           <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-20">
             {HERO_BANNERS.map((_, i) => (
               <button
