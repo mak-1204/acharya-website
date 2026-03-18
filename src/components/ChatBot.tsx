@@ -12,7 +12,7 @@ const FAQS = [
   { keywords: ['fee', 'cost', 'price'], response: "Please call 9865440099 / 8870440099 or fill the enquiry form for detailed fee structures based on your course." },
   { keywords: ['batch', 'when', 'start'], response: "New batches start June 2025. We also have weekend batches for CLAT & CUET." },
   { keywords: ['online', 'offline'], response: "Yes! We offer both online live interactive classes and offline physical classes at our Madurai center." },
-  { keywords: ['location', 'address', 'where'], response: "We are at No. 207, 8th St, Muthuramalingapuram, K. Pudur, Madurai - 625007." },
+  { keywords: ['location', 'address', 'where'], response: "We are at No. 9, 8th St, Karpaga Nagar, K. Pudur, Madurai - 625007." },
   { keywords: ['enroll', 'admission', 'join'], response: "Fill out our enquiry form or call 9865440099 / 8870440099 for an immediate response." },
 ];
 

@@ -101,9 +101,9 @@ export const Footer = () => {
               Contact Us
             </h4>
             <ul className="space-y-3 text-white/80 text-xs md:text-[13px] flex flex-col items-center sm:items-start">
-              <li className="flex gap-2 justify-center sm:justify-start">
+              <li className="flex gap-2 justify-center sm:justify-start text-left">
                 <MapPin className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                <span className="leading-snug">No. 207, 8th St, K. Pudur, Madurai - 07</span>
+                <span className="leading-snug">No. 9 , 8th St, Karpaga Nagar , K. Pudur , Madurai - 625007</span>
               </li>
               <li className="flex gap-2 justify-center sm:justify-start">
                 <Phone className="w-4 h-4 text-primary shrink-0" />
