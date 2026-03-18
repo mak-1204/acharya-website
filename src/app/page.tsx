@@ -12,7 +12,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import { 
   CircleCheckBig, BookOpen, Target, Award, Users, 
   GraduationCap, MapPin, 
-  Calendar, Quote, Trophy, ArrowRight, Camera, Loader2
+  Calendar, Quote, Trophy, ArrowRight, Camera, Loader2, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import {
   Carousel,
@@ -53,6 +53,7 @@ const JOURNEY_STEPS = [
 ];
 
 const getInitials = (name: string) => {
+  if (!name) return 'A';
   return name
     .split(' ')
     .filter(Boolean)
@@ -65,8 +66,8 @@ const getInitials = (name: string) => {
 export default function Home() {
   const [heroApi, setHeroApi] = useState<CarouselApi>();
   const [heroCurrent, setHeroCurrent] = useState(0);
-  const [isStarsPaused, setIsStarsPaused] = useState(false);
-  const autoplay = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
+  const autoplayHero = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
+  const autoplayStars = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
 
   // --- Data Fetching State ---
   const [banners, setBanners] = useState<any[]>([]);
@@ -162,8 +163,6 @@ export default function Home() {
     });
   }, [heroApi]);
 
-  const loopedStars = stars ? [...stars, ...stars, ...stars, ...stars] : [];
-
   return (
     <div className="flex flex-col w-full overflow-x-hidden">
       {/* 1. HERO SECTION */}
@@ -176,7 +175,7 @@ export default function Home() {
           <Carousel 
             setApi={setHeroApi} 
             opts={{ loop: true }} 
-            plugins={[autoplay.current]}
+            plugins={[autoplayHero.current]}
             className="w-full relative group"
           >
             <CarouselContent>
@@ -205,13 +204,16 @@ export default function Home() {
                       </div>
                       <div className="hidden lg:block relative h-[400px] w-full max-w-xl ml-auto">
                         <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white/10 group">
-                          <Image 
-                            src={banner.imageUrl} 
-                            alt={banner.title} 
-                            fill 
-                            className="object-cover transition-transform duration-700 group-hover:scale-105" 
-                            priority
-                          />
+                          {banner.imageUrl && (
+                            <Image 
+                              src={banner.imageUrl} 
+                              alt={banner.title} 
+                              fill 
+                              className="object-cover transition-transform duration-700 group-hover:scale-105" 
+                              priority
+                              unoptimized={banner.imageUrl.includes('drive.google.com') || banner.imageUrl.includes('ibb.co')}
+                            />
+                          )}
                         </div>
                       </div>
                     </div>
@@ -297,14 +299,7 @@ export default function Home() {
                 Meet Our Stars <span className="text-[#FFC107]">✦</span>
               </h2>
 
-              <div 
-                className="relative overflow-hidden group py-4"
-                onMouseEnter={() => setIsStarsPaused(true)}
-                onMouseLeave={() => setIsStarsPaused(false)}
-              >
-                <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-                <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
-
+              <div className="relative group px-1 md:px-12">
                 {starsLoading ? (
                   <div className="flex gap-4 md:gap-6 overflow-hidden">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -312,37 +307,50 @@ export default function Home() {
                     ))}
                   </div>
                 ) : (
-                  <div 
-                    className="flex w-max will-change-transform"
-                    style={{
-                      animation: `marquee 40s linear infinite`,
-                      animationPlayState: isStarsPaused ? 'paused' : 'running'
+                  <Carousel
+                    opts={{
+                      align: "start",
+                      loop: stars.length > 4,
                     }}
+                    plugins={[autoplayStars.current]}
+                    className="w-full"
                   >
-                    {loopedStars.map((star, idx) => (
-                      <div key={`${star.id}-${idx}`} className="pr-4 md:pr-6 flex-shrink-0">
-                        <div className="w-[140px] sm:w-[160px] md:w-[180px] bg-white rounded-xl md:rounded-2xl shadow-md overflow-hidden hover:scale-105 transition-transform duration-300 cursor-pointer border border-border">
-                          <div className="h-32 sm:h-36 md:h-44 bg-gradient-to-br from-[#1A237E] to-[#D32F2F] flex items-center justify-center relative">
-                            {star.photo ? (
-                              <Image src={star.photo} alt={star.name} fill className="object-cover" />
-                            ) : (
-                              <span className="text-white text-2xl md:text-4xl font-bold">{getInitials(star.name)}</span>
-                            )}
-                            <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1 px-2 text-center">
-                              <span className="text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider">
-                                {star.exam}
-                              </span>
+                    <CarouselContent className="-ml-4">
+                      {stars.map((star) => (
+                        <CarouselItem key={star.id} className="pl-4 basis-[140px] sm:basis-[160px] md:basis-[200px] lg:basis-[220px]">
+                          <div className="bg-white rounded-xl md:rounded-2xl shadow-md overflow-hidden hover:scale-105 transition-transform duration-300 cursor-pointer border border-border h-full flex flex-col">
+                            <div className="h-32 sm:h-36 md:h-44 bg-gradient-to-br from-[#1A237E] to-[#D32F2F] flex items-center justify-center relative shrink-0">
+                              {star.photo ? (
+                                <Image 
+                                  src={star.photo} 
+                                  alt={star.name} 
+                                  fill 
+                                  className="object-cover" 
+                                  unoptimized={star.photo.includes('drive.google.com') || star.photo.includes('ibb.co')}
+                                />
+                              ) : (
+                                <span className="text-white text-2xl md:text-4xl font-bold">{getInitials(star.name)}</span>
+                              )}
+                              <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1 px-2 text-center">
+                                <span className="text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider">
+                                  {star.exam}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="p-3 md:p-4 text-left flex-1 flex flex-col justify-between">
+                              <div>
+                                <p className="font-bold text-[#1C1C1C] text-xs md:text-sm truncate">{star.name}</p>
+                                <p className="text-muted-foreground text-[8px] md:text-[10px] mt-0.5 line-clamp-1">{star.courseName}</p>
+                              </div>
+                              <p className="text-[#D32F2F] font-bold text-base md:text-lg mt-2 md:mt-3">{star.score}</p>
                             </div>
                           </div>
-                          <div className="p-3 md:p-4 text-left">
-                            <p className="font-bold text-[#1C1C1C] text-xs md:text-sm truncate">{star.name}</p>
-                            <p className="text-muted-foreground text-[8px] md:text-[10px] mt-0.5">{star.courseName}</p>
-                            <p className="text-[#D32F2F] font-bold text-base md:text-lg mt-2 md:mt-3">{star.score}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="hidden md:flex -left-4 bg-white border shadow-md hover:bg-muted" />
+                    <CarouselNext className="hidden md:flex -right-4 bg-white border shadow-md hover:bg-muted" />
+                  </Carousel>
                 )}
               </div>
             </div>
@@ -408,7 +416,15 @@ export default function Home() {
                   i === 0 && "col-span-2 row-span-2 h-[300px] md:h-[500px]",
                   i !== 0 && "h-[140px] md:h-[240px]"
                 )}>
-                  <Image src={img.imageUrl} alt={img.caption || 'Gallery'} fill className="object-cover transition-transform duration-500 group-hover:scale-110" />
+                  {img.imageUrl && (
+                    <Image 
+                      src={img.imageUrl} 
+                      alt={img.caption || 'Gallery'} 
+                      fill 
+                      className="object-cover transition-transform duration-500 group-hover:scale-110" 
+                      unoptimized={img.imageUrl.includes('drive.google.com') || img.imageUrl.includes('ibb.co')}
+                    />
+                  )}
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4">
                     <Camera className="text-white w-8 h-8" />
                   </div>
