@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, Lock, Eye, EyeOff } from 'lucide-react';
 import { Logo } from '@/components/Logo';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -23,6 +24,7 @@ export default function LoginPage() {
   const auth = useAuth();
   const db = useFirestore();
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +39,7 @@ export default function LoginPage() {
       const user = userCredential.user;
 
       // 2. Verify authorization in Firestore 'admin' collection
+      // Field name is 'mail id' as per requirements
       const adminQuery = query(
         collection(db, 'admin'),
         where('mail id', '==', user.email)
@@ -46,17 +49,28 @@ export default function LoginPage() {
       if (adminSnapshot.empty) {
         // Not an authorized admin
         await signOut(auth);
-        setError('Unauthorized user');
+        setError('Unauthorized user: Your email is not in the admin list.');
+        toast({
+          variant: "destructive",
+          title: "Access Denied",
+          description: "This email is not authorized to access the admin portal.",
+        });
       } else {
         // Success
+        toast({
+          title: "Login Successful",
+          description: "Welcome back, admin.",
+        });
         router.push('/admin');
       }
     } catch (err: any) {
-      console.error(err);
+      console.error("Login Error:", err);
       if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
         setError('Invalid email or password');
+      } else if (err.code === 'auth/too-many-requests') {
+        setError('Too many failed attempts. Please try again later.');
       } else {
-        setError('An error occurred during sign in. Please try again later.');
+        setError('An error occurred during sign in. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -80,7 +94,7 @@ export default function LoginPage() {
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
-            <div className="space-y-2">
+            <div className="space-y-2 text-left">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -92,7 +106,7 @@ export default function LoginPage() {
                 className="rounded-xl"
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 text-left">
               <Label htmlFor="password">Password</Label>
               <div className="relative">
                 <Input

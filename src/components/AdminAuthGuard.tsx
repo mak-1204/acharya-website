@@ -32,6 +32,7 @@ export const AdminAuthGuard = ({ children }: AdminAuthGuardProps) => {
           const adminSnapshot = await getDocs(adminQuery);
 
           if (adminSnapshot.empty) {
+            console.warn("Unauthorized attempt:", currentUser.email);
             await signOut(auth);
             setAuthorized(false);
             router.push('/admin/login');
@@ -41,6 +42,7 @@ export const AdminAuthGuard = ({ children }: AdminAuthGuardProps) => {
         } catch (error) {
           console.error("Auth Guard Error:", error);
           await signOut(auth);
+          setAuthorized(false);
           router.push('/admin/login');
         }
       } else {
@@ -58,7 +60,7 @@ export const AdminAuthGuard = ({ children }: AdminAuthGuardProps) => {
       <div className="fixed inset-0 flex flex-col items-center justify-center bg-background z-[200]">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="w-12 h-12 text-primary animate-spin" />
-          <p className="text-muted-foreground font-bold tracking-widest uppercase text-xs">Verifying Admin Session...</p>
+          <p className="text-muted-foreground font-bold tracking-widest uppercase text-[10px] md:text-xs">Verifying Admin Session...</p>
         </div>
       </div>
     );
