@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
 import { Loader2 } from 'lucide-react';
 
 interface AdminAuthGuardProps {
@@ -11,16 +12,35 @@ interface AdminAuthGuardProps {
 }
 
 export const AdminAuthGuard = ({ children }: AdminAuthGuardProps) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [authorized, setAuthorized] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        setUser(currentUser);
+        try {
+          // Verify authorization in Firestore 'admin' collection
+          const adminQuery = query(
+            collection(db, 'admin'),
+            where('mail id', '==', currentUser.email)
+          );
+          const adminSnapshot = await getDocs(adminQuery);
+
+          if (adminSnapshot.empty) {
+            await signOut(auth);
+            setAuthorized(false);
+            router.push('/admin/login');
+          } else {
+            setAuthorized(true);
+          }
+        } catch (error) {
+          console.error("Auth Guard Error:", error);
+          await signOut(auth);
+          router.push('/admin/login');
+        }
       } else {
-        setUser(null);
+        setAuthorized(false);
         router.push('/admin/login');
       }
       setLoading(false);
@@ -32,13 +52,15 @@ export const AdminAuthGuard = ({ children }: AdminAuthGuardProps) => {
   if (loading) {
     return (
       <div className="fixed inset-0 flex flex-col items-center justify-center bg-background z-[200]">
-        <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
-        <p className="text-muted-foreground font-medium">Verifying authorization...</p>
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-12 h-12 text-primary animate-spin" />
+          <p className="text-muted-foreground font-bold tracking-widest uppercase text-xs">Verifying Admin Session...</p>
+        </div>
       </div>
     );
   }
 
-  if (!user) {
+  if (!authorized) {
     return null;
   }
 

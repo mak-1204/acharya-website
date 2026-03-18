@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
@@ -25,12 +26,29 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push('/admin');
+      // 1. Authenticate with Firebase Auth
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // 2. Verify authorization in Firestore 'admin' collection
+      const adminQuery = query(
+        collection(db, 'admin'),
+        where('mail id', '==', user.email)
+      );
+      const adminSnapshot = await getDocs(adminQuery);
+
+      if (adminSnapshot.empty) {
+        // Not an authorized admin
+        await signOut(auth);
+        setError('Unauthorized user');
+      } else {
+        // Success
+        router.push('/admin');
+      }
     } catch (err: any) {
       console.error(err);
       if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-        setError('Invalid email or password. Please try again.');
+        setError('Invalid email or password');
       } else {
         setError('An error occurred during sign in. Please try again later.');
       }
@@ -61,7 +79,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@acharyaeducation.com"
+                placeholder="admin@acharya.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -89,7 +107,7 @@ export default function LoginPage() {
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Signing In...
+                  Verifying...
                 </>
               ) : (
                 <>
