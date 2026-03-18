@@ -84,6 +84,24 @@ const HERO_BANNERS = [
     color: "bg-[#D32F2F]"
   },
   {
+    title: "NEET CRASH COURSE",
+    subtitle: "Intensive 40-Day Revision with Daily Practice & Expert Tips.",
+    image: "/doctor.jpg",
+    cta: "Enroll Now",
+    link: GOOGLE_FORM_URL,
+    badge: "Crash Course",
+    color: "bg-[#D32F2F]"
+  },
+  {
+    title: "CUET CRASH COURSE",
+    subtitle: "Master Domain Subjects & General Test in 30 Days.",
+    image: "/doctor.jpg",
+    cta: "Enroll Now",
+    link: GOOGLE_FORM_URL,
+    badge: "Crash Course",
+    color: "bg-[#2E7D32]"
+  },
+  {
     title: "CUET(ICAR) Program",
     subtitle: "Your Gateway to Top Agricultural Universities in India.",
     image: "/portrait-of-a-smiling-university-student-holding-a-book-and-a-sac-standing-at-the-entrance-of.jpg",
