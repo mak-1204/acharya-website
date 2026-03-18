@@ -83,7 +83,7 @@ const HERO_BANNERS = [
   {
     title: "CUET(ICAR) Program",
     subtitle: "Your Gateway to Top Agricultural Universities in India.",
-    image: "https://picsum.photos/seed/hero4/1200/450",
+    image: "/portrait-of-a-smiling-university-student-holding-a-book-and-a-sac-standing-at-the-entrance-of.jpg",
     cta: "Start Prep",
     link: GOOGLE_FORM_URL,
     badge: "New Program",
