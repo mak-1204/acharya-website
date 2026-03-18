@@ -6,6 +6,7 @@ import { collection, doc, serverTimestamp } from 'firebase/firestore';
 import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
@@ -33,8 +34,6 @@ export default function StarsAdminPage() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
-  
-  // Controlled form state for the Switch
   const [isPublished, setIsPublished] = useState(true);
 
   useEffect(() => {
@@ -55,7 +54,9 @@ export default function StarsAdminPage() {
       photo: formData.get('photo') as string,
       score: formData.get('score') as string,
       exam: formData.get('exam') as string,
+      rank: formData.get('rank') as string,
       courseName: formData.get('courseName') as string,
+      quote: formData.get('quote') as string,
       order: Number(formData.get('order')),
       isPublished: isPublished,
       updatedAt: serverTimestamp(),
@@ -92,7 +93,7 @@ export default function StarsAdminPage() {
           <DialogTrigger asChild>
             <Button className="rounded-xl gap-2 bg-secondary hover:bg-secondary/90"><Plus className="w-4 h-4" /> Add Star</Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingItem ? 'Edit Star Student' : 'Add New Star'}</DialogTitle>
             </DialogHeader>
@@ -109,17 +110,25 @@ export default function StarsAdminPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="score">Score / Rank</Label>
+                  <Label htmlFor="score">Score / Marks</Label>
                   <Input id="score" name="score" defaultValue={editingItem?.score} placeholder="672 / 720" required />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="courseName">Course Name</Label>
-                  <Input id="courseName" name="courseName" defaultValue={editingItem?.courseName} placeholder="Classroom Course" required />
+                  <Label htmlFor="rank">Rank (Optional)</Label>
+                  <Input id="rank" name="rank" defaultValue={editingItem?.rank} placeholder="AIR 1204" />
                 </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="courseName">Course Name</Label>
+                <Input id="courseName" name="courseName" defaultValue={editingItem?.courseName} placeholder="Classroom Course" required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="photo">Photo URL (Optional)</Label>
                 <Input id="photo" name="photo" defaultValue={editingItem?.photo} placeholder="https://..." />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="quote">Inspirational Quote</Label>
+                <Textarea id="quote" name="quote" defaultValue={editingItem?.quote} placeholder="Consistency is the key to success..." className="h-20" />
               </div>
               <div className="grid grid-cols-2 gap-4 items-center pt-2">
                 <div className="space-y-2">
@@ -170,6 +179,7 @@ export default function StarsAdminPage() {
                 <div className="space-y-1 text-left">
                   <p className="text-xs font-bold text-muted-foreground uppercase">{star.courseName}</p>
                   <p className="text-secondary font-bold text-lg">{star.score}</p>
+                  {star.rank && <p className="text-primary font-bold text-xs">{star.rank}</p>}
                 </div>
                 <div className="flex gap-2 pt-2">
                   <Button variant="outline" size="sm" className="flex-1" onClick={() => { setEditingItem(star); setIsOpen(true); }}>

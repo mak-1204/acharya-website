@@ -1,47 +1,9 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Hero banners, categories and courses are publicly readable
-    match /hero_banners/{doc} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    match /courses/{doc} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    match /gallery/{doc} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    match /testimonials/{doc} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    match /stars/{doc} {
-      allow read: if true;
-      allow write: if request.auth != null;
-    }
-    
-    // Admin check allows authenticated read for the login verification
-    match /admin/{doc} {
-      allow read: if request.auth != null;
-      allow write: if false;
-    }
-    
-    // Analytics allows public read and write for tracking
-    match /analytics/{doc} {
+    // LIBERAL RULES: Allowing all reads and writes for development and testing
+    match /{document=**} {
       allow read, write: if true;
-    }
-
-    // Retaining lead capture rules for form functionality
-    match /enquiries/{enquiryId} {
-      allow create: if true; // Forms are publicly accessible
-      allow read, update, delete: if false;
-    }
-    match /scholarship_leads/{leadId} {
-      allow create: if true;
-      allow read, update, delete: if false;
     }
   }
 }
