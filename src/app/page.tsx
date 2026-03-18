@@ -11,7 +11,7 @@ import { EnquiryForm } from '@/components/EnquiryForm';
 import Autoplay from 'embla-carousel-autoplay';
 import { 
   CircleCheckBig, BookOpen, Target, Award, Users, 
-  ShieldCheck, Zap, GraduationCap, MapPin, 
+  GraduationCap, MapPin, 
   Calendar, Quote, Trophy, ArrowRight
 } from 'lucide-react';
 import {
@@ -123,9 +123,9 @@ const HERO_BANNERS = [
 
 const COURSES = [
   { id: 'jee', title: 'JEE Main & Advanced', target: 'Class 11, 12 & Repeaters', mode: 'Hybrid', icon: <Target className="w-6 h-6" />, category: 'jee' },
-  { id: 'neet', title: 'NEET Medical', target: 'Class 11, 12 & Repeaters', mode: 'Hybrid', icon: <Zap className="w-6 h-6" />, category: 'neet' },
+  { id: 'neet', title: 'NEET Medical', target: 'Class 11, 12 & Repeaters', mode: 'Hybrid', icon: <Target className="w-6 h-6" />, category: 'neet' },
   { id: 'foundation', title: 'Foundation Program', target: 'Class 6 - 10', mode: 'Offline', icon: <BookOpen className="w-6 h-6" />, category: 'foundation' },
-  { id: 'clat', title: 'CLAT (Law Entrance)', target: 'Class 11 & 12', mode: 'Hybrid', icon: <ShieldCheck className="w-6 h-6" />, category: 'clat' },
+  { id: 'clat', title: 'CLAT (Law Entrance)', target: 'Class 11 & 12', mode: 'Hybrid', icon: <Award className="w-6 h-6" />, category: 'clat' },
   { id: 'cuet', title: 'CUET Preparation', target: 'Class 12 Passed', mode: 'Hybrid', icon: <Award className="w-6 h-6" />, category: 'cuet' },
   { id: 'tuition', title: 'State Board Tuitions', target: 'Class 9 - 12', mode: 'Offline', icon: <Users className="w-6 h-6" />, category: 'tuition' },
 ];
@@ -136,7 +136,7 @@ const WHY_ACHARYA = [
   { title: 'Study Material', desc: 'Research-backed modules tailored for competitive exams.', icon: <BookOpen className="text-primary" /> },
   { title: 'Regular Assessment', desc: 'Weekly tests and detailed performance analysis.', icon: <Target className="text-secondary" /> },
   { title: 'Personalized Care', desc: 'Regular PTMs and individualized doubt-clearing sessions.', icon: <CircleCheckBig className="text-primary" /> },
-  { title: 'Proven Results', desc: 'Legacy of top rankers in Madurai since 2007.', icon: <Zap className="text-secondary" /> },
+  { title: 'Proven Results', desc: 'Legacy of top rankers in Madurai since 2007.', icon: <Trophy className="text-secondary" /> },
 ];
 
 const IMPULSE_STATS = [
@@ -212,7 +212,7 @@ export default function Home() {
                     <div className="hidden lg:block relative h-[400px] w-full max-w-xl ml-auto">
                       <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white/10 group">
                         <Image 
-                          src={`${banner.image}?v=${Date.now()}`} 
+                          src={banner.image} 
                           alt={banner.title} 
                           fill 
                           className="object-cover transition-transform duration-700 group-hover:scale-105" 

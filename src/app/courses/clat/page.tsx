@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Home, ChevronRight, Scale, Gavel, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Home, ChevronRight, Scale, Gavel, ShieldCheck } from 'lucide-react';
 import { EnquiryForm } from '@/components/EnquiryForm';
 import Image from 'next/image';
 
@@ -46,7 +46,7 @@ export default function ClatPage() {
                 <div className="absolute -inset-4 bg-primary/20 rounded-[2.5rem] md:rounded-[3.5rem] blur-2xl group-hover:bg-primary/30 transition-colors"></div>
                 <div className="relative w-full h-full rounded-[2rem] md:rounded-[3rem] shadow-2xl border-4 border-white/10 overflow-hidden">
                   <Image 
-                    src={`/lawyer.jpg?v=${Date.now()}`}
+                    src="/lawyer.jpg"
                     alt="CLAT Aspirant"
                     fill
                     className="object-cover"
