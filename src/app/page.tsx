@@ -92,7 +92,7 @@ const HERO_BANNERS = [
   {
     title: "CLAT Legal Edge",
     subtitle: "Join Madurai's #1 Dedicated Batch for Law Aspirants.",
-    image: "https://picsum.photos/seed/hero3/1200/450",
+    image: "/lawyer.jpg",
     cta: "Apply Now",
     link: GOOGLE_FORM_URL,
     badge: "New Batch",
@@ -183,7 +183,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="hidden lg:block relative h-[450px] w-full max-w-xl ml-auto">
-                      <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl border-4 border-white/10 group">
+                      <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white/10 group">
                         <Image 
                           src={banner.image} 
                           alt={banner.title} 
