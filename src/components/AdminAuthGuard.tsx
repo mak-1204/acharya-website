@@ -2,9 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
+import { useAuth, useFirestore } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 
 interface AdminAuthGuardProps {
@@ -14,9 +14,13 @@ interface AdminAuthGuardProps {
 export const AdminAuthGuard = ({ children }: AdminAuthGuardProps) => {
   const [authorized, setAuthorized] = useState(false);
   const [loading, setLoading] = useState(true);
+  const auth = useAuth();
+  const db = useFirestore();
   const router = useRouter();
 
   useEffect(() => {
+    if (!auth || !db) return;
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         try {
@@ -47,7 +51,7 @@ export const AdminAuthGuard = ({ children }: AdminAuthGuardProps) => {
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, [auth, db, router]);
 
   if (loading) {
     return (

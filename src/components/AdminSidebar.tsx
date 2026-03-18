@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { useAuth } from '@/firebase';
 import { cn } from '@/lib/utils';
 import { 
   LayoutDashboard, 
@@ -17,7 +17,6 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { Logo } from './Logo';
-import { Button } from '@/components/ui/button';
 
 const ADMIN_LINKS = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -29,9 +28,11 @@ const ADMIN_LINKS = [
 
 export const AdminSidebar = () => {
   const pathname = usePathname();
+  const auth = useAuth();
   const router = useRouter();
 
   const handleLogout = async () => {
+    if (!auth) return;
     try {
       await signOut(auth);
       router.push('/admin/login');
