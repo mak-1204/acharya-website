@@ -63,7 +63,7 @@ const getInitials = (name: string) => {
 };
 
 export default function Home() {
-  const { firestore } = useFirestore();
+  const firestore = useFirestore();
   const [heroApi, setHeroApi] = useState<CarouselApi>();
   const [heroCurrent, setHeroCurrent] = useState(0);
   const [isStarsPaused, setIsStarsPaused] = useState(false);
