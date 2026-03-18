@@ -12,7 +12,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import { 
   CircleCheckBig, BookOpen, Target, Award, Users, 
   GraduationCap, MapPin, 
-  Calendar, Quote, Trophy, ArrowRight, Camera, Sparkles
+  Calendar, Quote, Trophy, ArrowRight, Camera
 } from 'lucide-react';
 import {
   Carousel,
@@ -496,40 +496,6 @@ export default function Home() {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 10. SCHOLARSHIP SECTION */}
-      <section id="scholarship" className="py-16 md:py-24 bg-white scroll-mt-16">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="bg-secondary rounded-[2.5rem] p-8 md:p-16 text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-              <div className="space-y-6">
-                <Badge className="bg-primary text-white border-none">AEST 2025</Badge>
-                <h2 className="text-3xl md:text-5xl font-bold leading-tight">Acharya Excellence Scholarship Test</h2>
-                <p className="text-lg opacity-80 leading-relaxed">
-                  Unlock your potential with up to 100% scholarship on our premier courses. AEST is designed to identify and nurture talent in Madurai.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3 bg-white/10 p-4 rounded-2xl border border-white/10">
-                    <Sparkles className="text-primary w-6 h-6" />
-                    <span className="font-bold">Up to 100% Off</span>
-                  </div>
-                  <div className="flex items-center gap-3 bg-white/10 p-4 rounded-2xl border border-white/10">
-                    <Trophy className="text-primary w-6 h-6" />
-                    <span className="font-bold">National Ranking</span>
-                  </div>
-                </div>
-                <Button asChild size="lg" className="bg-primary hover:bg-primary/90 rounded-full font-bold px-10 h-14">
-                  <Link href="#enquire">Register for Test</Link>
-                </Button>
-              </div>
-              <div className="hidden lg:block relative h-[400px]">
-                 <Image src="https://picsum.photos/seed/scholar/600/600" alt="Scholarship" fill className="object-cover rounded-3xl" />
-              </div>
-            </div>
           </div>
         </div>
       </section>

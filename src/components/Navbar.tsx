@@ -17,7 +17,6 @@ const NAV_LINKS = [
   { name: 'About', href: '#about' },
   { name: 'Results', href: '#stars' },
   { name: 'Gallery', href: '#gallery' },
-  { name: 'Scholarship', href: '#scholarship' },
   { name: 'Contact', href: '#contact' },
 ];
 
@@ -45,7 +44,7 @@ export const Navbar = () => {
     };
 
     const observer = new IntersectionObserver(handleIntersect, observerOptions);
-    const sections = ['hero', 'courses', 'stars', 'why', 'journey', 'mode', 'about', 'gallery', 'scholarship', 'testimonials', 'enquire', 'contact'];
+    const sections = ['hero', 'courses', 'stars', 'why', 'journey', 'mode', 'about', 'gallery', 'testimonials', 'enquire', 'contact'];
     
     sections.forEach((id) => {
       const el = document.getElementById(id);
