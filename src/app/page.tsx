@@ -65,7 +65,7 @@ const HERO_BANNERS = [
   {
     title: "JEE Mains 2026 Crash Course",
     subtitle: "Madurai's Most Intensive Revision Program. 45 Days to Success.",
-    image: "https://picsum.photos/seed/hero1/1200/450",
+    image: "/Engineer.jpg",
     cta: "Enroll Now",
     link: GOOGLE_FORM_URL,
     badge: "Limited Seats",
@@ -162,50 +162,53 @@ export default function Home() {
           <CarouselContent>
             {HERO_BANNERS.map((banner, index) => (
               <CarouselItem key={index}>
-                <div className={cn("relative w-full min-h-[500px] md:h-[650px] flex items-center overflow-hidden py-12 md:py-0", banner.color)}>
-                  <div className="container mx-auto px-4 z-10 grid grid-cols-1 lg:grid-cols-2 items-center gap-8 text-left">
-                    <div className="text-white space-y-4 md:space-y-6">
+                <div className={cn("relative w-full min-h-[500px] md:h-[700px] flex items-center overflow-hidden py-12 md:py-0", banner.color)}>
+                  <div className="container mx-auto px-4 z-10 grid grid-cols-1 lg:grid-cols-2 items-center gap-12 text-left">
+                    <div className="text-white space-y-4 md:space-y-8">
                       <Badge className="bg-white/20 text-white border-none px-4 py-1.5 uppercase tracking-wider text-[10px] md:text-xs">
                         {banner.badge}
                       </Badge>
-                      <h1 className="text-3xl sm:text-4xl lg:text-7xl font-bold tracking-tight leading-tight">
+                      <h1 className="text-4xl sm:text-5xl lg:text-8xl font-bold tracking-tight leading-tight">
                         {banner.title}
                       </h1>
-                      <p className="text-base md:text-xl text-white/80 max-lg:mx-auto">
+                      <p className="text-base md:text-2xl text-white/80 max-lg:mx-auto">
                         {banner.subtitle}
                       </p>
-                      <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-4">
-                        <Button asChild size="lg" className="w-full sm:w-auto bg-white text-secondary hover:bg-white/90 font-bold rounded-full px-10 h-12 md:h-14">
+                      <div className="flex flex-col sm:flex-row gap-3 md:gap-6 pt-4">
+                        <Button asChild size="lg" className="w-full sm:w-auto bg-white text-secondary hover:bg-white/90 font-bold rounded-full px-12 h-12 md:h-16 text-lg">
                           <a href={banner.link} target="_blank" rel="noopener noreferrer">{banner.cta}</a>
                         </Button>
-                        <Button asChild size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-white text-white hover:bg-white/10 font-bold rounded-full px-10 h-12 md:h-14">
+                        <Button asChild size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-white text-white hover:bg-white/10 font-bold rounded-full px-12 h-12 md:h-16 text-lg">
                           <a href="tel:9865440099">Call Counselor</a>
                         </Button>
                       </div>
                     </div>
-                    <div className="hidden lg:block relative h-[500px]">
-                      <Image 
-                        src={banner.image} 
-                        alt={banner.title} 
-                        fill 
-                        className="object-contain" 
-                        priority
-                        data-ai-hint="education banner"
-                      />
+                    <div className="hidden lg:block relative h-[550px] w-full max-w-2xl ml-auto">
+                      <div className="relative w-full h-full rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white/10 group">
+                        <Image 
+                          src={banner.image} 
+                          alt={banner.title} 
+                          fill 
+                          className="object-cover transition-transform duration-700 group-hover:scale-105" 
+                          priority
+                          data-ai-hint="education banner"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+                      </div>
                     </div>
                   </div>
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+          <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-20">
             {HERO_BANNERS.map((_, i) => (
               <button
                 key={i}
                 onClick={() => heroApi?.scrollTo(i)}
                 className={cn(
                   "w-2 h-2 md:w-3 md:h-3 rounded-full transition-all",
-                  heroCurrent === i ? "bg-white w-6 md:w-10" : "bg-white/40"
+                  heroCurrent === i ? "bg-white w-8 md:w-12" : "bg-white/40"
                 )}
               />
             ))}
@@ -214,7 +217,7 @@ export default function Home() {
       </section>
 
       {/* 2. STATS STRIP */}
-      <section id="stats" className="bg-white py-8 md:py-12 border-b relative z-30 -mt-6 md:-mt-10 mx-4 md:mx-12 lg:mx-auto max-w-7xl rounded-2xl md:rounded-3xl shadow-xl border">
+      <section id="stats" className="bg-white py-8 md:py-12 border-b relative z-30 -mt-6 md:-mt-12 mx-4 md:mx-12 lg:mx-auto max-w-7xl rounded-2xl md:rounded-3xl shadow-xl border">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 text-center">
             {IMPULSE_STATS.map((stat, i) => (
@@ -273,7 +276,6 @@ export default function Home() {
               onMouseEnter={() => setIsStarsPaused(true)}
               onMouseLeave={() => setIsStarsPaused(false)}
             >
-              {/* Overlay Gradients for smooth fade out */}
               <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
               <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
 
@@ -482,3 +484,4 @@ export default function Home() {
     </div>
   );
 }
+
