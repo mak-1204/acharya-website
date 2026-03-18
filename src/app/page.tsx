@@ -108,8 +108,10 @@ export default function Home() {
   useEffect(() => {
     const fetchImpactStats = async () => {
       try {
-        const snap = await getDocs(query(collection(db, 'impact_stats'), where('isPublished', '==', true), orderBy('order', 'asc')));
-        setImpactStats(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        // Fetch all and filter in memory to avoid missing index errors during dev/testing
+        const snap = await getDocs(query(collection(db, 'impact_stats'), orderBy('order', 'asc')));
+        const allStats = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        setImpactStats(allStats.filter((s: any) => s.isPublished));
       } catch (err) {
         console.error("Error fetching impact stats:", err);
       } finally {
