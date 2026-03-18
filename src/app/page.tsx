@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -25,28 +26,28 @@ const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7
 const STARS_DATA = [
   {
     name: "Anish Kumar",
-    exam: "JEE MAINS '25",
+    exam: "JEE MAINS '26",
     score: "99.8 Percentile",
     category: "JEE",
     initials: "AK"
   },
   {
     name: "Ayesha Mariam",
-    exam: "NEET-UG '25",
+    exam: "NEET-UG '26",
     score: "685 / 720",
     category: "NEET",
     initials: "AM"
   },
   {
     name: "Raghav Ganesh",
-    exam: "JEE ADV. '25",
+    exam: "JEE ADV. '26",
     score: "AIR 1204",
     category: "JEE",
     initials: "RG"
   },
   {
     name: "Shruthika",
-    exam: "NEET-UG '25",
+    exam: "NEET-UG '26",
     score: "672 / 720",
     category: "NEET",
     initials: "S"
@@ -62,7 +63,7 @@ const STARS_DATA = [
 
 const HERO_BANNERS = [
   {
-    title: "JEE Mains 2025 Crash Course",
+    title: "JEE Mains 2026 Crash Course",
     subtitle: "Madurai's Most Intensive Revision Program. 45 Days to Success.",
     image: "https://picsum.photos/seed/hero1/1200/450",
     cta: "Enroll Now",
@@ -73,7 +74,7 @@ const HERO_BANNERS = [
   {
     title: "NEET Victory Batch",
     subtitle: "Complete NCERT Coverage with Daily Doubt Solving Sessions.",
-    image: "https://picsum.photos/seed/hero2/1200/450",
+    image: "/doctor.jpg",
     cta: "Join Now",
     link: GOOGLE_FORM_URL,
     badge: "Admissions Open",
