@@ -380,7 +380,7 @@ export default function Home() {
                <h4 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">Which mode suits you?</h4>
                <p className="mb-6 md:mb-8 opacity-80 text-sm md:text-base">Connect with our counselors to understand the best methodology for your success.</p>
                <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 font-bold rounded-full w-full h-12 md:h-14">
-                 <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Consult an Expert</a>
+                 <a href="tel:9865440099">Call our expert</a>
                </Button>
             </div>
           </div>
