@@ -1,89 +1,33 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    /**
-     * FIRESTORE SECURITY RULES DOCUMENTATION
-     * 
-     * Core Philosophy:
-     * This ruleset implements a Public-Read/Public-Lead-Capture model. Content like course 
-     * categories and sub-courses are accessible to everyone to ensure SEO visibility and 
-     * ease of browsing. Sensitive data collection (enquiries and scholarship leads) is 
-     * restricted to "create-only" for public users, preventing unauthorized data access.
-     * 
-     * Data Structure:
-     * - /course_categories/{categorySlug}: Top-level organizational units (e.g., JEE, NEET).
-     * - /sub_courses/{subCourseId}: Detailed offerings linked to categories via 'categorySlug'.
-     * - /enquiries/{enquiryId}: Lead capture for general interest.
-     * - /scholarship_leads/{leadId}: Lead capture for scholarship interest.
-     * 
-     * Key Security Decisions:
-     * 1. Public Content: Course data is read-only for all users (authenticated or not).
-     * 2. Lead Protection: Enquiries and Scholarship Leads can be created by any user 
-     *    (including anonymous users) but cannot be read, updated, or deleted via client SDKs.
-     * 3. Authorization Independence: Sub-courses use a denormalized 'categorySlug' to allow 
-     *    direct filtering without needing cross-document lookups (get() calls) in rules.
-     * 4. Prototyping Flexibility: Schema validation is omitted for content fields to 
-     *    allow rapid iteration on the data model.
-     */
-
-    // --- Global Helper Functions ---
-
-    /** 
-     * @description Checks if the request is from a signed-in user (includes anonymous).
-     */
-    function isSignedIn() {
-      return request.auth != null;
+    // Hero banners, categories and courses are publicly readable
+    match /hero_banners/{doc} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /course_categories/{doc} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /sub_courses/{doc} {
+      allow read: if true;
+      allow write: if false;
+    }
+    
+    // Analytics allows public read and write for tracking
+    match /analytics/{doc} {
+      allow read, write: if true;
     }
 
-    // --- Collection Rules ---
-
-    /**
-     * @description High-level course categories used for homepage navigation.
-     * @path /course_categories/{categorySlug}
-     * @allow get, list: Always (publicly accessible).
-     * @deny create, update, delete: All users (managed via Firebase Console).
-     * @principle Public Read with Admin-only Writes.
-     */
-    match /course_categories/{categorySlug} {
-      allow get, list: if true;
-      allow create, update, delete: if false;
-    }
-
-    /**
-     * @description Detailed course offerings associated with specific categories.
-     * @path /sub_courses/{subCourseId}
-     * @allow get, list: Always (publicly accessible).
-     * @deny create, update, delete: All users (managed via Firebase Console).
-     * @principle Public Read with Admin-only Writes.
-     */
-    match /sub_courses/{subCourseId} {
-      allow get, list: if true;
-      allow create, update, delete: if false;
-    }
-
-    /**
-     * @description Public lead capture for general program enquiries.
-     * @path /enquiries/{enquiryId}
-     * @allow create: Any authenticated user (including anonymous) to support lead submission.
-     * @deny get, list, update, delete: All client-side users to protect lead data.
-     * @principle Write-only Lead Collection.
-     */
+    // Retaining lead capture rules for form functionality
     match /enquiries/{enquiryId} {
-      allow create: if isSignedIn();
-      allow get, list, update, delete: if false;
+      allow create: if request.auth != null;
+      allow read, update, delete: if false;
     }
-
-    /**
-     * @description Public lead capture for scholarship program applications.
-     * @path /scholarship_leads/{leadId}
-     * @allow create: Any authenticated user (including anonymous) to support lead submission.
-     * @deny get, list, update, delete: All client-side users to protect lead data.
-     * @principle Write-only Lead Collection.
-     */
     match /scholarship_leads/{leadId} {
-      allow create: if isSignedIn();
-      allow get, list, update, delete: if false;
+      allow create: if request.auth != null;
+      allow read, update, delete: if false;
     }
   }
 }
