@@ -7,6 +7,7 @@ import { Instagram, Mail, Phone, MapPin } from 'lucide-react';
 import { Logo } from './Logo';
 
 const MAPS_URL = "https://www.google.com/maps/place/207,+7,+8th+St,+Muthuramalingapuram,+Karpaga+Nagar,+K.Pudur,+Madurai,+Tamil+Nadu+625007,+India/@9.9496341,78.1479403,20.63z/data=!4m5!3m4!1s0x3b00c5d0ff406d7f:0x94de6a503a7fe!8m2!3d9.9496002!4d78.1477893?hl=en-US&entry=ttu&g_ep=EgoyMDI2MDMxNS4wIKXMDSoASAFQAw%3D%3D";
+const INSTAGRAM_URL = "https://www.instagram.com/acharyaeducation_madurai?igsh=MTduemJtM2s4aDIyYw==";
 
 export const Footer = () => {
   const [year, setYear] = useState("2026");
@@ -28,7 +29,13 @@ export const Footer = () => {
               IIT, NEET & Beyond Since 2007. Madurai's trusted partner in academic excellence.
             </p>
             <div className="flex space-x-3">
-              <a href="#" className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-primary hover:border-primary transition-all">
+              <a 
+                href={INSTAGRAM_URL} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-primary hover:border-primary transition-all"
+                aria-label="Instagram"
+              >
                 <Instagram className="w-4 h-4 text-white" />
               </a>
             </div>
