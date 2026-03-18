@@ -80,6 +80,15 @@ const HERO_BANNERS = [
     color: "bg-[#D32F2F]"
   },
   {
+    title: "CUET(ICAR) Program",
+    subtitle: "Your Gateway to Top Agricultural Universities in India.",
+    image: "https://picsum.photos/seed/hero4/1200/450",
+    cta: "Start Prep",
+    link: GOOGLE_FORM_URL,
+    badge: "New Program",
+    color: "bg-[#2E7D32]"
+  },
+  {
     title: "CLAT Legal Edge",
     subtitle: "Join Madurai's #1 Dedicated Batch for Law Aspirants.",
     image: "https://picsum.photos/seed/hero3/1200/450",
