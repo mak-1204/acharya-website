@@ -23,8 +23,8 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { cn } from '@/lib/utils';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, where, orderBy } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
@@ -63,44 +63,97 @@ const getInitials = (name: string) => {
 };
 
 export default function Home() {
-  const firestore = useFirestore();
   const [heroApi, setHeroApi] = useState<CarouselApi>();
   const [heroCurrent, setHeroCurrent] = useState(0);
   const [isStarsPaused, setIsStarsPaused] = useState(false);
   const autoplay = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
 
-  // --- Firestore Queries ---
+  // --- Data Fetching State ---
+  const [banners, setBanners] = useState<any[]>([]);
+  const [bannersLoading, setBannersLoading] = useState(true);
 
-  const bannersQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'hero_banners'), where('isActive', '==', true), orderBy('order', 'asc'));
-  }, [firestore]);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [coursesLoading, setCoursesLoading] = useState(true);
 
-  const coursesQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'courses'), where('isPublished', '==', true), orderBy('order', 'asc'));
-  }, [firestore]);
+  const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [testimonialsLoading, setTestimonialsLoading] = useState(true);
 
-  const testimonialsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'testimonials'), where('isPublished', '==', true), orderBy('order', 'asc'));
-  }, [firestore]);
+  const [gallery, setGallery] = useState<any[]>([]);
+  const [galleryLoading, setGalleryLoading] = useState(true);
 
-  const galleryQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'gallery'), where('isPublished', '==', true), orderBy('order', 'asc'));
-  }, [firestore]);
+  const [stars, setStars] = useState<any[]>([]);
+  const [starsLoading, setStarsLoading] = useState(true);
 
-  const starsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collection(firestore, 'stars'), where('isPublished', '==', true), orderBy('order', 'asc'));
-  }, [firestore]);
+  // --- Firestore Effects ---
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const snap = await getDocs(query(collection(db, 'hero_banners'), where('isActive', '==', true), orderBy('order', 'asc')));
+        setBanners(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      } catch (err) {
+        console.error("Error fetching banners:", err);
+      } finally {
+        setBannersLoading(false);
+      }
+    };
+    fetchBanners();
+  }, []);
 
-  const { data: banners, isLoading: bannersLoading } = useCollection(bannersQuery);
-  const { data: courses, isLoading: coursesLoading } = useCollection(coursesQuery);
-  const { data: testimonials, isLoading: testimonialsLoading } = useCollection(testimonialsQuery);
-  const { data: gallery, isLoading: galleryLoading } = useCollection(galleryQuery);
-  const { data: stars, isLoading: starsLoading } = useCollection(starsQuery);
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const snap = await getDocs(query(collection(db, 'courses'), where('isPublished', '==', true), orderBy('order', 'asc')));
+        setCourses(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      } catch (err) {
+        console.error("Error fetching courses:", err);
+      } finally {
+        setCoursesLoading(false);
+      }
+    };
+    fetchCourses();
+  }, []);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const snap = await getDocs(query(collection(db, 'testimonials'), where('isPublished', '==', true), orderBy('order', 'asc')));
+        setTestimonials(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      } catch (err) {
+        console.error("Error fetching testimonials:", err);
+      } finally {
+        setTestimonialsLoading(false);
+      }
+    };
+    fetchTestimonials();
+  }, []);
+
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const snap = await getDocs(query(collection(db, 'gallery'), where('isPublished', '==', true), orderBy('order', 'asc')));
+        setGallery(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      } catch (err) {
+        console.error("Error fetching gallery:", err);
+      } finally {
+        setGalleryLoading(false);
+      }
+    };
+    fetchGallery();
+  }, []);
+
+  useEffect(() => {
+    const fetchStars = async () => {
+      try {
+        const snap = await getDocs(query(collection(db, 'stars'), where('isPublished', '==', true), orderBy('order', 'asc')));
+        setStars(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      } catch (err) {
+        console.error("Error fetching stars:", err);
+      } finally {
+        setStarsLoading(false);
+      }
+    };
+    fetchStars();
+  }, []);
 
   useEffect(() => {
     if (!heroApi) return;
