@@ -25,11 +25,21 @@ export const AdminAuthGuard = ({ children }: AdminAuthGuardProps) => {
       if (currentUser) {
         try {
           // Verify authorization in Firestore 'admin' collection
+          // Checking both 'user mail id' (from screenshot) and 'mail id' (from requirements)
           const adminQuery = query(
             collection(db, 'admin'),
-            where('mail id', '==', currentUser.email)
+            where('user mail id', '==', currentUser.email)
           );
-          const adminSnapshot = await getDocs(adminQuery);
+          let adminSnapshot = await getDocs(adminQuery);
+
+          // Fallback check for 'mail id'
+          if (adminSnapshot.empty) {
+            const fallbackQuery = query(
+              collection(db, 'admin'),
+              where('mail id', '==', currentUser.email)
+            );
+            adminSnapshot = await getDocs(fallbackQuery);
+          }
 
           if (adminSnapshot.empty) {
             console.warn("Unauthorized attempt:", currentUser.email);

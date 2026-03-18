@@ -39,12 +39,21 @@ export default function LoginPage() {
       const user = userCredential.user;
 
       // 2. Verify authorization in Firestore 'admin' collection
-      // Field name is 'mail id' as per requirements
+      // Checking both 'user mail id' (from screenshot) and 'mail id' (from requirements)
       const adminQuery = query(
         collection(db, 'admin'),
-        where('mail id', '==', user.email)
+        where('user mail id', '==', user.email)
       );
-      const adminSnapshot = await getDocs(adminQuery);
+      let adminSnapshot = await getDocs(adminQuery);
+
+      // Fallback check for 'mail id' if 'user mail id' doesn't return results
+      if (adminSnapshot.empty) {
+        const fallbackQuery = query(
+          collection(db, 'admin'),
+          where('mail id', '==', user.email)
+        );
+        adminSnapshot = await getDocs(fallbackQuery);
+      }
 
       if (adminSnapshot.empty) {
         // Not an authorized admin
