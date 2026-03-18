@@ -48,25 +48,27 @@ export default function GalleryAdminPage() {
       }
       setIsOpen(false);
       setEditingItem(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving gallery item:", error);
-      toast({ variant: "destructive", title: "Error", description: "Could not save gallery item." });
+      toast({ variant: "destructive", title: "Error", description: error.message || "Could not save gallery item." });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Delete this gallery image?")) {
-      if (galleryRef) {
-        try {
-          await deleteDoc(doc(galleryRef, id));
-          toast({ title: "Deleted", variant: "destructive" });
-        } catch (error) {
-          console.error("Error deleting gallery item:", error);
-          toast({ variant: "destructive", title: "Error", description: "Could not delete gallery item." });
-        }
-      }
+    if (!confirm("Delete this gallery image?")) return;
+    if (!galleryRef) return;
+
+    setIsSubmitting(true);
+    try {
+      await deleteDoc(doc(galleryRef, id));
+      toast({ title: "Deleted", variant: "destructive" });
+    } catch (error: any) {
+      console.error("Error deleting gallery item:", error);
+      toast({ variant: "destructive", title: "Error", description: error.message || "Could not delete gallery item." });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -79,7 +81,7 @@ export default function GalleryAdminPage() {
         </div>
         <Dialog open={isOpen} onOpenChange={(v) => { setIsOpen(v); if(!v) setEditingItem(null); }}>
           <DialogTrigger asChild>
-            <Button className="rounded-xl gap-2"><Plus className="w-4 h-4" /> Add Item</Button>
+            <Button className="rounded-xl gap-2" disabled={isSubmitting}><Plus className="w-4 h-4" /> Add Item</Button>
           </DialogTrigger>
           <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
@@ -131,10 +133,10 @@ export default function GalleryAdminPage() {
                 <div>
                   <p className="text-white text-xs font-medium mb-4 line-clamp-2">{item.caption || 'No caption'}</p>
                   <div className="flex gap-2">
-                    <Button variant="secondary" size="sm" className="flex-1 h-8" onClick={() => { setEditingItem(item); setIsOpen(true); }}>
+                    <Button variant="secondary" size="sm" className="flex-1 h-8" onClick={() => { setEditingItem(item); setIsOpen(true); }} disabled={isSubmitting}>
                       <Edit className="w-3 h-3 mr-1" /> Edit
                     </Button>
-                    <Button variant="destructive" size="sm" className="h-8 w-8 p-0" onClick={() => handleDelete(item.id)}>
+                    <Button variant="destructive" size="sm" className="h-8 w-8 p-0" onClick={() => handleDelete(item.id)} disabled={isSubmitting}>
                       <Trash2 className="w-3 h-3" />
                     </Button>
                   </div>

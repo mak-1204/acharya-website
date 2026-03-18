@@ -54,25 +54,27 @@ export default function TestimonialsAdminPage() {
       }
       setIsOpen(false);
       setEditingItem(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving testimonial:", error);
-      toast({ variant: "destructive", title: "Error", description: "Could not save testimonial." });
+      toast({ variant: "destructive", title: "Error", description: error.message || "Could not save testimonial." });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Delete this testimonial?")) {
-      if (testimonialsRef) {
-        try {
-          await deleteDoc(doc(testimonialsRef, id));
-          toast({ title: "Deleted", variant: "destructive" });
-        } catch (error) {
-          console.error("Error deleting testimonial:", error);
-          toast({ variant: "destructive", title: "Error", description: "Could not delete testimonial." });
-        }
-      }
+    if (!confirm("Delete this testimonial?")) return;
+    if (!testimonialsRef) return;
+
+    setIsSubmitting(true);
+    try {
+      await deleteDoc(doc(testimonialsRef, id));
+      toast({ title: "Deleted", variant: "destructive" });
+    } catch (error: any) {
+      console.error("Error deleting testimonial:", error);
+      toast({ variant: "destructive", title: "Error", description: error.message || "Could not delete testimonial." });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -85,7 +87,7 @@ export default function TestimonialsAdminPage() {
         </div>
         <Dialog open={isOpen} onOpenChange={(v) => { setIsOpen(v); if(!v) setEditingItem(null); setRating(editingItem?.rating?.toString() || '5'); }}>
           <DialogTrigger asChild>
-            <Button className="rounded-xl gap-2"><Plus className="w-4 h-4" /> Add Testimonial</Button>
+            <Button className="rounded-xl gap-2" disabled={isSubmitting}><Plus className="w-4 h-4" /> Add Testimonial</Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
@@ -172,10 +174,10 @@ export default function TestimonialsAdminPage() {
                     <div className="flex justify-between items-center mt-4 pt-4 border-t">
                       <Badge variant={item.isPublished ? "default" : "secondary"}>{item.isPublished ? 'Public' : 'Draft'}</Badge>
                       <div className="flex gap-2">
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => { setEditingItem(item); setIsOpen(true); }}>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => { setEditingItem(item); setIsOpen(true); }} disabled={isSubmitting}>
                           <Edit className="w-4 h-4" />
                         </Button>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive" onClick={() => handleDelete(item.id)}>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive" onClick={() => handleDelete(item.id)} disabled={isSubmitting}>
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>

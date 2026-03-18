@@ -64,12 +64,12 @@ export default function StarsAdminPage() {
       }
       setIsOpen(false);
       setEditingItem(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving star:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to save the student. Please try again.",
+        description: error.message || "Failed to save the student. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
@@ -77,20 +77,22 @@ export default function StarsAdminPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Remove this star student from the list?")) {
-      if (starsRef) {
-        try {
-          await deleteDoc(doc(starsRef, id));
-          toast({ title: "Deleted", variant: "destructive" });
-        } catch (error) {
-          console.error("Error deleting star:", error);
-          toast({
-            variant: "destructive",
-            title: "Error",
-            description: "Could not delete the item.",
-          });
-        }
-      }
+    if (!confirm("Remove this star student from the list?")) return;
+    if (!starsRef) return;
+
+    setIsSubmitting(true);
+    try {
+      await deleteDoc(doc(starsRef, id));
+      toast({ title: "Deleted", variant: "destructive" });
+    } catch (error: any) {
+      console.error("Error deleting star:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Could not delete the item.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -200,10 +202,10 @@ export default function StarsAdminPage() {
                   {star.rank && <p className="text-primary font-bold text-xs">{star.rank}</p>}
                 </div>
                 <div className="flex gap-2 pt-2">
-                  <Button variant="outline" size="sm" className="flex-1" onClick={() => { setEditingItem(star); setIsOpen(true); }}>
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => { setEditingItem(star); setIsOpen(true); }} disabled={isSubmitting}>
                     <Edit className="w-3 h-3 mr-2" /> Edit
                   </Button>
-                  <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-destructive hover:bg-destructive/10" onClick={() => handleDelete(star.id)}>
+                  <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-destructive hover:bg-destructive/10" onClick={() => handleDelete(star.id)} disabled={isSubmitting}>
                     <Trash2 className="w-3 h-3" />
                   </Button>
                 </div>

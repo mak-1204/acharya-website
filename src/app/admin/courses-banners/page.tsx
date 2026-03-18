@@ -56,9 +56,9 @@ export default function CoursesBannersPage() {
       }
       setIsBannerDialogOpen(false);
       setEditingBanner(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving banner:", error);
-      toast({ variant: "destructive", title: "Error", description: "Could not save the banner." });
+      toast({ variant: "destructive", title: "Error", description: error.message || "Could not save the banner." });
     } finally {
       setIsSubmitting(false);
     }
@@ -94,23 +94,26 @@ export default function CoursesBannersPage() {
       }
       setIsCourseDialogOpen(false);
       setEditingCourse(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving course:", error);
-      toast({ variant: "destructive", title: "Error", description: "Could not save the course." });
+      toast({ variant: "destructive", title: "Error", description: error.message || "Could not save the course." });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (ref: any, id: string, title: string) => {
-    if (confirm(`Are you sure you want to delete "${title}"?`)) {
-      try {
-        await deleteDoc(doc(ref, id));
-        toast({ title: "Deleted", description: "The item has been removed.", variant: "destructive" });
-      } catch (error) {
-        console.error("Error deleting document:", error);
-        toast({ variant: "destructive", title: "Error", description: "Failed to delete the item." });
-      }
+    if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
+    
+    setIsSubmitting(true);
+    try {
+      await deleteDoc(doc(ref, id));
+      toast({ title: "Deleted", description: "The item has been removed.", variant: "destructive" });
+    } catch (error: any) {
+      console.error("Error deleting document:", error);
+      toast({ variant: "destructive", title: "Error", description: error.message || "Failed to delete the item." });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -131,7 +134,7 @@ export default function CoursesBannersPage() {
           </div>
           <Dialog open={isBannerDialogOpen} onOpenChange={(open) => { setIsBannerDialogOpen(open); if(!open) setEditingBanner(null); }}>
             <DialogTrigger asChild>
-              <Button className="rounded-xl gap-2"><Plus className="w-4 h-4" /> Add Banner</Button>
+              <Button className="rounded-xl gap-2" disabled={isSubmitting}><Plus className="w-4 h-4" /> Add Banner</Button>
             </DialogTrigger>
             <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
               <DialogHeader>
@@ -197,10 +200,10 @@ export default function CoursesBannersPage() {
                   <h3 className="font-bold text-secondary truncate">{banner.title}</h3>
                   <p className="text-xs text-muted-foreground mt-1">Order: {banner.order}</p>
                   <div className="flex justify-end gap-2 mt-4">
-                    <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => { setEditingBanner(banner); setIsBannerDialogOpen(true); }}>
+                    <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => { setEditingBanner(banner); setIsBannerDialogOpen(true); }} disabled={isSubmitting}>
                       <Edit className="w-4 h-4" />
                     </Button>
-                    <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-destructive hover:bg-destructive/10" onClick={() => handleDelete(bannersRef, banner.id, banner.title)}>
+                    <Button variant="outline" size="sm" className="h-8 w-8 p-0 text-destructive hover:bg-destructive/10" onClick={() => handleDelete(bannersRef, banner.id, banner.title)} disabled={isSubmitting}>
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
@@ -219,7 +222,7 @@ export default function CoursesBannersPage() {
           </div>
           <Dialog open={isCourseDialogOpen} onOpenChange={(open) => { setIsCourseDialogOpen(open); if(!open) setEditingCourse(null); }}>
             <DialogTrigger asChild>
-              <Button className="rounded-xl gap-2 bg-secondary hover:bg-secondary/90"><Plus className="w-4 h-4" /> Add Course</Button>
+              <Button className="rounded-xl gap-2 bg-secondary hover:bg-secondary/90" disabled={isSubmitting}><Plus className="w-4 h-4" /> Add Course</Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
@@ -304,10 +307,10 @@ export default function CoursesBannersPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={() => { setEditingCourse(course); setIsCourseDialogOpen(true); }}>
+                    <Button variant="outline" size="sm" onClick={() => { setEditingCourse(course); setIsCourseDialogOpen(true); }} disabled={isSubmitting}>
                       <Edit className="w-4 h-4 mr-2" /> Edit
                     </Button>
-                    <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10" onClick={() => handleDelete(coursesRef, course.id, course.title)}>
+                    <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10" onClick={() => handleDelete(coursesRef, course.id, course.title)} disabled={isSubmitting}>
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
