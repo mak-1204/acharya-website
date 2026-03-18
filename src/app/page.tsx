@@ -12,7 +12,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import { 
   CircleCheckBig, BookOpen, Target, Award, Users, 
   GraduationCap, MapPin, 
-  Calendar, Quote, Trophy, ArrowRight, Camera
+  Calendar, Quote, Trophy, ArrowRight, Camera, Loader2
 } from 'lucide-react';
 import {
   Carousel,
@@ -24,46 +24,11 @@ import {
 } from "@/components/ui/carousel";
 import { cn } from '@/lib/utils';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection, query, where, orderBy } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
-
-const STARS_DATA = [
-  {
-    name: "Anish Kumar",
-    exam: "JEE MAINS '26",
-    score: "99.8 Percentile",
-    category: "JEE",
-    initials: "AK"
-  },
-  {
-    name: "Ayesha Mariam",
-    exam: "NEET-UG '26",
-    score: "685 / 720",
-    category: "NEET",
-    initials: "AM"
-  },
-  {
-    name: "Raghav Ganesh",
-    exam: "JEE ADV. '26",
-    score: "AIR 1204",
-    category: "JEE",
-    initials: "RG"
-  },
-  {
-    name: "Shruthika",
-    exam: "NEET-UG '26",
-    score: "672 / 720",
-    category: "NEET",
-    initials: "S"
-  },
-  {
-    name: "Josalin Mattews",
-    exam: "CLASSES 6-10",
-    score: "Top Rank",
-    category: "CLASSES 6-10",
-    initials: "JM"
-  }
-];
 
 const HERO_BANNERS = [
   {
@@ -162,11 +127,34 @@ const TESTIMONIALS = [
 
 const GALLERY_IMAGES = PlaceHolderImages.filter(img => img.id.startsWith('gallery') || ['classroom', 'faculty'].includes(img.id));
 
+const getInitials = (name: string) => {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .substring(0, 2);
+};
+
 export default function Home() {
+  const { firestore } = useFirestore();
   const [heroApi, setHeroApi] = useState<CarouselApi>();
   const [heroCurrent, setHeroCurrent] = useState(0);
   const [isStarsPaused, setIsStarsPaused] = useState(false);
   const autoplay = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
+
+  // Dynamic Stars Fetching
+  const starsQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(
+      collection(firestore, 'stars'),
+      where('isPublished', '==', true),
+      orderBy('order', 'asc')
+    );
+  }, [firestore]);
+
+  const { data: stars, isLoading: starsLoading } = useCollection(starsQuery);
 
   useEffect(() => {
     if (!heroApi) return;
@@ -175,8 +163,8 @@ export default function Home() {
     });
   }, [heroApi]);
 
-  const loopedStars = [...STARS_DATA, ...STARS_DATA, ...STARS_DATA, ...STARS_DATA];
-  const starsDuration = "30s";
+  const loopedStars = stars ? [...stars, ...stars, ...stars, ...stars] : [];
+  const starsDuration = "40s";
 
   return (
     <div className="flex flex-col w-full overflow-x-hidden">
@@ -295,56 +283,70 @@ export default function Home() {
       </section>
 
       {/* 4. MEET OUR STARS SECTION */}
-      <section id="stars" className="py-16 md:py-24 bg-white scroll-mt-16 overflow-hidden">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <div className="text-center">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1C1C1C] mb-8 md:mb-12 font-headline">
-              Meet Our Stars <span className="text-[#FFC107]">✦</span>
-            </h2>
-
-            <div 
-              className="relative overflow-hidden group py-4"
-              onMouseEnter={() => setIsStarsPaused(true)}
-              onMouseLeave={() => setIsStarsPaused(false)}
-            >
-              <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-              <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+      {starsLoading || (stars && stars.length > 0) ? (
+        <section id="stars" className="py-16 md:py-24 bg-white scroll-mt-16 overflow-hidden">
+          <div className="container mx-auto px-4 max-w-7xl">
+            <div className="text-center">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1C1C1C] mb-8 md:mb-12 font-headline">
+                Meet Our Stars <span className="text-[#FFC107]">✦</span>
+              </h2>
 
               <div 
-                className="flex w-max will-change-transform"
-                style={{
-                  animation: `marquee ${starsDuration} linear infinite`,
-                  animationPlayState: isStarsPaused ? 'paused' : 'running'
-                }}
+                className="relative overflow-hidden group py-4"
+                onMouseEnter={() => setIsStarsPaused(true)}
+                onMouseLeave={() => setIsStarsPaused(false)}
               >
-                {loopedStars.map((star, idx) => (
+                <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+                <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+
+                {starsLoading ? (
+                  <div className="flex gap-4 md:gap-6 overflow-hidden">
+                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                      <Skeleton key={i} className="w-[140px] sm:w-[160px] md:w-[180px] h-[220px] md:h-[280px] rounded-xl md:rounded-2xl shrink-0" />
+                    ))}
+                  </div>
+                ) : (
                   <div 
-                    key={idx} 
-                    className="pr-4 md:pr-6 flex-shrink-0"
+                    className="flex w-max will-change-transform"
+                    style={{
+                      animation: `marquee ${starsDuration} linear infinite`,
+                      animationPlayState: isStarsPaused ? 'paused' : 'running'
+                    }}
                   >
-                    <div className="w-[140px] sm:w-[160px] md:w-[180px] bg-white rounded-xl md:rounded-2xl shadow-md overflow-hidden hover:scale-105 transition-transform duration-300 cursor-pointer border border-border">
-                      <div className="h-32 sm:h-36 md:h-44 bg-gradient-to-br from-[#1A237E] to-[#D32F2F] flex items-center justify-center relative">
-                        <span className="text-white text-2xl md:text-4xl font-bold">{star.initials}</span>
-                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1 px-2 text-center">
-                          <span className="text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider">
-                            {star.exam}
-                          </span>
+                    {loopedStars.map((star, idx) => (
+                      <div 
+                        key={`${star.id}-${idx}`} 
+                        className="pr-4 md:pr-6 flex-shrink-0"
+                      >
+                        <div className="w-[140px] sm:w-[160px] md:w-[180px] bg-white rounded-xl md:rounded-2xl shadow-md overflow-hidden hover:scale-105 transition-transform duration-300 cursor-pointer border border-border">
+                          <div className="h-32 sm:h-36 md:h-44 bg-gradient-to-br from-[#1A237E] to-[#D32F2F] flex items-center justify-center relative">
+                            {star.photo ? (
+                              <Image src={star.photo} alt={star.name} fill className="object-cover" />
+                            ) : (
+                              <span className="text-white text-2xl md:text-4xl font-bold">{getInitials(star.name)}</span>
+                            )}
+                            <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1 px-2 text-center">
+                              <span className="text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider">
+                                {star.exam}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="p-3 md:p-4 text-left">
+                            <p className="font-bold text-[#1C1C1C] text-xs md:text-sm truncate">{star.name}</p>
+                            <p className="text-muted-foreground text-[8px] md:text-[10px] mt-0.5">{star.courseName}</p>
+                            <p className="text-[#D32F2F] font-bold text-base md:text-lg mt-2 md:mt-3">{star.score}</p>
+                          </div>
                         </div>
                       </div>
-
-                      <div className="p-3 md:p-4 text-left">
-                        <p className="font-bold text-[#1C1C1C] text-xs md:text-sm truncate">{star.name}</p>
-                        <p className="text-muted-foreground text-[8px] md:text-[10px] mt-0.5">Classroom Course</p>
-                        <p className="text-[#D32F2F] font-bold text-base md:text-lg mt-2 md:mt-3">{star.score}</p>
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* 5. WHY ACHARYA */}
       <section id="why" className="py-16 md:py-24 bg-secondary text-white scroll-mt-16">

@@ -7,14 +7,24 @@ import { collection, doc, serverTimestamp } from 'firebase/firestore';
 import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, Trophy, Star, Loader2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Trophy, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
+
+const getInitials = (name: string) => {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+    .substring(0, 2);
+};
 
 export default function StarsAdminPage() {
   const { firestore } = useFirestore();
@@ -36,9 +46,7 @@ export default function StarsAdminPage() {
       photo: formData.get('photo'),
       score: formData.get('score'),
       exam: formData.get('exam'),
-      rank: formData.get('rank'),
       courseName: formData.get('courseName'),
-      quote: formData.get('quote'),
       order: Number(formData.get('order')),
       isPublished: formData.get('isPublished') === 'on',
       updatedAt: serverTimestamp(),
@@ -87,32 +95,22 @@ export default function StarsAdminPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="exam">Exam Name</Label>
-                  <Input id="exam" name="exam" defaultValue={editingItem?.exam} placeholder="JEE Advanced 2024" required />
+                  <Input id="exam" name="exam" defaultValue={editingItem?.exam} placeholder="NEET-UG '26" required />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="score">Score/Percentile</Label>
-                  <Input id="score" name="score" defaultValue={editingItem?.score} placeholder="99.8%" required />
+                  <Label htmlFor="score">Score / Rank</Label>
+                  <Input id="score" name="score" defaultValue={editingItem?.score} placeholder="672 / 720" required />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="rank">Rank (Optional)</Label>
-                  <Input id="rank" name="rank" defaultValue={editingItem?.rank} placeholder="AIR 120" />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="courseName">Course Attended</Label>
-                  <Input id="courseName" name="courseName" defaultValue={editingItem?.courseName} placeholder="2 Year Classroom" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="photo">Photo URL</Label>
-                  <Input id="photo" name="photo" defaultValue={editingItem?.photo} />
+                  <Label htmlFor="courseName">Course Name</Label>
+                  <Input id="courseName" name="courseName" defaultValue={editingItem?.courseName} placeholder="Classroom Course" required />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="quote">Inspiring Quote (Optional)</Label>
-                <Textarea id="quote" name="quote" defaultValue={editingItem?.quote} className="h-20" />
+                <Label htmlFor="photo">Photo URL (Optional)</Label>
+                <Input id="photo" name="photo" defaultValue={editingItem?.photo} placeholder="https://..." />
               </div>
               <div className="grid grid-cols-2 gap-4 items-center pt-2">
                 <div className="space-y-2">
@@ -140,9 +138,9 @@ export default function StarsAdminPage() {
             <Card key={star.id} className="border-none shadow-sm overflow-hidden group">
               <div className="h-40 bg-gradient-to-br from-secondary to-primary relative overflow-hidden flex items-center justify-center">
                 {star.photo ? (
-                  <img src={star.photo} alt="" className="w-full h-full object-cover opacity-80" />
+                  <img src={star.photo} alt="" className="w-full h-full object-cover" />
                 ) : (
-                  <Trophy className="w-12 h-12 text-white/20" />
+                  <span className="text-white text-4xl font-bold">{getInitials(star.name)}</span>
                 )}
                 <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
                   <Badge variant={star.isPublished ? "default" : "secondary"}>
@@ -152,21 +150,13 @@ export default function StarsAdminPage() {
                 </div>
               </div>
               <CardContent className="p-4 space-y-3">
-                <div className="space-y-1">
-                  <h3 className="font-bold text-secondary text-lg leading-tight">{star.name}</h3>
+                <div className="space-y-1 text-left">
+                  <h3 className="font-bold text-secondary text-lg leading-tight truncate">{star.name}</h3>
                   <p className="text-primary font-bold text-sm">{star.exam}</p>
                 </div>
-                <div className="grid grid-cols-2 gap-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  <div>
-                    <p>Score</p>
-                    <p className="text-secondary">{star.score}</p>
-                  </div>
-                  {star.rank && (
-                    <div>
-                      <p>Rank</p>
-                      <p className="text-secondary">{star.rank}</p>
-                    </div>
-                  )}
+                <div className="space-y-1 text-left">
+                  <p className="text-xs font-bold text-muted-foreground uppercase">{star.courseName}</p>
+                  <p className="text-secondary font-bold text-lg">{star.score}</p>
                 </div>
                 <div className="flex gap-2 pt-2">
                   <Button variant="outline" size="sm" className="flex-1" onClick={() => { setEditingItem(star); setIsOpen(true); }}>
