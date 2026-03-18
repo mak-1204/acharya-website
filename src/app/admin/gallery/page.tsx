@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, doc, serverTimestamp } from 'firebase/firestore';
-import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { collection, doc, serverTimestamp, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -23,11 +22,13 @@ export default function GalleryAdminPage() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!galleryRef) return;
 
+    setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
     const data = {
       imageUrl: formData.get('imageUrl'),
@@ -37,22 +38,34 @@ export default function GalleryAdminPage() {
       updatedAt: serverTimestamp(),
     };
 
-    if (editingItem) {
-      updateDocumentNonBlocking(doc(galleryRef, editingItem.id), data);
-      toast({ title: "Success", description: "Gallery item updated." });
-    } else {
-      addDocumentNonBlocking(galleryRef, { ...data, createdAt: serverTimestamp() });
-      toast({ title: "Success", description: "Image added to gallery." });
+    try {
+      if (editingItem) {
+        await updateDoc(doc(galleryRef, editingItem.id), data);
+        toast({ title: "Success", description: "Gallery item updated." });
+      } else {
+        await addDoc(galleryRef, { ...data, createdAt: serverTimestamp() });
+        toast({ title: "Success", description: "Image added to gallery." });
+      }
+      setIsOpen(false);
+      setEditingItem(null);
+    } catch (error) {
+      console.error("Error saving gallery item:", error);
+      toast({ variant: "destructive", title: "Error", description: "Could not save gallery item." });
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsOpen(false);
-    setEditingItem(null);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Delete this gallery image?")) {
       if (galleryRef) {
-        deleteDocumentNonBlocking(doc(galleryRef, id));
-        toast({ title: "Deleted", variant: "destructive" });
+        try {
+          await deleteDoc(doc(galleryRef, id));
+          toast({ title: "Deleted", variant: "destructive" });
+        } catch (error) {
+          console.error("Error deleting gallery item:", error);
+          toast({ variant: "destructive", title: "Error", description: "Could not delete gallery item." });
+        }
       }
     }
   };
@@ -75,24 +88,27 @@ export default function GalleryAdminPage() {
             <form onSubmit={handleSave} className="space-y-4 pt-4">
               <div className="space-y-2">
                 <Label htmlFor="imageUrl">Media URL (Image/Video)</Label>
-                <Input id="imageUrl" name="imageUrl" defaultValue={editingItem?.imageUrl} required placeholder="https://..." />
+                <Input id="imageUrl" name="imageUrl" defaultValue={editingItem?.imageUrl} required placeholder="https://..." disabled={isSubmitting} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="caption">Caption</Label>
-                <Input id="caption" name="caption" defaultValue={editingItem?.caption} />
+                <Input id="caption" name="caption" defaultValue={editingItem?.caption} disabled={isSubmitting} />
               </div>
               <div className="grid grid-cols-2 gap-4 items-center">
                 <div className="space-y-2">
                   <Label htmlFor="order">Order</Label>
-                  <Input id="order" name="order" type="number" defaultValue={editingItem?.order || 0} required />
+                  <Input id="order" name="order" type="number" defaultValue={editingItem?.order || 0} required disabled={isSubmitting} />
                 </div>
                 <div className="flex items-center gap-2 pt-6">
-                  <Switch id="isPublished" name="isPublished" defaultChecked={editingItem?.isPublished ?? true} />
+                  <Switch id="isPublished" name="isPublished" defaultChecked={editingItem?.isPublished ?? true} disabled={isSubmitting} />
                   <Label htmlFor="isPublished">Published</Label>
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit" className="w-full">Save Item</Button>
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null}
+                  Save Item
+                </Button>
               </DialogFooter>
             </form>
           </DialogContent>

@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, doc, serverTimestamp } from 'firebase/firestore';
-import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { collection, doc, serverTimestamp, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -28,11 +27,13 @@ export default function CoursesBannersPage() {
   const [isCourseDialogOpen, setIsCourseDialogOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState<any>(null);
   const [editingCourse, setEditingCourse] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSaveBanner = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSaveBanner = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!bannersRef) return;
 
+    setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
     const data = {
       title: formData.get('title'),
@@ -45,21 +46,29 @@ export default function CoursesBannersPage() {
       updatedAt: serverTimestamp(),
     };
 
-    if (editingBanner) {
-      updateDocumentNonBlocking(doc(bannersRef, editingBanner.id), data);
-      toast({ title: "Banner Updated", description: "The hero banner has been updated successfully." });
-    } else {
-      addDocumentNonBlocking(bannersRef, { ...data, createdAt: serverTimestamp() });
-      toast({ title: "Banner Created", description: "A new hero banner has been added." });
+    try {
+      if (editingBanner) {
+        await updateDoc(doc(bannersRef, editingBanner.id), data);
+        toast({ title: "Banner Updated", description: "The hero banner has been updated successfully." });
+      } else {
+        await addDoc(bannersRef, { ...data, createdAt: serverTimestamp() });
+        toast({ title: "Banner Created", description: "A new hero banner has been added." });
+      }
+      setIsBannerDialogOpen(false);
+      setEditingBanner(null);
+    } catch (error) {
+      console.error("Error saving banner:", error);
+      toast({ variant: "destructive", title: "Error", description: "Could not save the banner." });
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsBannerDialogOpen(false);
-    setEditingBanner(null);
   };
 
-  const handleSaveCourse = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSaveCourse = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!coursesRef) return;
 
+    setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
     const data = {
       title: formData.get('title'),
@@ -75,21 +84,33 @@ export default function CoursesBannersPage() {
       updatedAt: serverTimestamp(),
     };
 
-    if (editingCourse) {
-      updateDocumentNonBlocking(doc(coursesRef, editingCourse.id), data);
-      toast({ title: "Course Updated", description: "The course information has been updated successfully." });
-    } else {
-      addDocumentNonBlocking(coursesRef, { ...data, createdAt: serverTimestamp() });
-      toast({ title: "Course Created", description: "A new course has been added to the catalog." });
+    try {
+      if (editingCourse) {
+        await updateDoc(doc(coursesRef, editingCourse.id), data);
+        toast({ title: "Course Updated", description: "The course information has been updated successfully." });
+      } else {
+        await addDoc(coursesRef, { ...data, createdAt: serverTimestamp() });
+        toast({ title: "Course Created", description: "A new course has been added to the catalog." });
+      }
+      setIsCourseDialogOpen(false);
+      setEditingCourse(null);
+    } catch (error) {
+      console.error("Error saving course:", error);
+      toast({ variant: "destructive", title: "Error", description: "Could not save the course." });
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsCourseDialogOpen(false);
-    setEditingCourse(null);
   };
 
-  const handleDelete = (ref: any, id: string, title: string) => {
+  const handleDelete = async (ref: any, id: string, title: string) => {
     if (confirm(`Are you sure you want to delete "${title}"?`)) {
-      deleteDocumentNonBlocking(doc(ref, id));
-      toast({ title: "Deleted", description: "The item has been removed.", variant: "destructive" });
+      try {
+        await deleteDoc(doc(ref, id));
+        toast({ title: "Deleted", description: "The item has been removed.", variant: "destructive" });
+      } catch (error) {
+        console.error("Error deleting document:", error);
+        toast({ variant: "destructive", title: "Error", description: "Failed to delete the item." });
+      }
     }
   };
 
@@ -119,38 +140,41 @@ export default function CoursesBannersPage() {
               <form onSubmit={handleSaveBanner} className="space-y-4 pt-4">
                 <div className="space-y-2">
                   <Label htmlFor="title">Title</Label>
-                  <Input id="title" name="title" defaultValue={editingBanner?.title} required />
+                  <Input id="title" name="title" defaultValue={editingBanner?.title} required disabled={isSubmitting} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="subtitle">Subtitle</Label>
-                  <Input id="subtitle" name="subtitle" defaultValue={editingBanner?.subtitle} />
+                  <Input id="subtitle" name="subtitle" defaultValue={editingBanner?.subtitle} disabled={isSubmitting} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="imageUrl">Banner Media URL (Image/Video)</Label>
-                  <Input id="imageUrl" name="imageUrl" defaultValue={editingBanner?.imageUrl} required placeholder="https://..." />
+                  <Input id="imageUrl" name="imageUrl" defaultValue={editingBanner?.imageUrl} required placeholder="https://..." disabled={isSubmitting} />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="ctaText">CTA Text</Label>
-                    <Input id="ctaText" name="ctaText" defaultValue={editingBanner?.ctaText || 'Enroll Now'} />
+                    <Input id="ctaText" name="ctaText" defaultValue={editingBanner?.ctaText || 'Enroll Now'} disabled={isSubmitting} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="ctaLink">CTA Link</Label>
-                    <Input id="ctaLink" name="ctaLink" defaultValue={editingBanner?.ctaLink} />
+                    <Input id="ctaLink" name="ctaLink" defaultValue={editingBanner?.ctaLink} disabled={isSubmitting} />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4 items-center">
                   <div className="space-y-2">
                     <Label htmlFor="order">Display Order</Label>
-                    <Input id="order" name="order" type="number" defaultValue={editingBanner?.order || 0} required />
+                    <Input id="order" name="order" type="number" defaultValue={editingBanner?.order || 0} required disabled={isSubmitting} />
                   </div>
                   <div className="flex items-center gap-2 pt-6">
-                    <Switch id="isActive" name="isActive" defaultChecked={editingBanner?.isActive ?? true} />
+                    <Switch id="isActive" name="isActive" defaultChecked={editingBanner?.isActive ?? true} disabled={isSubmitting} />
                     <Label htmlFor="isActive">Active</Label>
                   </div>
                 </div>
                 <DialogFooter className="pt-4">
-                  <Button type="submit" className="w-full">Save Banner</Button>
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null}
+                    Save Banner
+                  </Button>
                 </DialogFooter>
               </form>
             </DialogContent>
@@ -205,51 +229,54 @@ export default function CoursesBannersPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="course-title">Title</Label>
-                    <Input id="course-title" name="title" defaultValue={editingCourse?.title} required />
+                    <Input id="course-title" name="title" defaultValue={editingCourse?.title} required disabled={isSubmitting} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="slug">Slug (URL friendly)</Label>
-                    <Input id="slug" name="slug" defaultValue={editingCourse?.slug} required placeholder="jee-main" />
+                    <Input id="slug" name="slug" defaultValue={editingCourse?.slug} required placeholder="jee-main" disabled={isSubmitting} />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="description">Description</Label>
-                  <Input id="description" name="description" defaultValue={editingCourse?.description} />
+                  <Input id="description" name="description" defaultValue={editingCourse?.description} disabled={isSubmitting} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="bannerImage">Course Banner URL</Label>
-                  <Input id="bannerImage" name="bannerImage" defaultValue={editingCourse?.bannerImage} placeholder="https://..." />
+                  <Input id="bannerImage" name="bannerImage" defaultValue={editingCourse?.bannerImage} placeholder="https://..." disabled={isSubmitting} />
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="price">Original Price</Label>
-                    <Input id="price" name="price" type="number" defaultValue={editingCourse?.price || 0} />
+                    <Input id="price" name="price" type="number" defaultValue={editingCourse?.price || 0} disabled={isSubmitting} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="discountedPrice">Offer Price</Label>
-                    <Input id="discountedPrice" name="discountedPrice" type="number" defaultValue={editingCourse?.discountedPrice || 0} />
+                    <Input id="discountedPrice" name="discountedPrice" type="number" defaultValue={editingCourse?.discountedPrice || 0} disabled={isSubmitting} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="course-order">Order</Label>
-                    <Input id="course-order" name="order" type="number" defaultValue={editingCourse?.order || 0} required />
+                    <Input id="course-order" name="order" type="number" defaultValue={editingCourse?.order || 0} required disabled={isSubmitting} />
                   </div>
                 </div>
                 <div className="grid grid-cols-3 gap-4 items-center pt-2">
                   <div className="flex items-center gap-2">
-                    <Switch id="isPublished" name="isPublished" defaultChecked={editingCourse?.isPublished ?? true} />
+                    <Switch id="isPublished" name="isPublished" defaultChecked={editingCourse?.isPublished ?? true} disabled={isSubmitting} />
                     <Label htmlFor="isPublished">Published</Label>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Switch id="isFeatured" name="isFeatured" defaultChecked={editingCourse?.isFeatured ?? false} />
+                    <Switch id="isFeatured" name="isFeatured" defaultChecked={editingCourse?.isFeatured ?? false} disabled={isSubmitting} />
                     <Label htmlFor="isFeatured">Featured</Label>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="category">Category</Label>
-                    <Input id="category" name="category" defaultValue={editingCourse?.category} placeholder="JEE/NEET" />
+                    <Input id="category" name="category" defaultValue={editingCourse?.category} placeholder="JEE/NEET" disabled={isSubmitting} />
                   </div>
                 </div>
                 <DialogFooter className="pt-4">
-                  <Button type="submit" className="w-full bg-secondary">Save Course</Button>
+                  <Button type="submit" className="w-full bg-secondary" disabled={isSubmitting}>
+                    {isSubmitting ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null}
+                    Save Course
+                  </Button>
                 </DialogFooter>
               </form>
             </DialogContent>

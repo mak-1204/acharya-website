@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, doc, serverTimestamp } from 'firebase/firestore';
-import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { collection, doc, serverTimestamp, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,11 +24,13 @@ export default function TestimonialsAdminPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
   const [rating, setRating] = useState('5');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!testimonialsRef) return;
 
+    setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
     const data = {
       studentName: formData.get('studentName'),
@@ -43,22 +44,34 @@ export default function TestimonialsAdminPage() {
       updatedAt: serverTimestamp(),
     };
 
-    if (editingItem) {
-      updateDocumentNonBlocking(doc(testimonialsRef, editingItem.id), data);
-      toast({ title: "Updated", description: "Testimonial updated." });
-    } else {
-      addDocumentNonBlocking(testimonialsRef, { ...data, createdAt: serverTimestamp() });
-      toast({ title: "Added", description: "New testimonial added." });
+    try {
+      if (editingItem) {
+        await updateDoc(doc(testimonialsRef, editingItem.id), data);
+        toast({ title: "Updated", description: "Testimonial updated." });
+      } else {
+        await addDoc(testimonialsRef, { ...data, createdAt: serverTimestamp() });
+        toast({ title: "Added", description: "New testimonial added." });
+      }
+      setIsOpen(false);
+      setEditingItem(null);
+    } catch (error) {
+      console.error("Error saving testimonial:", error);
+      toast({ variant: "destructive", title: "Error", description: "Could not save testimonial." });
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsOpen(false);
-    setEditingItem(null);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Delete this testimonial?")) {
       if (testimonialsRef) {
-        deleteDocumentNonBlocking(doc(testimonialsRef, id));
-        toast({ title: "Deleted", variant: "destructive" });
+        try {
+          await deleteDoc(doc(testimonialsRef, id));
+          toast({ title: "Deleted", variant: "destructive" });
+        } catch (error) {
+          console.error("Error deleting testimonial:", error);
+          toast({ variant: "destructive", title: "Error", description: "Could not delete testimonial." });
+        }
       }
     }
   };
@@ -82,31 +95,31 @@ export default function TestimonialsAdminPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="studentName">Student Name</Label>
-                  <Input id="studentName" name="studentName" defaultValue={editingItem?.studentName} required />
+                  <Input id="studentName" name="studentName" defaultValue={editingItem?.studentName} required disabled={isSubmitting} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="course">Course</Label>
-                  <Input id="course" name="course" defaultValue={editingItem?.course} required />
+                  <Input id="course" name="course" defaultValue={editingItem?.course} required disabled={isSubmitting} />
                 </div>
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="photo">Student Photo URL</Label>
-                <Input id="photo" name="photo" defaultValue={editingItem?.photo} placeholder="https://..." />
+                <Input id="photo" name="photo" defaultValue={editingItem?.photo} placeholder="https://..." disabled={isSubmitting} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="review">Review Content</Label>
-                <Textarea id="review" name="review" defaultValue={editingItem?.review} required className="h-24" />
+                <Textarea id="review" name="review" defaultValue={editingItem?.review} required className="h-24" disabled={isSubmitting} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="result">Student Result (Optional)</Label>
-                <Input id="result" name="result" defaultValue={editingItem?.result} placeholder="e.g. 99.5 Percentile" />
+                <Input id="result" name="result" defaultValue={editingItem?.result} placeholder="e.g. 99.5 Percentile" disabled={isSubmitting} />
               </div>
               <div className="grid grid-cols-3 gap-4 items-center">
                 <div className="space-y-2">
                   <Label>Rating</Label>
-                  <Select value={rating} onValueChange={setRating}>
+                  <Select value={rating} onValueChange={setRating} disabled={isSubmitting}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {[1, 2, 3, 4, 5].map(num => <SelectItem key={num} value={num.toString()}>{num} Stars</SelectItem>)}
@@ -115,15 +128,18 @@ export default function TestimonialsAdminPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="test-order">Order</Label>
-                  <Input id="test-order" name="order" type="number" defaultValue={editingItem?.order || 0} required />
+                  <Input id="test-order" name="order" type="number" defaultValue={editingItem?.order || 0} required disabled={isSubmitting} />
                 </div>
                 <div className="flex items-center gap-2 pt-6">
-                  <Switch id="isPublished" name="isPublished" defaultChecked={editingItem?.isPublished ?? true} />
+                  <Switch id="isPublished" name="isPublished" defaultChecked={editingItem?.isPublished ?? true} disabled={isSubmitting} />
                   <Label htmlFor="isPublished">Public</Label>
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit" className="w-full">Save Testimonial</Button>
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null}
+                  Save Testimonial
+                </Button>
               </DialogFooter>
             </form>
           </DialogContent>

@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, doc, serverTimestamp } from 'firebase/firestore';
-import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { collection, doc, serverTimestamp, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -34,11 +33,13 @@ export default function StarsAdminPage() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!starsRef) return;
 
+    setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
     const data = {
       name: formData.get('name') as string,
@@ -53,22 +54,42 @@ export default function StarsAdminPage() {
       updatedAt: serverTimestamp(),
     };
 
-    if (editingItem) {
-      updateDocumentNonBlocking(doc(starsRef, editingItem.id), data);
-      toast({ title: "Updated", description: "Star student updated successfully." });
-    } else {
-      addDocumentNonBlocking(starsRef, { ...data, createdAt: serverTimestamp() });
-      toast({ title: "Created", description: "New star added to the hall of fame." });
+    try {
+      if (editingItem) {
+        await updateDoc(doc(starsRef, editingItem.id), data);
+        toast({ title: "Updated", description: "Star student updated successfully." });
+      } else {
+        await addDoc(starsRef, { ...data, createdAt: serverTimestamp() });
+        toast({ title: "Created", description: "New star added to the hall of fame." });
+      }
+      setIsOpen(false);
+      setEditingItem(null);
+    } catch (error) {
+      console.error("Error saving star:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save the student. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsOpen(false);
-    setEditingItem(null);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Remove this star student from the list?")) {
       if (starsRef) {
-        deleteDocumentNonBlocking(doc(starsRef, id));
-        toast({ title: "Deleted", variant: "destructive" });
+        try {
+          await deleteDoc(doc(starsRef, id));
+          toast({ title: "Deleted", variant: "destructive" });
+        } catch (error) {
+          console.error("Error deleting star:", error);
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Could not delete the item.",
+          });
+        }
       }
     }
   };
@@ -92,53 +113,57 @@ export default function StarsAdminPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Student Name</Label>
-                  <Input id="name" name="name" defaultValue={editingItem?.name} required />
+                  <Input id="name" name="name" defaultValue={editingItem?.name} required disabled={isSubmitting} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="exam">Exam Name</Label>
-                  <Input id="exam" name="exam" defaultValue={editingItem?.exam} placeholder="NEET-UG '26" required />
+                  <Input id="exam" name="exam" defaultValue={editingItem?.exam} placeholder="NEET-UG '26" required disabled={isSubmitting} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="score">Score / Marks</Label>
-                  <Input id="score" name="score" defaultValue={editingItem?.score} placeholder="672 / 720" required />
+                  <Input id="score" name="score" defaultValue={editingItem?.score} placeholder="672 / 720" required disabled={isSubmitting} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="rank">Rank (Optional)</Label>
-                  <Input id="rank" name="rank" defaultValue={editingItem?.rank} placeholder="AIR 1204" />
+                  <Input id="rank" name="rank" defaultValue={editingItem?.rank} placeholder="AIR 1204" disabled={isSubmitting} />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="courseName">Course Name</Label>
-                <Input id="courseName" name="courseName" defaultValue={editingItem?.courseName} placeholder="Classroom Course" required />
+                <Input id="courseName" name="courseName" defaultValue={editingItem?.courseName} placeholder="Classroom Course" required disabled={isSubmitting} />
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="photo">Student Photo URL</Label>
-                <Input id="photo" name="photo" defaultValue={editingItem?.photo} placeholder="https://..." />
+                <Input id="photo" name="photo" defaultValue={editingItem?.photo} placeholder="https://..." disabled={isSubmitting} />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="quote">Inspirational Quote</Label>
-                <Textarea id="quote" name="quote" defaultValue={editingItem?.quote} placeholder="Consistency is the key to success..." className="h-20" />
+                <Textarea id="quote" name="quote" defaultValue={editingItem?.quote} placeholder="Consistency is the key to success..." className="h-20" disabled={isSubmitting} />
               </div>
               <div className="grid grid-cols-2 gap-4 items-center pt-2">
                 <div className="space-y-2">
                   <Label htmlFor="star-order">Order</Label>
-                  <Input id="star-order" name="order" type="number" defaultValue={editingItem?.order || 0} required />
+                  <Input id="star-order" name="order" type="number" defaultValue={editingItem?.order || 0} required disabled={isSubmitting} />
                 </div>
                 <div className="flex items-center gap-2 pt-6">
                   <Switch 
                     id="isPublished" 
                     name="isPublished"
                     defaultChecked={editingItem?.isPublished ?? true}
+                    disabled={isSubmitting}
                   />
                   <Label htmlFor="isPublished">Visible on Site</Label>
                 </div>
               </div>
               <DialogFooter className="pt-4">
-                <Button type="submit" className="w-full bg-secondary">Save Star Student</Button>
+                <Button type="submit" className="w-full bg-secondary" disabled={isSubmitting}>
+                  {isSubmitting ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null}
+                  Save Star Student
+                </Button>
               </DialogFooter>
             </form>
           </DialogContent>
