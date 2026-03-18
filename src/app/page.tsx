@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -141,8 +140,9 @@ export default function Home() {
     });
   }, [heroApi]);
 
-  const loopedStars = [...STARS_DATA, ...STARS_DATA];
-  const starsDuration = STARS_DATA.length <= 3 ? "12s" : "20s";
+  // Quadruple the data and use exact width items for a perfect infinite loop
+  const loopedStars = [...STARS_DATA, ...STARS_DATA, ...STARS_DATA, ...STARS_DATA];
+  const starsDuration = "30s"; // Smoother, slower scroll
 
   return (
     <div className="flex flex-col w-full overflow-x-hidden">
@@ -263,11 +263,12 @@ export default function Home() {
               onMouseEnter={() => setIsStarsPaused(true)}
               onMouseLeave={() => setIsStarsPaused(false)}
             >
+              {/* Overlay Gradients for smooth fade out */}
               <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
               <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
 
               <div 
-                className="flex gap-4 md:gap-6 w-max"
+                className="flex w-max will-change-transform"
                 style={{
                   animation: `marquee ${starsDuration} linear infinite`,
                   animationPlayState: isStarsPaused ? 'paused' : 'running'
@@ -276,21 +277,23 @@ export default function Home() {
                 {loopedStars.map((star, idx) => (
                   <div 
                     key={idx} 
-                    className="w-[140px] sm:w-[160px] md:w-[180px] bg-white rounded-xl md:rounded-2xl shadow-md overflow-hidden flex-shrink-0 hover:scale-105 transition-transform duration-300 cursor-pointer border border-border"
+                    className="pr-4 md:pr-6 flex-shrink-0"
                   >
-                    <div className="h-32 sm:h-36 md:h-44 bg-gradient-to-br from-[#1A237E] to-[#D32F2F] flex items-center justify-center relative">
-                      <span className="text-white text-2xl md:text-4xl font-bold">{star.initials}</span>
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1 px-2 text-center">
-                        <span className="text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider">
-                          {star.exam}
-                        </span>
+                    <div className="w-[140px] sm:w-[160px] md:w-[180px] bg-white rounded-xl md:rounded-2xl shadow-md overflow-hidden hover:scale-105 transition-transform duration-300 cursor-pointer border border-border">
+                      <div className="h-32 sm:h-36 md:h-44 bg-gradient-to-br from-[#1A237E] to-[#D32F2F] flex items-center justify-center relative">
+                        <span className="text-white text-2xl md:text-4xl font-bold">{star.initials}</span>
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1 px-2 text-center">
+                          <span className="text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider">
+                            {star.exam}
+                          </span>
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="p-3 md:p-4 text-left">
-                      <p className="font-bold text-[#1C1C1C] text-xs md:text-sm truncate">{star.name}</p>
-                      <p className="text-muted-foreground text-[8px] md:text-[10px] mt-0.5">Classroom Course</p>
-                      <p className="text-[#D32F2F] font-bold text-base md:text-lg mt-2 md:mt-3">{star.score}</p>
+                      <div className="p-3 md:p-4 text-left">
+                        <p className="font-bold text-[#1C1C1C] text-xs md:text-sm truncate">{star.name}</p>
+                        <p className="text-muted-foreground text-[8px] md:text-[10px] mt-0.5">Classroom Course</p>
+                        <p className="text-[#D32F2F] font-bold text-base md:text-lg mt-2 md:mt-3">{star.score}</p>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -326,27 +329,18 @@ export default function Home() {
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary leading-tight">Your Path to Excellence</h2>
           </div>
           
-          {/* Tablet/Desktop View */}
           <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-20 relative">
-            {/* Horizontal line for desktop (4 cols) */}
             <div className="hidden lg:block absolute top-12 left-[12%] right-[12%] h-0.5 bg-muted -translate-y-1/2 z-0"></div>
-            
             {JOURNEY_STEPS.map((step, i) => (
               <div key={i} className="relative z-10 flex flex-col items-center text-center group">
                 <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white text-primary flex items-center justify-center mb-6 shadow-xl border-4 border-white ring-8 ring-primary/5 group-hover:scale-110 group-hover:ring-primary/10 transition-all duration-500">
                   <div className="w-8 h-8 md:w-10 md:h-10">{step.icon}</div>
                 </div>
-                
                 <div className="absolute top-0 right-1/2 translate-x-12 -translate-y-2 w-8 h-8 rounded-full bg-secondary text-white text-xs font-bold flex items-center justify-center border-2 border-white shadow-lg">
                   0{i + 1}
                 </div>
-
                 <h3 className="text-xl font-bold text-secondary mb-3">{step.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed max-w-[240px]">
-                  {step.desc}
-                </p>
-
-                {/* Diagonal Arrow for Tablet (2 cols) */}
+                <p className="text-muted-foreground text-sm leading-relaxed max-w-[240px]">{step.desc}</p>
                 {i < JOURNEY_STEPS.length - 1 && (
                   <div className="lg:hidden absolute -bottom-12 flex justify-center w-full">
                     <ArrowRight className="w-5 h-5 text-primary rotate-90" />
@@ -356,7 +350,6 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Mobile View */}
           <div className="flex sm:hidden flex-col gap-16 relative">
             <div className="absolute left-1/2 top-10 bottom-10 w-0.5 bg-muted -translate-x-1/2 z-0"></div>
             {JOURNEY_STEPS.map((step, i) => (
@@ -368,9 +361,7 @@ export default function Home() {
                   {i + 1}
                 </div>
                 <h3 className="text-lg font-bold text-secondary mb-2">{step.title}</h3>
-                <p className="text-muted-foreground text-[12px] leading-relaxed px-10">
-                  {step.desc}
-                </p>
+                <p className="text-muted-foreground text-[12px] leading-relaxed px-10">{step.desc}</p>
                 {i < JOURNEY_STEPS.length - 1 && (
                   <div className="mt-6 animate-bounce">
                     <ArrowRight className="w-5 h-5 text-primary rotate-90" />
