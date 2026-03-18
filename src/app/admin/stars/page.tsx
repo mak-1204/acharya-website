@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc, serverTimestamp } from 'firebase/firestore';
 import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
@@ -12,7 +12,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { FileUploader } from '@/components/FileUploader';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -35,18 +34,6 @@ export default function StarsAdminPage() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
-  const [isPublished, setIsPublished] = useState(true);
-  const [photoUrl, setPhotoUrl] = useState('');
-
-  useEffect(() => {
-    if (editingItem) {
-      setIsPublished(editingItem.isPublished ?? true);
-      setPhotoUrl(editingItem.photo || '');
-    } else {
-      setIsPublished(true);
-      setPhotoUrl('');
-    }
-  }, [editingItem]);
 
   const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -55,14 +42,14 @@ export default function StarsAdminPage() {
     const formData = new FormData(e.currentTarget);
     const data = {
       name: formData.get('name') as string,
-      photo: photoUrl,
+      photo: formData.get('photo') as string,
       score: formData.get('score') as string,
       exam: formData.get('exam') as string,
       rank: formData.get('rank') as string,
       courseName: formData.get('courseName') as string,
       quote: formData.get('quote') as string,
       order: Number(formData.get('order')),
-      isPublished: isPublished,
+      isPublished: formData.get('isPublished') === 'on',
       updatedAt: serverTimestamp(),
     };
 
@@ -128,12 +115,8 @@ export default function StarsAdminPage() {
               </div>
               
               <div className="space-y-2">
-                <Label>Student Photo</Label>
-                <FileUploader 
-                  onUploadComplete={setPhotoUrl} 
-                  defaultValue={editingItem?.photo}
-                  label="Drop student photo here"
-                />
+                <Label htmlFor="photo">Student Photo URL</Label>
+                <Input id="photo" name="photo" defaultValue={editingItem?.photo} placeholder="https://..." />
               </div>
 
               <div className="space-y-2">
@@ -148,8 +131,8 @@ export default function StarsAdminPage() {
                 <div className="flex items-center gap-2 pt-6">
                   <Switch 
                     id="isPublished" 
-                    checked={isPublished}
-                    onCheckedChange={setIsPublished}
+                    name="isPublished"
+                    defaultChecked={editingItem?.isPublished ?? true}
                   />
                   <Label htmlFor="isPublished">Visible on Site</Label>
                 </div>
@@ -202,7 +185,6 @@ export default function StarsAdminPage() {
               </CardContent>
             </Card>
           ))}
-          {!items?.length && <p className="col-span-full text-center py-20 text-muted-foreground italic">No stars added yet.</p>}
         </div>
       )}
     </div>

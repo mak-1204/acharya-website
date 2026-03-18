@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc, serverTimestamp } from 'firebase/firestore';
 import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
@@ -12,7 +12,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FileUploader } from '@/components/FileUploader';
 import { Plus, Edit, Trash2, Star as StarIcon, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -26,17 +25,6 @@ export default function TestimonialsAdminPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
   const [rating, setRating] = useState('5');
-  const [photoUrl, setPhotoUrl] = useState('');
-
-  useEffect(() => {
-    if (editingItem) {
-      setRating(editingItem.rating.toString());
-      setPhotoUrl(editingItem.photo || '');
-    } else {
-      setRating('5');
-      setPhotoUrl('');
-    }
-  }, [editingItem]);
 
   const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,7 +33,7 @@ export default function TestimonialsAdminPage() {
     const formData = new FormData(e.currentTarget);
     const data = {
       studentName: formData.get('studentName'),
-      photo: photoUrl,
+      photo: formData.get('photo'),
       course: formData.get('course'),
       review: formData.get('review'),
       result: formData.get('result'),
@@ -82,7 +70,7 @@ export default function TestimonialsAdminPage() {
           <h1 className="text-3xl font-bold text-secondary">Testimonials</h1>
           <p className="text-muted-foreground">Manage student feedback and reviews.</p>
         </div>
-        <Dialog open={isOpen} onOpenChange={(v) => { setIsOpen(v); if(!v) setEditingItem(null); }}>
+        <Dialog open={isOpen} onOpenChange={(v) => { setIsOpen(v); if(!v) setEditingItem(null); setRating(editingItem?.rating?.toString() || '5'); }}>
           <DialogTrigger asChild>
             <Button className="rounded-xl gap-2"><Plus className="w-4 h-4" /> Add Testimonial</Button>
           </DialogTrigger>
@@ -103,12 +91,8 @@ export default function TestimonialsAdminPage() {
               </div>
               
               <div className="space-y-2">
-                <Label>Student Photo</Label>
-                <FileUploader 
-                  onUploadComplete={setPhotoUrl} 
-                  defaultValue={editingItem?.photo}
-                  label="Drop photo here"
-                />
+                <Label htmlFor="photo">Student Photo URL</Label>
+                <Input id="photo" name="photo" defaultValue={editingItem?.photo} placeholder="https://..." />
               </div>
 
               <div className="space-y-2">

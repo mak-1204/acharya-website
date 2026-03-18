@@ -1,17 +1,16 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc, serverTimestamp } from 'firebase/firestore';
 import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { FileUploader } from '@/components/FileUploader';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -24,12 +23,6 @@ export default function GalleryAdminPage() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
-  const [imageUrl, setImageUrl] = useState('');
-
-  useEffect(() => {
-    if (editingItem) setImageUrl(editingItem.imageUrl || '');
-    else setImageUrl('');
-  }, [editingItem]);
 
   const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -37,7 +30,7 @@ export default function GalleryAdminPage() {
 
     const formData = new FormData(e.currentTarget);
     const data = {
-      imageUrl: imageUrl,
+      imageUrl: formData.get('imageUrl'),
       caption: formData.get('caption'),
       order: Number(formData.get('order')),
       isPublished: formData.get('isPublished') === 'on',
@@ -81,11 +74,8 @@ export default function GalleryAdminPage() {
             </DialogHeader>
             <form onSubmit={handleSave} className="space-y-4 pt-4">
               <div className="space-y-2">
-                <Label>Media Content (Image/Video)</Label>
-                <FileUploader 
-                  onUploadComplete={setImageUrl} 
-                  defaultValue={editingItem?.imageUrl}
-                />
+                <Label htmlFor="imageUrl">Media URL (Image/Video)</Label>
+                <Input id="imageUrl" name="imageUrl" defaultValue={editingItem?.imageUrl} required placeholder="https://..." />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="caption">Caption</Label>
@@ -136,7 +126,6 @@ export default function GalleryAdminPage() {
               </div>
             </Card>
           ))}
-          {!items?.length && <p className="col-span-full text-center py-20 text-muted-foreground italic">Gallery is empty.</p>}
         </div>
       )}
     </div>

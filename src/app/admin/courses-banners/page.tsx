@@ -1,49 +1,33 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc, serverTimestamp } from 'firebase/firestore';
 import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { FileUploader } from '@/components/FileUploader';
-import { Plus, Edit, Trash2, LayoutTemplate, BookOpen, Loader2 } from 'lucide-react';
+import { LayoutTemplate, BookOpen, Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function CoursesBannersPage() {
   const { firestore } = useFirestore();
   const { toast } = useToast();
   
-  // Collections
   const bannersRef = useMemoFirebase(() => firestore ? collection(firestore, 'hero_banners') : null, [firestore]);
   const coursesRef = useMemoFirebase(() => firestore ? collection(firestore, 'courses') : null, [firestore]);
   
   const { data: banners, isLoading: bannersLoading } = useCollection(bannersRef);
   const { data: courses, isLoading: coursesLoading } = useCollection(coursesRef);
 
-  // Form State
   const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
   const [isCourseDialogOpen, setIsCourseDialogOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState<any>(null);
   const [editingCourse, setEditingCourse] = useState<any>(null);
-
-  const [bannerImageUrl, setBannerImageUrl] = useState('');
-  const [courseImageUrl, setCourseImageUrl] = useState('');
-
-  useEffect(() => {
-    if (editingBanner) setBannerImageUrl(editingBanner.imageUrl || '');
-    else setBannerImageUrl('');
-  }, [editingBanner]);
-
-  useEffect(() => {
-    if (editingCourse) setCourseImageUrl(editingCourse.bannerImage || '');
-    else setCourseImageUrl('');
-  }, [editingCourse]);
 
   const handleSaveBanner = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -53,7 +37,7 @@ export default function CoursesBannersPage() {
     const data = {
       title: formData.get('title'),
       subtitle: formData.get('subtitle'),
-      imageUrl: bannerImageUrl,
+      imageUrl: formData.get('imageUrl'),
       ctaText: formData.get('ctaText'),
       ctaLink: formData.get('ctaLink'),
       isActive: formData.get('isActive') === 'on',
@@ -81,7 +65,7 @@ export default function CoursesBannersPage() {
       title: formData.get('title'),
       slug: formData.get('slug'),
       description: formData.get('description'),
-      bannerImage: courseImageUrl,
+      bannerImage: formData.get('bannerImage'),
       price: Number(formData.get('price')),
       discountedPrice: Number(formData.get('discountedPrice')),
       category: formData.get('category'),
@@ -118,7 +102,6 @@ export default function CoursesBannersPage() {
         </div>
       </div>
 
-      {/* BANNERS SECTION */}
       <section className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -143,11 +126,8 @@ export default function CoursesBannersPage() {
                   <Input id="subtitle" name="subtitle" defaultValue={editingBanner?.subtitle} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Banner Media (Image/Video)</Label>
-                  <FileUploader 
-                    onUploadComplete={setBannerImageUrl} 
-                    defaultValue={editingBanner?.imageUrl}
-                  />
+                  <Label htmlFor="imageUrl">Banner Media URL (Image/Video)</Label>
+                  <Input id="imageUrl" name="imageUrl" defaultValue={editingBanner?.imageUrl} required placeholder="https://..." />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -203,12 +183,10 @@ export default function CoursesBannersPage() {
                 </CardContent>
               </Card>
             ))}
-            {!banners?.length && <p className="col-span-full text-center py-8 text-muted-foreground italic">No banners found.</p>}
           </div>
         )}
       </section>
 
-      {/* COURSES SECTION */}
       <section className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -239,11 +217,8 @@ export default function CoursesBannersPage() {
                   <Input id="description" name="description" defaultValue={editingCourse?.description} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Course Banner Media</Label>
-                  <FileUploader 
-                    onUploadComplete={setCourseImageUrl} 
-                    defaultValue={editingCourse?.bannerImage}
-                  />
+                  <Label htmlFor="bannerImage">Course Banner URL</Label>
+                  <Input id="bannerImage" name="bannerImage" defaultValue={editingCourse?.bannerImage} placeholder="https://..." />
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2">
