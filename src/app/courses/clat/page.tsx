@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Home, ChevronRight, Scale, Gavel, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { EnquiryForm } from '@/components/EnquiryForm';
+import Image from 'next/image';
 
 export default function ClatPage() {
   return (
@@ -34,8 +35,8 @@ export default function ClatPage() {
                 CLAT, AILET, and other law entrances require sharp logical reasoning and specialized legal awareness. At Acharya, we provide the most comprehensive law entrance program in Madurai.
               </p>
               <div className="flex gap-4">
-                 <Button className="bg-primary hover:bg-primary/90 h-14 px-10 rounded-full font-bold text-lg transition-transform hover:scale-105">
-                   Join Batch
+                 <Button asChild className="bg-primary hover:bg-primary/90 h-14 px-10 rounded-full font-bold text-lg transition-transform hover:scale-105">
+                   <Link href="#enquiry">Join Batch</Link>
                  </Button>
               </div>
             </div>
@@ -43,11 +44,14 @@ export default function ClatPage() {
             <div className="order-1 lg:order-2">
               <div className="relative aspect-[4/5] sm:aspect-square md:aspect-[4/5] lg:aspect-square w-full max-w-2xl mx-auto group">
                 <div className="absolute -inset-4 bg-primary/20 rounded-[2.5rem] md:rounded-[3.5rem] blur-2xl group-hover:bg-primary/30 transition-colors"></div>
-                <img 
-                  src="/focused-indian-lawyer-black-professional-attire-holding-legal-books-symbolizing-justice_1076263-7682.jpg"
-                  alt="CLAT Aspirant"
-                  className="relative w-full h-full object-cover rounded-[2rem] md:rounded-[3rem] shadow-2xl border-4 border-white/10"
-                />
+                <div className="relative w-full h-full rounded-[2rem] md:rounded-[3rem] shadow-2xl border-4 border-white/10 overflow-hidden">
+                  <Image 
+                    src={`/lawyer.jpg?v=${Date.now()}`}
+                    alt="CLAT Aspirant"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -78,7 +82,7 @@ export default function ClatPage() {
         </div>
       </section>
 
-      <section className="py-20 bg-muted/30">
+      <section id="enquiry" className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
            <EnquiryForm source="clat_page" title="Enquire for CLAT Batch" />
         </div>

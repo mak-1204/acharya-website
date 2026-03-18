@@ -210,9 +210,9 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="hidden lg:block relative h-[400px] w-full max-w-xl ml-auto">
-                      <div className="relative w-full h-full rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white/10 group">
+                      <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white/10 group">
                         <Image 
-                          src={banner.image} 
+                          src={`${banner.image}?v=${Date.now()}`} 
                           alt={banner.title} 
                           fill 
                           className="object-cover transition-transform duration-700 group-hover:scale-105" 
