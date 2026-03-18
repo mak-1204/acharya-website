@@ -18,42 +18,51 @@ export const Footer = () => {
   }, []);
 
   return (
-    <footer className="bg-secondary text-white py-8 md:py-12 w-full overflow-x-hidden border-t-4 border-primary">
+    <footer className="bg-secondary text-white py-12 md:py-16 w-full overflow-x-hidden border-t-4 border-primary">
       <div className="container mx-auto px-4 max-w-7xl">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 md:gap-10 mb-8 text-center sm:text-left">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 md:gap-12 mb-12 text-center sm:text-left">
           {/* Brand */}
-          <div className="lg:col-span-3 space-y-4 flex flex-col items-center sm:items-start">
-            <Link href="/" className="inline-block bg-white p-2 rounded-lg overflow-hidden">
-              <Image 
-                src="/WhatsApp Image 2026-03-17 at 7.07.47 PM.jpeg" 
-                alt="Acharya Education Logo" 
-                width={200}
-                height={60}
-                className="h-10 md:h-12 w-auto object-contain"
-                priority
-              />
-            </Link>
-            <p className="text-white/70 text-xs md:text-[13px] leading-relaxed max-w-xs">
-              IIT, NEET & Beyond Since 2007. Madurai's trusted partner in academic excellence.
-            </p>
-            <div className="flex space-x-3">
+          <div className="lg:col-span-4 space-y-6 flex flex-col items-center sm:items-start">
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <Link href="/" className="inline-block bg-white p-3 rounded-2xl overflow-hidden shadow-2xl shrink-0 transition-transform hover:scale-105">
+                <Image 
+                  src="/WhatsApp Image 2026-03-17 at 7.07.47 PM.jpeg" 
+                  alt="Acharya Education Logo" 
+                  width={320}
+                  height={100}
+                  className="h-16 md:h-24 w-auto object-contain"
+                  priority
+                />
+              </Link>
+              <div className="space-y-2">
+                <p className="text-white font-bold text-sm md:text-base leading-snug max-w-[200px] text-center sm:text-left">
+                  IIT, NEET & Beyond <br/>
+                  <span className="text-primary font-bold">Since 2007.</span>
+                </p>
+                <p className="text-white/60 text-[11px] md:text-xs leading-relaxed max-w-[200px] text-center sm:text-left italic">
+                  Madurai's trusted partner in academic excellence.
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex space-x-4">
               <a 
                 href={INSTAGRAM_URL} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-primary hover:border-primary transition-all"
+                className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-primary hover:border-primary transition-all shadow-lg"
                 aria-label="Instagram"
               >
-                <Instagram className="w-4 h-4 text-white" />
+                <Instagram className="w-5 h-5 text-white" />
               </a>
               <a 
                 href={LINKEDIN_URL} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:bg-primary hover:border-primary transition-all"
+                className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-primary hover:border-primary transition-all shadow-lg"
                 aria-label="LinkedIn"
               >
-                <Linkedin className="w-4 h-4 text-white" />
+                <Linkedin className="w-5 h-5 text-white" />
               </a>
             </div>
           </div>
@@ -108,7 +117,7 @@ export const Footer = () => {
           </div>
 
           {/* Compact Map on the Right */}
-          <div className="lg:col-span-3 space-y-4 flex flex-col items-center sm:items-start">
+          <div className="lg:col-span-2 space-y-4 flex flex-col items-center sm:items-start">
             <h4 className="text-sm md:text-base font-bold text-primary uppercase tracking-wider">
               Our Location
             </h4>
@@ -129,7 +138,7 @@ export const Footer = () => {
           </div>
         </div>
 
-        <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-3 text-[11px] md:text-xs text-white/40 text-center md:text-left uppercase tracking-tighter font-semibold">
+        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-3 text-[11px] md:text-xs text-white/40 text-center md:text-left uppercase tracking-tighter font-semibold">
           <p>© {year} Acharya Education. All rights reserved.</p>
           <div className="flex space-x-4">
             <a href="#" className="hover:text-white transition-colors">Privacy</a>
