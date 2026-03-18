@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
+import { FileUploader } from '@/components/FileUploader';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -35,12 +36,15 @@ export default function StarsAdminPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
   const [isPublished, setIsPublished] = useState(true);
+  const [photoUrl, setPhotoUrl] = useState('');
 
   useEffect(() => {
     if (editingItem) {
       setIsPublished(editingItem.isPublished ?? true);
+      setPhotoUrl(editingItem.photo || '');
     } else {
       setIsPublished(true);
+      setPhotoUrl('');
     }
   }, [editingItem]);
 
@@ -51,7 +55,7 @@ export default function StarsAdminPage() {
     const formData = new FormData(e.currentTarget);
     const data = {
       name: formData.get('name') as string,
-      photo: formData.get('photo') as string,
+      photo: photoUrl,
       score: formData.get('score') as string,
       exam: formData.get('exam') as string,
       rank: formData.get('rank') as string,
@@ -122,10 +126,16 @@ export default function StarsAdminPage() {
                 <Label htmlFor="courseName">Course Name</Label>
                 <Input id="courseName" name="courseName" defaultValue={editingItem?.courseName} placeholder="Classroom Course" required />
               </div>
+              
               <div className="space-y-2">
-                <Label htmlFor="photo">Photo URL (Optional)</Label>
-                <Input id="photo" name="photo" defaultValue={editingItem?.photo} placeholder="https://..." />
+                <Label>Student Photo</Label>
+                <FileUploader 
+                  onUploadComplete={setPhotoUrl} 
+                  defaultValue={editingItem?.photo}
+                  label="Drop student photo here"
+                />
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="quote">Inspirational Quote</Label>
                 <Textarea id="quote" name="quote" defaultValue={editingItem?.quote} placeholder="Consistency is the key to success..." className="h-20" />

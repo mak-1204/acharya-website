@@ -1,18 +1,18 @@
-
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc, serverTimestamp } from 'firebase/firestore';
 import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, LayoutTemplate, BookOpen, AlertCircle, Loader2 } from 'lucide-react';
+import { FileUploader } from '@/components/FileUploader';
+import { Plus, Edit, Trash2, LayoutTemplate, BookOpen, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function CoursesBannersPage() {
@@ -32,6 +32,19 @@ export default function CoursesBannersPage() {
   const [editingBanner, setEditingBanner] = useState<any>(null);
   const [editingCourse, setEditingCourse] = useState<any>(null);
 
+  const [bannerImageUrl, setBannerImageUrl] = useState('');
+  const [courseImageUrl, setCourseImageUrl] = useState('');
+
+  useEffect(() => {
+    if (editingBanner) setBannerImageUrl(editingBanner.imageUrl || '');
+    else setBannerImageUrl('');
+  }, [editingBanner]);
+
+  useEffect(() => {
+    if (editingCourse) setCourseImageUrl(editingCourse.bannerImage || '');
+    else setCourseImageUrl('');
+  }, [editingCourse]);
+
   const handleSaveBanner = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!bannersRef) return;
@@ -40,7 +53,7 @@ export default function CoursesBannersPage() {
     const data = {
       title: formData.get('title'),
       subtitle: formData.get('subtitle'),
-      imageUrl: formData.get('imageUrl'),
+      imageUrl: bannerImageUrl,
       ctaText: formData.get('ctaText'),
       ctaLink: formData.get('ctaLink'),
       isActive: formData.get('isActive') === 'on',
@@ -68,7 +81,7 @@ export default function CoursesBannersPage() {
       title: formData.get('title'),
       slug: formData.get('slug'),
       description: formData.get('description'),
-      bannerImage: formData.get('bannerImage'),
+      bannerImage: courseImageUrl,
       price: Number(formData.get('price')),
       discountedPrice: Number(formData.get('discountedPrice')),
       category: formData.get('category'),
@@ -116,7 +129,7 @@ export default function CoursesBannersPage() {
             <DialogTrigger asChild>
               <Button className="rounded-xl gap-2"><Plus className="w-4 h-4" /> Add Banner</Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>{editingBanner ? 'Edit Banner' : 'Add New Banner'}</DialogTitle>
               </DialogHeader>
@@ -130,8 +143,11 @@ export default function CoursesBannersPage() {
                   <Input id="subtitle" name="subtitle" defaultValue={editingBanner?.subtitle} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="imageUrl">Image URL</Label>
-                  <Input id="imageUrl" name="imageUrl" defaultValue={editingBanner?.imageUrl} required />
+                  <Label>Banner Media (Image/Video)</Label>
+                  <FileUploader 
+                    onUploadComplete={setBannerImageUrl} 
+                    defaultValue={editingBanner?.imageUrl}
+                  />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
@@ -203,7 +219,7 @@ export default function CoursesBannersPage() {
             <DialogTrigger asChild>
               <Button className="rounded-xl gap-2 bg-secondary hover:bg-secondary/90"><Plus className="w-4 h-4" /> Add Course</Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>{editingCourse ? 'Edit Course' : 'Add New Course'}</DialogTitle>
               </DialogHeader>
@@ -223,8 +239,11 @@ export default function CoursesBannersPage() {
                   <Input id="description" name="description" defaultValue={editingCourse?.description} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="bannerImage">Banner Image URL</Label>
-                  <Input id="bannerImage" name="bannerImage" defaultValue={editingCourse?.bannerImage} />
+                  <Label>Course Banner Media</Label>
+                  <FileUploader 
+                    onUploadComplete={setCourseImageUrl} 
+                    defaultValue={editingCourse?.bannerImage}
+                  />
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2">
@@ -282,24 +301,17 @@ export default function CoursesBannersPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-6">
-                    <div className="text-right hidden sm:block">
-                      <p className="text-sm font-bold text-primary">₹{course.discountedPrice || 0}</p>
-                      <p className="text-[10px] text-muted-foreground line-through">₹{course.price || 0}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={() => { setEditingCourse(course); setIsCourseDialogOpen(true); }}>
-                        <Edit className="w-4 h-4 mr-2" /> Edit
-                      </Button>
-                      <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10" onClick={() => handleDelete(coursesRef, course.id, course.title)}>
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={() => { setEditingCourse(course); setIsCourseDialogOpen(true); }}>
+                      <Edit className="w-4 h-4 mr-2" /> Edit
+                    </Button>
+                    <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10" onClick={() => handleDelete(coursesRef, course.id, course.title)}>
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
             ))}
-            {!courses?.length && <p className="text-center py-8 text-muted-foreground italic">No courses found.</p>}
           </div>
         )}
       </section>

@@ -1,19 +1,19 @@
-
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc, serverTimestamp } from 'firebase/firestore';
 import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Edit, Trash2, MessageSquare, Star as StarIcon, Loader2 } from 'lucide-react';
+import { FileUploader } from '@/components/FileUploader';
+import { Plus, Edit, Trash2, Star as StarIcon, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function TestimonialsAdminPage() {
@@ -26,6 +26,17 @@ export default function TestimonialsAdminPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
   const [rating, setRating] = useState('5');
+  const [photoUrl, setPhotoUrl] = useState('');
+
+  useEffect(() => {
+    if (editingItem) {
+      setRating(editingItem.rating.toString());
+      setPhotoUrl(editingItem.photo || '');
+    } else {
+      setRating('5');
+      setPhotoUrl('');
+    }
+  }, [editingItem]);
 
   const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -34,7 +45,7 @@ export default function TestimonialsAdminPage() {
     const formData = new FormData(e.currentTarget);
     const data = {
       studentName: formData.get('studentName'),
-      photo: formData.get('photo'),
+      photo: photoUrl,
       course: formData.get('course'),
       review: formData.get('review'),
       result: formData.get('result'),
@@ -75,7 +86,7 @@ export default function TestimonialsAdminPage() {
           <DialogTrigger asChild>
             <Button className="rounded-xl gap-2"><Plus className="w-4 h-4" /> Add Testimonial</Button>
           </DialogTrigger>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editingItem ? 'Edit Testimonial' : 'Add New Testimonial'}</DialogTitle>
             </DialogHeader>
@@ -90,10 +101,16 @@ export default function TestimonialsAdminPage() {
                   <Input id="course" name="course" defaultValue={editingItem?.course} required />
                 </div>
               </div>
+              
               <div className="space-y-2">
-                <Label htmlFor="photo">Photo URL</Label>
-                <Input id="photo" name="photo" defaultValue={editingItem?.photo} />
+                <Label>Student Photo</Label>
+                <FileUploader 
+                  onUploadComplete={setPhotoUrl} 
+                  defaultValue={editingItem?.photo}
+                  label="Drop photo here"
+                />
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="review">Review Content</Label>
                 <Textarea id="review" name="review" defaultValue={editingItem?.review} required className="h-24" />
@@ -155,7 +172,7 @@ export default function TestimonialsAdminPage() {
                     <div className="flex justify-between items-center mt-4 pt-4 border-t">
                       <Badge variant={item.isPublished ? "default" : "secondary"}>{item.isPublished ? 'Public' : 'Draft'}</Badge>
                       <div className="flex gap-2">
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => { setEditingItem(item); setRating(item.rating.toString()); setIsOpen(true); }}>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => { setEditingItem(item); setIsOpen(true); }}>
                           <Edit className="w-4 h-4" />
                         </Button>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive" onClick={() => handleDelete(item.id)}>
@@ -168,7 +185,6 @@ export default function TestimonialsAdminPage() {
               </CardContent>
             </Card>
           ))}
-          {!items?.length && <p className="col-span-full text-center py-20 text-muted-foreground italic">No testimonials yet.</p>}
         </div>
       )}
     </div>

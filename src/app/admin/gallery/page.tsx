@@ -1,7 +1,6 @@
-
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc, serverTimestamp } from 'firebase/firestore';
 import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
@@ -12,7 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { FileUploader } from '@/components/FileUploader';
+import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function GalleryAdminPage() {
@@ -24,6 +24,12 @@ export default function GalleryAdminPage() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
+  const [imageUrl, setImageUrl] = useState('');
+
+  useEffect(() => {
+    if (editingItem) setImageUrl(editingItem.imageUrl || '');
+    else setImageUrl('');
+  }, [editingItem]);
 
   const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,7 +37,7 @@ export default function GalleryAdminPage() {
 
     const formData = new FormData(e.currentTarget);
     const data = {
-      imageUrl: formData.get('imageUrl'),
+      imageUrl: imageUrl,
       caption: formData.get('caption'),
       order: Number(formData.get('order')),
       isPublished: formData.get('isPublished') === 'on',
@@ -63,20 +69,23 @@ export default function GalleryAdminPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-secondary">Campus Gallery</h1>
-          <p className="text-muted-foreground">Manage images displayed in the website gallery.</p>
+          <p className="text-muted-foreground">Manage images and videos displayed in the website gallery.</p>
         </div>
         <Dialog open={isOpen} onOpenChange={(v) => { setIsOpen(v); if(!v) setEditingItem(null); }}>
           <DialogTrigger asChild>
-            <Button className="rounded-xl gap-2"><Plus className="w-4 h-4" /> Add Image</Button>
+            <Button className="rounded-xl gap-2"><Plus className="w-4 h-4" /> Add Item</Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingItem ? 'Edit Image' : 'Add New Image'}</DialogTitle>
+              <DialogTitle>{editingItem ? 'Edit Item' : 'Add New Item'}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSave} className="space-y-4 pt-4">
               <div className="space-y-2">
-                <Label htmlFor="imageUrl">Image URL</Label>
-                <Input id="imageUrl" name="imageUrl" defaultValue={editingItem?.imageUrl} required />
+                <Label>Media Content (Image/Video)</Label>
+                <FileUploader 
+                  onUploadComplete={setImageUrl} 
+                  defaultValue={editingItem?.imageUrl}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="caption">Caption</Label>
@@ -93,7 +102,7 @@ export default function GalleryAdminPage() {
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit" className="w-full">Save Image</Button>
+                <Button type="submit" className="w-full">Save Item</Button>
               </DialogFooter>
             </form>
           </DialogContent>
