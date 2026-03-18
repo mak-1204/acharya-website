@@ -1,17 +1,18 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { EnquiryForm } from '@/components/EnquiryForm';
+import Autoplay from 'embla-carousel-autoplay';
 import { 
   CheckCircle2, BookOpen, Target, Award, Users, 
   ShieldCheck, Zap, GraduationCap, MapPin, 
-  Calendar, Quote, Camera, Trophy, Gift, ArrowRight, Phone
+  Calendar, Quote, Trophy, ArrowRight
 } from 'lucide-react';
 import {
   Carousel,
@@ -142,6 +143,7 @@ export default function Home() {
   const [heroApi, setHeroApi] = useState<CarouselApi>();
   const [heroCurrent, setHeroCurrent] = useState(0);
   const [isStarsPaused, setIsStarsPaused] = useState(false);
+  const autoplay = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
 
   useEffect(() => {
     if (!heroApi) return;
@@ -157,7 +159,12 @@ export default function Home() {
     <div className="flex flex-col w-full overflow-x-hidden">
       {/* 1. HERO SECTION */}
       <section id="hero" className="relative w-full pt-0 overflow-hidden">
-        <Carousel setApi={setHeroApi} opts={{ loop: true }} className="w-full">
+        <Carousel 
+          setApi={setHeroApi} 
+          opts={{ loop: true }} 
+          plugins={[autoplay.current]}
+          className="w-full"
+        >
           <CarouselContent>
             {HERO_BANNERS.map((banner, index) => (
               <CarouselItem key={index}>
@@ -183,7 +190,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="hidden lg:block relative h-[450px] w-full max-w-xl ml-auto">
-                      <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white/10 group">
+                      <div className="relative w-full h-full rounded-[3rem] overflow-hidden shadow-2xl border-4 border-white/10 group">
                         <Image 
                           src={banner.image} 
                           alt={banner.title} 
@@ -351,7 +358,7 @@ export default function Home() {
                   0{i + 1}
                 </div>
                 <h3 className="text-xl font-bold text-secondary mb-3">{step.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed max-w-[240px]">{step.desc}</p>
+                <p className="text-muted-foreground text-sm leading-relaxed max-w-[240px] px-4 md:px-0">{step.desc}</p>
                 {i < JOURNEY_STEPS.length - 1 && (
                   <div className="lg:hidden absolute -bottom-12 flex justify-center w-full">
                     <ArrowRight className="w-5 h-5 text-primary rotate-90" />
@@ -364,7 +371,7 @@ export default function Home() {
           <div className="flex sm:hidden flex-col gap-16 relative">
             <div className="absolute left-1/2 top-10 bottom-10 w-0.5 bg-muted -translate-x-1/2 z-0"></div>
             {JOURNEY_STEPS.map((step, i) => (
-              <div key={i} className="relative z-10 flex flex-col items-center text-center">
+              <div key={i} className="relative z-10 flex flex-col items-center text-center px-6">
                 <div className="w-16 h-16 rounded-full bg-white text-primary flex items-center justify-center mb-4 shadow-xl border-4 border-white ring-8 ring-primary/5">
                   <div className="w-6 h-6">{step.icon}</div>
                 </div>
