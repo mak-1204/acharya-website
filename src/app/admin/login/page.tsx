@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Loader2, Lock, Eye, EyeOff, ArrowLeft, Info } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { useToast } from '@/hooks/use-toast';
 
@@ -36,18 +36,18 @@ export default function LoginPage() {
 
     try {
       // 1. Authenticate with Firebase Auth
+      // This requires the user to be created in the Firebase Console -> Authentication tab
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
       // 2. Verify authorization in Firestore 'admin' collection
-      // Checking 'user mail id' as seen in user's firestore setup
       const adminQuery = query(
         collection(db, 'admin'),
         where('user mail id', '==', user.email)
       );
       let adminSnapshot = await getDocs(adminQuery);
 
-      // Fallback check for 'mail id' if 'user mail id' doesn't return results
+      // Fallback check for 'mail id'
       if (adminSnapshot.empty) {
         const fallbackQuery = query(
           collection(db, 'admin'),
@@ -57,13 +57,13 @@ export default function LoginPage() {
       }
 
       if (adminSnapshot.empty) {
-        // Not an authorized admin
+        // Not an authorized admin in Firestore, even if authenticated in Auth
         await signOut(auth);
-        setError('Unauthorized user: Your email is not in the admin list.');
+        setError('Unauthorized user: Your email is not in the admin collection.');
         toast({
           variant: "destructive",
           title: "Access Denied",
-          description: "This email is not authorized to access the admin portal.",
+          description: "This email is not authorized in the database.",
         });
       } else {
         // Success
@@ -75,8 +75,9 @@ export default function LoginPage() {
       }
     } catch (err: any) {
       console.error("Login Error:", err);
-      if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
-        setError('Invalid email or password');
+      // Firebase returns 'auth/invalid-credential' for both wrong password and user not found
+      if (err.code === 'auth/invalid-credential') {
+        setError('Invalid credentials. Ensure this user is created in Firebase Console Authentication AND added to the "admin" Firestore collection.');
       } else if (err.code === 'auth/too-many-requests') {
         setError('Too many failed attempts. Please try again later.');
       } else {
@@ -89,82 +90,96 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
-      <Card className="w-full max-w-md shadow-2xl border-none">
-        <CardHeader className="space-y-4 text-center">
-          <div className="flex justify-center mb-2">
-            <Logo className="h-12" />
-          </div>
-          <CardTitle className="text-2xl font-bold text-secondary">Admin Login</CardTitle>
-          <CardDescription>Enter your credentials to access the management dashboard.</CardDescription>
-        </CardHeader>
-        <form onSubmit={handleLogin}>
-          <CardContent className="space-y-4">
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-            <div className="space-y-2 text-left">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="admin@acharya.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="rounded-xl"
-              />
+      <div className="w-full max-w-md space-y-6">
+        <Card className="shadow-2xl border-none overflow-hidden">
+          <CardHeader className="space-y-4 text-center bg-white pb-8">
+            <div className="flex justify-center mb-2">
+              <Logo className="h-12" />
             </div>
-            <div className="space-y-2 text-left">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="rounded-xl pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-secondary transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button 
-              type="submit" 
-              className="w-full bg-secondary hover:bg-secondary/90 text-white rounded-xl h-12 font-bold"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Verifying...
-                </>
-              ) : (
-                <>
-                  <Lock className="mr-2 h-4 w-4" />
-                  Sign In
-                </>
+            <CardTitle className="text-2xl font-bold text-secondary">Admin Login</CardTitle>
+            <CardDescription>Enter your credentials to access the management dashboard.</CardDescription>
+          </CardHeader>
+          <form onSubmit={handleLogin}>
+            <CardContent className="space-y-4 pt-6">
+              {error && (
+                <Alert variant="destructive" className="rounded-xl border-destructive/20 bg-destructive/5">
+                  <AlertDescription className="text-xs font-semibold">{error}</AlertDescription>
+                </Alert>
               )}
-            </Button>
-            <Link 
-              href="/" 
-              className="text-sm text-muted-foreground hover:text-secondary flex items-center justify-center gap-2 transition-colors font-medium"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Website
-            </Link>
-          </CardFooter>
-        </form>
-      </Card>
+              <div className="space-y-2 text-left">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="admin@acharya.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="rounded-xl h-11"
+                  autoComplete="email"
+                />
+              </div>
+              <div className="space-y-2 text-left">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="rounded-xl h-11 pr-10"
+                    autoComplete="current-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-secondary transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col gap-4 pb-8">
+              <Button 
+                type="submit" 
+                className="w-full bg-secondary hover:bg-secondary/90 text-white rounded-xl h-12 font-bold transition-all shadow-lg active:scale-95"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Verifying...
+                  </>
+                ) : (
+                  <>
+                    <Lock className="mr-2 h-4 w-4" />
+                    Sign In
+                  </>
+                )}
+              </Button>
+              <Link 
+                href="/" 
+                className="text-sm text-muted-foreground hover:text-secondary flex items-center justify-center gap-2 transition-colors font-medium group"
+              >
+                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                Back to Website
+              </Link>
+            </CardFooter>
+          </form>
+        </Card>
+
+        {/* Development Helper Tip */}
+        <div className="p-4 bg-primary/5 border border-primary/10 rounded-2xl flex items-start gap-3">
+          <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+          <div className="text-[11px] text-muted-foreground leading-relaxed">
+            <p className="font-bold text-secondary mb-1">Login Tip:</p>
+            1. Create the user in <span className="font-bold">Firebase Console &gt; Authentication</span>.<br/>
+            2. Add the same email to the <span className="font-bold">admin</span> Firestore collection with field <span className="font-bold">user mail id</span>.
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
