@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { Facebook, Youtube, Instagram, Mail, Phone, MapPin, Clock } from 'lucide-react';
 import { Logo } from './Logo';
 
+const MAPS_URL = "https://www.google.com/maps/place/207,+7,+8th+St,+Muthuramalingapuram,+Karpaga+Nagar,+K.Pudur,+Madurai,+Tamil+Nadu+625007,+India/@9.9496341,78.1479403,20.63z/data=!4m5!3m4!1s0x3b00c5d0ff406d7f:0x94de6a503a7fe!8m2!3d9.9496002!4d78.1477893?hl=en-US&entry=ttu";
+
 export const Footer = () => {
   const [year, setYear] = useState("2026");
 
@@ -88,14 +90,20 @@ export const Footer = () => {
             <h4 className="text-sm md:text-base font-bold text-primary uppercase tracking-wider">
               Our Location
             </h4>
-            <div className="w-full h-32 rounded-xl overflow-hidden border border-white/10 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+            <a 
+              href={MAPS_URL} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-full h-32 rounded-xl overflow-hidden border border-white/10 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500 block group relative"
+            >
               <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3929.982548485292!2d78.1481132!3d9.935406!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOcKwNTYnMDEuNSJOIDc4wrAwOCU1My4yIkU!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" 
-                className="w-full h-full border-0" 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3929.8354673857326!2d78.1477893!3d9.9496002!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b00c5d0ff406d7f%3A0x94de6a503a7fe!2s207%2C%207%2C%208th%20St%2C%20Muthuramalingapuram%2C%20Karpaga%20Nagar%2C%20K.Pudur%2C%20Madurai%2C%20Tamil%20Nadu%20625007!5e0!3m2!1sen!2sin!4v1710500000000!5m2!1sen!2sin" 
+                className="w-full h-full border-0 pointer-events-none" 
                 loading="lazy"
                 title="Acharya Education Location"
               ></iframe>
-            </div>
+              <div className="absolute inset-0 bg-secondary/10 group-hover:bg-transparent transition-colors"></div>
+            </a>
           </div>
         </div>
 
