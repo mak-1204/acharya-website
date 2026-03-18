@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EnquiryForm } from '@/components/EnquiryForm';
-import { Target, CircleCheckBig, Monitor, GraduationCap, Zap, BookOpen, Scale, Layers, Laptop, Building2, Calculator, ExternalLink, LayoutGrid } from 'lucide-react';
+import { Target, CircleCheckBig, Monitor, GraduationCap, Zap, BookOpen, Scale, Layers, Laptop, Building2, Calculator, ExternalLink, LayoutGrid, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
@@ -196,9 +196,12 @@ export default function CoursesPage() {
                             <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
                               {course.desc}
                             </p>
-                            <div className="flex pt-2">
+                            <div className="flex flex-col gap-3 pt-2">
                                <Button asChild className="w-full sm:w-auto bg-primary hover:bg-primary/90 h-12 px-8 rounded-full font-bold shadow-lg">
                                  <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Enroll via Google Forms <ExternalLink className="ml-2 w-4 h-4" /></a>
+                               </Button>
+                               <Button asChild variant="outline" className="w-full sm:w-auto border-secondary text-secondary hover:bg-secondary/10 h-12 px-8 rounded-full font-bold shadow-md">
+                                 <a href="tel:9865440099">Call to Enroll <Phone className="ml-2 w-4 h-4" /></a>
                                </Button>
                             </div>
                          </div>
