@@ -35,6 +35,30 @@
       "description": "Expert faculty member",
       "imageUrl": "https://picsum.photos/seed/faculty1/400/500",
       "imageHint": "teacher classroom"
+    },
+    {
+      "id": "gallery1",
+      "description": "Students in laboratory",
+      "imageUrl": "https://picsum.photos/seed/lab1/600/400",
+      "imageHint": "science laboratory"
+    },
+    {
+      "id": "gallery2",
+      "description": "Library study session",
+      "imageUrl": "https://picsum.photos/seed/library1/600/400",
+      "imageHint": "library books"
+    },
+    {
+      "id": "gallery3",
+      "description": "Group discussion",
+      "imageUrl": "https://picsum.photos/seed/group1/600/400",
+      "imageHint": "students group"
+    },
+    {
+      "id": "gallery4",
+      "description": "Award ceremony",
+      "imageUrl": "https://picsum.photos/seed/award1/600/400",
+      "imageHint": "achievement trophy"
     }
   ]
 }

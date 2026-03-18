@@ -12,7 +12,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import { 
   CircleCheckBig, BookOpen, Target, Award, Users, 
   GraduationCap, MapPin, 
-  Calendar, Quote, Trophy, ArrowRight
+  Calendar, Quote, Trophy, ArrowRight, Camera, Sparkles
 } from 'lucide-react';
 import {
   Carousel,
@@ -23,6 +23,7 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { cn } from '@/lib/utils';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
 
@@ -158,6 +159,8 @@ const TESTIMONIALS = [
   { name: 'Meera S.', text: 'The NCERT intensive program for NEET is precisely what I needed to clear 650+.', role: 'Medical Student' },
   { name: 'Sanjay P.', text: 'Acharya simplified complex physics concepts for me. Highly recommended!', role: 'Class 12 Student' },
 ];
+
+const GALLERY_IMAGES = PlaceHolderImages.filter(img => img.id.startsWith('gallery') || ['classroom', 'faculty'].includes(img.id));
 
 export default function Home() {
   const [heroApi, setHeroApi] = useState<CarouselApi>();
@@ -468,7 +471,70 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 9. TESTIMONIALS SECTION */}
+      {/* 9. GALLERY SECTION */}
+      <section id="gallery" className="py-16 md:py-24 bg-muted/30 scroll-mt-16">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="text-center mb-12 md:mb-16">
+            <Badge className="bg-primary/10 text-primary border-none mb-4">Inside Acharya</Badge>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary">Glimpses of Success</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {GALLERY_IMAGES.map((img, i) => (
+              <div key={i} className={cn(
+                "relative overflow-hidden rounded-2xl shadow-lg group",
+                i === 0 && "col-span-2 row-span-2 h-[300px] md:h-[500px]",
+                i !== 0 && "h-[140px] md:h-[240px]"
+              )}>
+                <Image 
+                  src={img.imageUrl} 
+                  alt={img.description} 
+                  fill 
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4">
+                  <Camera className="text-white w-8 h-8" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 10. SCHOLARSHIP SECTION */}
+      <section id="scholarship" className="py-16 md:py-24 bg-white scroll-mt-16">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="bg-secondary rounded-[2.5rem] p-8 md:p-16 text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+              <div className="space-y-6">
+                <Badge className="bg-primary text-white border-none">AEST 2025</Badge>
+                <h2 className="text-3xl md:text-5xl font-bold leading-tight">Acharya Excellence Scholarship Test</h2>
+                <p className="text-lg opacity-80 leading-relaxed">
+                  Unlock your potential with up to 100% scholarship on our premier courses. AEST is designed to identify and nurture talent in Madurai.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-3 bg-white/10 p-4 rounded-2xl border border-white/10">
+                    <Sparkles className="text-primary w-6 h-6" />
+                    <span className="font-bold">Up to 100% Off</span>
+                  </div>
+                  <div className="flex items-center gap-3 bg-white/10 p-4 rounded-2xl border border-white/10">
+                    <Trophy className="text-primary w-6 h-6" />
+                    <span className="font-bold">National Ranking</span>
+                  </div>
+                </div>
+                <Button asChild size="lg" className="bg-primary hover:bg-primary/90 rounded-full font-bold px-10 h-14">
+                  <Link href="#enquire">Register for Test</Link>
+                </Button>
+              </div>
+              <div className="hidden lg:block relative h-[400px]">
+                 <Image src="https://picsum.photos/seed/scholar/600/600" alt="Scholarship" fill className="object-cover rounded-3xl" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 11. TESTIMONIALS SECTION */}
       <section id="testimonials" className="py-16 md:py-24 bg-white scroll-mt-16">
         <div className="container mx-auto px-4 max-w-7xl">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary mb-12 md:mb-16 text-center">What Our Students Say</h2>
@@ -487,7 +553,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 10. ENQUIRE SECTION */}
+      {/* 12. ENQUIRE SECTION */}
       <section id="enquire" className="py-16 md:py-24 bg-primary relative overflow-hidden scroll-mt-16">
         <div className="container mx-auto px-4 relative z-10 text-center max-w-7xl">
           <div className="max-w-3xl mx-auto">
