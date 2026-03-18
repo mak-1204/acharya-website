@@ -12,7 +12,7 @@ import Autoplay from 'embla-carousel-autoplay';
 import { 
   CircleCheckBig, BookOpen, Target, Award, Users, 
   GraduationCap, MapPin, 
-  Calendar, Quote, Trophy, ArrowRight, Camera, Loader2, ChevronLeft, ChevronRight
+  Calendar, Quote, Trophy, ArrowRight, Camera, Loader2, ChevronLeft, ChevronRight, BarChart3
 } from 'lucide-react';
 import {
   Carousel,
@@ -38,19 +38,21 @@ const WHY_ACHARYA = [
   { title: 'Proven Results', desc: 'Legacy of top rankers in Madurai since 2007.', icon: <Trophy className="text-secondary" /> },
 ];
 
-const IMPULSE_STATS = [
-  { label: 'Students Trained', value: '50k+', icon: <Users className="w-5 h-5" /> },
-  { label: 'Teachers Benefited', value: '300+', icon: <GraduationCap className="w-5 h-5" /> },
-  { label: 'Centres', value: '7+', icon: <MapPin className="w-5 h-5" /> },
-  { label: 'Years of Excellence', value: '17+', icon: <Calendar className="w-5 h-5" /> },
-];
-
 const JOURNEY_STEPS = [
   { title: 'Counseling', desc: 'Personalized guidance to pick the right academic path.', icon: <Users className="w-8 h-8" /> },
   { title: 'Admission', desc: 'Smooth enrollment into Madurai’s most elite batches.', icon: <CircleCheckBig className="w-8 h-8" /> },
   { title: 'Learning', desc: 'Rigorous training with PhD/Expert faculty members.', icon: <BookOpen className="w-8 h-8" /> },
   { title: 'Success', desc: 'Regular testing and mentoring leading to top ranks.', icon: <Trophy className="w-8 h-8" /> },
 ];
+
+const ICON_MAP: Record<string, any> = {
+  Users,
+  GraduationCap,
+  MapPin,
+  Calendar,
+  Trophy,
+  BookOpen,
+};
 
 const getInitials = (name: string) => {
   if (!name) return 'A';
@@ -72,6 +74,9 @@ export default function Home() {
   // --- Data Fetching State ---
   const [banners, setBanners] = useState<any[]>([]);
   const [bannersLoading, setBannersLoading] = useState(true);
+
+  const [impactStats, setImpactStats] = useState<any[]>([]);
+  const [impactStatsLoading, setImpactStatsLoading] = useState(true);
 
   const [courses, setCourses] = useState<any[]>([]);
   const [coursesLoading, setCoursesLoading] = useState(true);
@@ -98,6 +103,20 @@ export default function Home() {
       }
     };
     fetchBanners();
+  }, []);
+
+  useEffect(() => {
+    const fetchImpactStats = async () => {
+      try {
+        const snap = await getDocs(query(collection(db, 'impact_stats'), where('isPublished', '==', true), orderBy('order', 'asc')));
+        setImpactStats(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      } catch (err) {
+        console.error("Error fetching impact stats:", err);
+      } finally {
+        setImpactStatsLoading(false);
+      }
+    };
+    fetchImpactStats();
   }, []);
 
   useEffect(() => {
@@ -162,6 +181,11 @@ export default function Home() {
       setHeroCurrent(heroApi.selectedScrollSnap());
     });
   }, [heroApi]);
+
+  const renderImpactStatIcon = (iconName: string) => {
+    const IconComp = ICON_MAP[iconName] || Users;
+    return <IconComp className="w-5 h-5" />;
+  };
 
   return (
     <div className="flex flex-col w-full overflow-x-hidden">
@@ -244,17 +268,26 @@ export default function Home() {
       {/* 2. STATS STRIP */}
       <section id="stats" className="bg-white py-8 md:py-12 border-b relative z-30 -mt-6 md:-mt-12 mx-4 md:mx-12 lg:mx-auto max-w-7xl rounded-2xl md:rounded-3xl shadow-xl border">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 text-center">
-            {IMPULSE_STATS.map((stat, i) => (
-              <div key={i} className="flex flex-col items-center group">
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-3 md:mb-4 group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                  {stat.icon}
+          {impactStatsLoading ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+              {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 text-center">
+              {impactStats.map((stat, i) => (
+                <div key={i} className="flex flex-col items-center group">
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-3 md:mb-4 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                    {renderImpactStatIcon(stat.iconName)}
+                  </div>
+                  <div className="text-xl sm:text-2xl md:text-4xl font-bold text-secondary">{stat.value}</div>
+                  <div className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{stat.label}</div>
                 </div>
-                <div className="text-xl sm:text-2xl md:text-4xl font-bold text-secondary">{stat.value}</div>
-                <div className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{stat.label}</div>
-              </div>
-            ))}
-          </div>
+              ))}
+              {impactStats.length === 0 && (
+                <div className="col-span-full py-2 text-muted-foreground italic text-sm">Empowering students in Madurai since 2007.</div>
+              )}
+            </div>
+          )}
         </div>
       </section>
 

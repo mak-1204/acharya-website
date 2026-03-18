@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "HeroBanner": {
@@ -92,6 +93,19 @@
       },
       "required": ["name", "score", "exam", "isPublished", "order"]
     },
+    "ImpactStat": {
+      "title": "ImpactStat",
+      "description": "Key statistics shown on the landing page stats strip.",
+      "type": "object",
+      "properties": {
+        "label": { "type": "string" },
+        "value": { "type": "string" },
+        "iconName": { "type": "string", "enum": ["Users", "GraduationCap", "MapPin", "Calendar", "Trophy", "BookOpen"] },
+        "order": { "type": "number" },
+        "isPublished": { "type": "boolean" }
+      },
+      "required": ["label", "value", "iconName", "order"]
+    },
     "Admin": {
       "title": "Admin",
       "description": "List of authorized administrators.",
@@ -146,6 +160,14 @@
           "entityName": "Star",
           "schema": { "$ref": "#/backend/entities/Star" },
           "description": "Top achieving students."
+        }
+      },
+      {
+        "path": "/impact_stats/{statId}",
+        "definition": {
+          "entityName": "ImpactStat",
+          "schema": { "$ref": "#/backend/entities/ImpactStat" },
+          "description": "Counter statistics for landing page."
         }
       },
       {

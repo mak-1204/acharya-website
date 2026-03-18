@@ -1,13 +1,15 @@
+
 'use client';
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { LayoutTemplate, ImageIcon, MessageSquare, Star, ArrowRight, TrendingUp } from 'lucide-react';
+import { LayoutTemplate, ImageIcon, MessageSquare, Star, ArrowRight, TrendingUp, BarChart3 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminDashboard() {
   const SECTIONS = [
     { label: 'Hero Banners & Courses', icon: LayoutTemplate, href: '/admin/courses-banners', color: 'bg-blue-500', desc: 'Manage your home carousel and course listings.' },
+    { label: 'Impact Stats', icon: BarChart3, href: '/admin/stats', color: 'bg-green-600', desc: 'Update the numbers (Students, Teachers, Centres) shown on landing page.' },
     { label: 'Campus Gallery', icon: ImageIcon, href: '/admin/gallery', color: 'bg-primary', desc: 'Update the visual tour of your institute.' },
     { label: 'Student Testimonials', icon: MessageSquare, href: '/admin/testimonials', color: 'bg-orange-500', desc: 'Edit reviews and success feedback.' },
     { label: 'Our Star Performers', icon: Star, href: '/admin/stars', color: 'bg-secondary', desc: 'Celebrate your top achieving students.' },
@@ -20,10 +22,10 @@ export default function AdminDashboard() {
         <p className="text-muted-foreground text-lg italic">Welcome back! Manage your website content from here.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {SECTIONS.map((section) => (
           <Link key={section.label} href={section.href}>
-            <Card className="border-none shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden">
+            <Card className="border-none shadow-sm hover:shadow-xl transition-all duration-300 group overflow-hidden h-full">
               <CardContent className="p-8">
                 <div className="flex items-start gap-6">
                   <div className={`p-4 rounded-2xl text-white shadow-lg ${section.color} group-hover:scale-110 transition-transform`}>
