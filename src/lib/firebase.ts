@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
@@ -12,7 +12,11 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase using the singleton pattern for Next.js
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+
 export const analytics = typeof window !== "undefined" ? getAnalytics(app) : null;
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+export default app;
