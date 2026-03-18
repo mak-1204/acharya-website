@@ -46,6 +46,9 @@ export default function CoursesBannersPage() {
   const [cIsFeatured, setCIsFeatured] = useState(false);
   const [cIsPublished, setCIsPublished] = useState(true);
   const [cOrder, setCOrder] = useState('0');
+  const [cAudience, setCAudience] = useState('');
+  const [cDuration, setCDuration] = useState('');
+  const [cHighlights, setCHighlights] = useState('');
 
   const fetchData = async () => {
     setLoading(true);
@@ -68,7 +71,7 @@ export default function CoursesBannersPage() {
   };
 
   const resetCourseForm = () => {
-    setCTitle(''); setCSlug(''); setCDesc(''); setCBannerImage(''); setCPrice('0'); setCDiscountedPrice('0'); setCCategory(''); setCIsFeatured(false); setCIsPublished(true); setCOrder('0'); setEditingCourse(null);
+    setCTitle(''); setCSlug(''); setCDesc(''); setCBannerImage(''); setCPrice('0'); setCDiscountedPrice('0'); setCCategory(''); setCIsFeatured(false); setCIsPublished(true); setCOrder('0'); setCAudience(''); setCDuration(''); setCHighlights(''); setEditingCourse(null);
   };
 
   const handleBannerSave = async (e: React.FormEvent) => {
@@ -85,7 +88,22 @@ export default function CoursesBannersPage() {
   const handleCourseSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    const data = { title: cTitle, slug: cSlug, description: cDesc, bannerImage: cBannerImage, price: Number(cPrice), discountedPrice: Number(cDiscountedPrice), category: cCategory, isFeatured: cIsFeatured, isPublished: cIsPublished, order: Number(cOrder), updatedAt: serverTimestamp() };
+    const data = { 
+      title: cTitle, 
+      slug: cSlug, 
+      description: cDesc, 
+      bannerImage: cBannerImage, 
+      price: Number(cPrice), 
+      discountedPrice: Number(cDiscountedPrice), 
+      category: cCategory, 
+      isFeatured: cIsFeatured, 
+      isPublished: cIsPublished, 
+      order: Number(cOrder),
+      audience: cAudience,
+      duration: cDuration,
+      highlights: cHighlights.split('\n').filter(h => h.trim() !== ''),
+      updatedAt: serverTimestamp() 
+    };
     try {
       if (editingCourse) await updateDoc(doc(db, 'courses', editingCourse.id), data);
       else await addDoc(collection(db, 'courses'), { ...data, createdAt: serverTimestamp() });
@@ -159,14 +177,19 @@ export default function CoursesBannersPage() {
               <form onSubmit={handleCourseSave} className="space-y-4 pt-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2"><Label>Title</Label><Input value={cTitle} onChange={e => setCTitle(e.target.value)} required /></div>
-                  <div className="space-y-2"><Label>Slug</Label><Input value={cSlug} onChange={e => setCSlug(e.target.value)} required /></div>
+                  <div className="space-y-2"><Label>Slug (lowercase, no spaces)</Label><Input value={cSlug} onChange={e => setCSlug(e.target.value)} required /></div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2"><Label>Target Audience</Label><Input value={cAudience} onChange={e => setCAudience(e.target.value)} placeholder="e.g. Class 11, 12 & Repeaters" /></div>
+                  <div className="space-y-2"><Label>Duration</Label><Input value={cDuration} onChange={e => setCDuration(e.target.value)} placeholder="e.g. 1 to 2 Years" /></div>
                 </div>
                 <div className="space-y-2"><Label>Description</Label><Textarea value={cDesc} onChange={e => setCDesc(e.target.value)} /></div>
+                <div className="space-y-2"><Label>Program Highlights (One per line)</Label><Textarea value={cHighlights} onChange={e => setCHighlights(e.target.value)} placeholder="NCERT Intensive Program&#10;Daily Practice Papers" className="h-24" /></div>
                 <div className="space-y-2"><Label>Banner Image URL</Label><Input value={cBannerImage} onChange={e => setCBannerImage(e.target.value)} /></div>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2"><Label>Price</Label><Input type="number" value={cPrice} onChange={e => setCPrice(e.target.value)} /></div>
                   <div className="space-y-2"><Label>Offer Price</Label><Input type="number" value={cDiscountedPrice} onChange={e => setCDiscountedPrice(e.target.value)} /></div>
-                  <div className="space-y-2"><Label>Category</Label><Input value={cCategory} onChange={e => setCCategory(e.target.value)} placeholder="e.g. JEE" /></div>
+                  <div className="space-y-2"><Label>Category</Label><Input value={cCategory} onChange={e => setCCategory(e.target.value)} placeholder="e.g. neet, jee, cuet" /></div>
                 </div>
                 <div className="flex flex-wrap gap-8 items-center border-t pt-4">
                   <div className="flex items-center gap-2"><Switch checked={cIsPublished} onCheckedChange={setCIsPublished} /><Label>Published</Label></div>
@@ -187,13 +210,29 @@ export default function CoursesBannersPage() {
                   <div>
                     <h4 className="font-bold text-secondary">{c.title}</h4>
                     <div className="flex gap-2 mt-1">
-                      <Badge variant="outline" className="text-[10px]">{c.category}</Badge>
+                      <Badge variant="outline" className="text-[10px] uppercase">{c.category}</Badge>
                       {c.isFeatured && <Badge className="bg-orange-500 text-[10px]">Featured</Badge>}
                     </div>
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => { setEditingCourse(c); setCTitle(c.title); setCSlug(c.slug); setCDesc(c.description || ''); setCBannerImage(c.bannerImage || ''); setCPrice(String(c.price)); setCDiscountedPrice(String(c.discountedPrice)); setCCategory(c.category || ''); setCIsFeatured(c.isFeatured); setCIsPublished(c.isPublished); setCOrder(String(c.order)); setCourseDialogOpen(true); }}>Edit</Button>
+                  <Button variant="outline" size="sm" onClick={() => { 
+                    setEditingCourse(c); 
+                    setCTitle(c.title); 
+                    setCSlug(c.slug); 
+                    setCDesc(c.description || ''); 
+                    setCBannerImage(c.bannerImage || ''); 
+                    setCPrice(String(c.price)); 
+                    setCDiscountedPrice(String(c.discountedPrice)); 
+                    setCCategory(c.category || ''); 
+                    setCIsFeatured(c.isFeatured); 
+                    setCIsPublished(c.isPublished); 
+                    setCOrder(String(c.order));
+                    setCAudience(c.audience || '');
+                    setCDuration(c.duration || '');
+                    setCHighlights(Array.isArray(c.highlights) ? c.highlights.join('\n') : '');
+                    setCourseDialogOpen(true); 
+                  }}>Edit</Button>
                   <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10" onClick={() => handleDelete('courses', c.id)}><Trash2 className="w-4 h-4" /></Button>
                 </div>
               </CardContent>
