@@ -16,9 +16,9 @@ export const Footer = () => {
   return (
     <footer className="bg-secondary text-white py-8 md:py-12 w-full overflow-x-hidden border-t-4 border-primary">
       <div className="container mx-auto px-4 max-w-7xl">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 mb-8 text-center sm:text-left">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-8 md:gap-10 mb-8 text-center sm:text-left">
           {/* Brand */}
-          <div className="space-y-4 flex flex-col items-center sm:items-start">
+          <div className="lg:col-span-3 space-y-4 flex flex-col items-center sm:items-start">
             <Link href="/" className="inline-block bg-white p-2 rounded-lg">
               <Logo className="h-8 md:h-10" />
             </Link>
@@ -35,7 +35,7 @@ export const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
+          <div className="lg:col-span-2 space-y-4">
             <h4 className="text-sm md:text-base font-bold text-primary uppercase tracking-wider">
               Quick Links
             </h4>
@@ -49,7 +49,7 @@ export const Footer = () => {
           </div>
 
           {/* Courses */}
-          <div className="space-y-4">
+          <div className="lg:col-span-2 space-y-4">
             <h4 className="text-sm md:text-base font-bold text-primary uppercase tracking-wider">
               Courses
             </h4>
@@ -63,7 +63,7 @@ export const Footer = () => {
           </div>
 
           {/* Contact Us */}
-          <div className="space-y-4">
+          <div className="lg:col-span-2 space-y-4">
             <h4 className="text-sm md:text-base font-bold text-primary uppercase tracking-wider">
               Contact Us
             </h4>
@@ -82,15 +82,21 @@ export const Footer = () => {
               </li>
             </ul>
           </div>
-        </div>
 
-        {/* Integrated Map - Compact */}
-        <div className="w-full h-24 md:h-32 rounded-xl overflow-hidden mb-6 border border-white/10 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-          <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3929.982548485292!2d78.1481132!3d9.935406!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOcKwNTYnMDEuNSJOIDc4wrAwOCU1My4yIkU!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" 
-            className="w-full h-full border-0" 
-            loading="lazy"
-          ></iframe>
+          {/* Compact Map on the Right */}
+          <div className="lg:col-span-3 space-y-4 flex flex-col items-center sm:items-start">
+            <h4 className="text-sm md:text-base font-bold text-primary uppercase tracking-wider">
+              Our Location
+            </h4>
+            <div className="w-full h-32 rounded-xl overflow-hidden border border-white/10 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+              <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3929.982548485292!2d78.1481132!3d9.935406!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zOcKwNTYnMDEuNSJOIDc4wrAwOCU1My4yIkU!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" 
+                className="w-full h-full border-0" 
+                loading="lazy"
+                title="Acharya Education Location"
+              ></iframe>
+            </div>
+          </div>
         </div>
 
         <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-3 text-[11px] md:text-xs text-white/40 text-center md:text-left uppercase tracking-tighter font-semibold">
