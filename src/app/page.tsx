@@ -95,7 +95,7 @@ const HERO_BANNERS = [
   {
     title: "CUET CRASH COURSE",
     subtitle: "Master Domain Subjects & General Test in 30 Days.",
-    image: "/doctor.jpg",
+    image: "/portrait-of-a-smiling-university-student-holding-a-book-and-a-sac-standing-at-the-entrance-of.jpg",
     cta: "Enroll Now",
     link: GOOGLE_FORM_URL,
     badge: "Crash Course",
@@ -217,7 +217,6 @@ export default function Home() {
                           fill 
                           className="object-cover transition-transform duration-700 group-hover:scale-105" 
                           priority
-                          data-ai-hint="education banner"
                         />
                       </div>
                     </div>
