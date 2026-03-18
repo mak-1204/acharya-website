@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { useAuth, useFirestore } from '@/firebase';
@@ -10,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Lock, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { useToast } from '@/hooks/use-toast';
 
@@ -39,7 +40,7 @@ export default function LoginPage() {
       const user = userCredential.user;
 
       // 2. Verify authorization in Firestore 'admin' collection
-      // Checking both 'user mail id' (from screenshot) and 'mail id' (from requirements)
+      // Checking 'user mail id' as seen in user's firestore setup
       const adminQuery = query(
         collection(db, 'admin'),
         where('user mail id', '==', user.email)
@@ -136,7 +137,7 @@ export default function LoginPage() {
               </div>
             </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex flex-col gap-4">
             <Button 
               type="submit" 
               className="w-full bg-secondary hover:bg-secondary/90 text-white rounded-xl h-12 font-bold"
@@ -154,6 +155,13 @@ export default function LoginPage() {
                 </>
               )}
             </Button>
+            <Link 
+              href="/" 
+              className="text-sm text-muted-foreground hover:text-secondary flex items-center justify-center gap-2 transition-colors font-medium"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Website
+            </Link>
           </CardFooter>
         </form>
       </Card>
