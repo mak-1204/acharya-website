@@ -5,8 +5,9 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { useStorage } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { UploadCloud, X, FileIcon, ImageIcon, Loader2 } from 'lucide-react';
+import { UploadCloud, X, FileIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface FileUploaderProps {
   onUploadComplete: (url: string) => void;
@@ -22,6 +23,7 @@ export const FileUploader = ({
   accept = "image/*,video/*"
 }: FileUploaderProps) => {
   const storage = useStorage();
+  const { toast } = useToast();
   const [progress, setProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(defaultValue || '');
@@ -29,7 +31,14 @@ export const FileUploader = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUpload = (file: File) => {
-    if (!storage) return;
+    if (!storage) {
+      toast({
+        variant: "destructive",
+        title: "Configuration Error",
+        description: "Firebase Storage is not initialized. Please check your config.",
+      });
+      return;
+    }
 
     setUploading(true);
     const storageRef = ref(storage, `uploads/${Date.now()}-${file.name}`);
@@ -44,13 +53,32 @@ export const FileUploader = ({
       (error) => {
         console.error("Upload error:", error);
         setUploading(false);
+        toast({
+          variant: "destructive",
+          title: "Upload Failed",
+          description: error.message || "Could not upload file. Ensure Storage is enabled and rules allow writes.",
+        });
       },
       async () => {
-        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        setPreviewUrl(downloadURL);
-        onUploadComplete(downloadURL);
-        setUploading(false);
-        setProgress(0);
+        try {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          setPreviewUrl(downloadURL);
+          onUploadComplete(downloadURL);
+          setUploading(false);
+          setProgress(0);
+          toast({
+            title: "Upload Success",
+            description: "File uploaded successfully.",
+          });
+        } catch (err: any) {
+          console.error("Error getting download URL:", err);
+          setUploading(false);
+          toast({
+            variant: "destructive",
+            title: "Download URL Error",
+            description: "Failed to retrieve the file link.",
+          });
+        }
       }
     );
   };
@@ -67,6 +95,10 @@ export const FileUploader = ({
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleUpload(e.dataTransfer.files[0]);
     }
+  };
+
+  const isVideo = (url: string) => {
+    return url.includes('.mp4') || url.includes('video') || (url.includes('storage') && url.toLowerCase().includes('%2fuploads%2f') && !url.match(/\.(jpg|jpeg|png|gif|webp)/i));
   };
 
   return (
@@ -92,10 +124,10 @@ export const FileUploader = ({
 
         {previewUrl ? (
           <div className="relative group w-full h-full flex items-center justify-center">
-            {previewUrl.includes('.mp4') || previewUrl.includes('video') || previewUrl.includes('storage') && previewUrl.toLowerCase().includes('%2fuploads%2f') && !previewUrl.match(/\.(jpg|jpeg|png|gif|webp)/i) ? (
+            {isVideo(previewUrl) ? (
                <div className="flex flex-col items-center gap-2">
                  <FileIcon className="w-12 h-12 text-secondary" />
-                 <span className="text-xs font-medium text-muted-foreground truncate max-w-[200px]">File Uploaded</span>
+                 <span className="text-xs font-medium text-muted-foreground truncate max-w-[200px]">Video File Selected</span>
                </div>
             ) : (
               <img src={previewUrl} alt="Preview" className="max-h-32 rounded-lg object-contain shadow-md" />
