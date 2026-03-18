@@ -161,7 +161,7 @@ export default function Home() {
                       <h1 className="text-3xl sm:text-4xl lg:text-7xl font-bold tracking-tight leading-tight">
                         {banner.title}
                       </h1>
-                      <p className="text-base md:text-xl text-white/80 max-w-lg">
+                      <p className="text-base md:text-xl text-white/80 max-lg:mx-auto">
                         {banner.subtitle}
                       </p>
                       <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-4">
@@ -319,35 +319,61 @@ export default function Home() {
       </section>
 
       {/* 6. JOURNEY STEPPER */}
-      <section id="journey" className="py-16 md:py-24 bg-white scroll-mt-16">
+      <section id="journey" className="py-20 md:py-32 bg-white scroll-mt-20">
         <div className="container mx-auto px-4 max-w-7xl">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-secondary mb-12 md:mb-20">Your Path to Excellence</h2>
+          <div className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
+            <Badge className="bg-primary/10 text-primary border-none mb-4">Success Roadmap</Badge>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary leading-tight">Your Path to Excellence</h2>
+          </div>
           
-          <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 relative">
-            <div className="hidden md:block absolute top-10 left-0 w-full h-1 bg-muted -translate-y-1/2 z-0"></div>
+          {/* Tablet/Desktop View */}
+          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-20 relative">
+            {/* Horizontal line for desktop (4 cols) */}
+            <div className="hidden lg:block absolute top-12 left-[12%] right-[12%] h-0.5 bg-muted -translate-y-1/2 z-0"></div>
+            
             {JOURNEY_STEPS.map((step, i) => (
               <div key={i} className="relative z-10 flex flex-col items-center text-center group">
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-primary text-white flex items-center justify-center mb-4 md:mb-6 shadow-xl border-4 md:border-8 border-white group-hover:scale-110 transition-transform">
-                  <div className="w-6 h-6 md:w-8 md:h-8">{step.icon}</div>
+                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white text-primary flex items-center justify-center mb-6 shadow-xl border-4 border-white ring-8 ring-primary/5 group-hover:scale-110 group-hover:ring-primary/10 transition-all duration-500">
+                  <div className="w-8 h-8 md:w-10 md:h-10">{step.icon}</div>
                 </div>
-                <h3 className="text-lg md:text-xl font-bold text-secondary mb-1 md:mb-2">{step.title}</h3>
-                <p className="text-muted-foreground text-xs md:text-sm px-4">{step.desc}</p>
+                
+                <div className="absolute top-0 right-1/2 translate-x-12 -translate-y-2 w-8 h-8 rounded-full bg-secondary text-white text-xs font-bold flex items-center justify-center border-2 border-white shadow-lg">
+                  0{i + 1}
+                </div>
+
+                <h3 className="text-xl font-bold text-secondary mb-3">{step.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed max-w-[240px]">
+                  {step.desc}
+                </p>
+
+                {/* Diagonal Arrow for Tablet (2 cols) */}
+                {i < JOURNEY_STEPS.length - 1 && (
+                  <div className="lg:hidden absolute -bottom-12 flex justify-center w-full">
+                    <ArrowRight className="w-5 h-5 text-primary rotate-90" />
+                  </div>
+                )}
               </div>
             ))}
           </div>
 
-          <div className="flex sm:hidden flex-col gap-8 relative">
-            <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-muted -translate-x-1/2"></div>
+          {/* Mobile View */}
+          <div className="flex sm:hidden flex-col gap-16 relative">
+            <div className="absolute left-1/2 top-10 bottom-10 w-0.5 bg-muted -translate-x-1/2 z-0"></div>
             {JOURNEY_STEPS.map((step, i) => (
               <div key={i} className="relative z-10 flex flex-col items-center text-center">
-                <div className="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center mb-3 shadow-lg border-4 border-white">
-                  <div className="w-5 h-5">{step.icon}</div>
+                <div className="w-16 h-16 rounded-full bg-white text-primary flex items-center justify-center mb-4 shadow-xl border-4 border-white ring-8 ring-primary/5">
+                  <div className="w-6 h-6">{step.icon}</div>
                 </div>
-                <h3 className="text-base font-bold text-secondary mb-1">{step.title}</h3>
-                <p className="text-muted-foreground text-[11px] px-8">{step.desc}</p>
+                <div className="absolute top-0 right-1/2 translate-x-10 -translate-y-2 w-7 h-7 rounded-full bg-secondary text-white text-[10px] font-bold flex items-center justify-center border-2 border-white shadow-lg">
+                  {i + 1}
+                </div>
+                <h3 className="text-lg font-bold text-secondary mb-2">{step.title}</h3>
+                <p className="text-muted-foreground text-[12px] leading-relaxed px-10">
+                  {step.desc}
+                </p>
                 {i < JOURNEY_STEPS.length - 1 && (
-                  <div className="mt-4 animate-bounce">
-                    <ArrowRight className="w-4 h-4 text-primary rotate-90" />
+                  <div className="mt-6 animate-bounce">
+                    <ArrowRight className="w-5 h-5 text-primary rotate-90" />
                   </div>
                 )}
               </div>
@@ -360,10 +386,10 @@ export default function Home() {
       <section id="mode" className="py-16 md:py-24 bg-primary text-white scroll-mt-16">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-16 items-center">
-            <div className="space-y-4 md:space-y-6">
+            <div className="space-y-4 md:space-y-6 text-center lg:text-left">
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold">Learn the Way You Want</h2>
               <p className="text-lg md:text-xl text-white/80">We offer flexible learning models to suit every student's lifestyle and academic needs.</p>
-              <div className="space-y-3 md:space-y-4 pt-2 md:pt-4">
+              <div className="space-y-3 md:space-y-4 pt-2 md:pt-4 text-left">
                 {[
                   "Offline Classes: Immersive classroom experience in Madurai.",
                   "Online Classes: Live interactive sessions from anywhere.",
@@ -376,7 +402,7 @@ export default function Home() {
                 ))}
               </div>
             </div>
-            <div className="bg-white/10 p-6 md:p-10 rounded-2xl md:rounded-3xl backdrop-blur-sm border border-white/20">
+            <div className="bg-white/10 p-6 md:p-10 rounded-2xl md:rounded-3xl backdrop-blur-sm border border-white/20 text-center">
                <h4 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">Which mode suits you?</h4>
                <p className="mb-6 md:mb-8 opacity-80 text-sm md:text-base">Connect with our counselors to understand the best methodology for your success.</p>
                <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 font-bold rounded-full w-full h-12 md:h-14">
