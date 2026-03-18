@@ -107,7 +107,7 @@ export const Footer = () => {
               </li>
               <li className="flex gap-2 justify-center sm:justify-start">
                 <Phone className="w-4 h-4 text-primary shrink-0" />
-                <span className="font-bold">9865440099</span>
+                <span className="font-bold">98654 40099 / 88704 40099</span>
               </li>
               <li className="flex gap-2 justify-center sm:justify-start">
                 <Mail className="w-4 h-4 text-primary shrink-0" />

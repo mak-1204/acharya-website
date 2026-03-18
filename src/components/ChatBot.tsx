@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -8,11 +9,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 const FAQS = [
   { keywords: ['course', 'offer', 'provide'], response: "We offer JEE, NEET, CUET, CLAT, Foundation (6-10), Integrated Programs, and Crash Courses." },
-  { keywords: ['fee', 'cost', 'price'], response: "Please call 9865440099 or fill the enquiry form for detailed fee structures based on your course." },
+  { keywords: ['fee', 'cost', 'price'], response: "Please call 9865440099 / 8870440099 or fill the enquiry form for detailed fee structures based on your course." },
   { keywords: ['batch', 'when', 'start'], response: "New batches start June 2025. We also have weekend batches for CLAT & CUET." },
   { keywords: ['online', 'offline'], response: "Yes! We offer both online live interactive classes and offline physical classes at our Madurai center." },
   { keywords: ['location', 'address', 'where'], response: "We are at No. 207, 8th St, Muthuramalingapuram, K. Pudur, Madurai - 625007." },
-  { keywords: ['enroll', 'admission', 'join'], response: "Fill out our enquiry form or call 9865440099 for an immediate response." },
+  { keywords: ['enroll', 'admission', 'join'], response: "Fill out our enquiry form or call 9865440099 / 8870440099 for an immediate response." },
 ];
 
 export const ChatBot = () => {
@@ -47,7 +48,7 @@ export const ChatBot = () => {
     const match = FAQS.find((faq) => faq.keywords.some((key) => query.includes(key)));
 
     setTimeout(() => {
-      const response = match ? match.response : "For more details, please call us at 9865440099 or fill the enquiry form on our website.";
+      const response = match ? match.response : "For more details, please call us at 9865440099 / 8870440099 or fill the enquiry form on our website.";
       setMessages((prev) => [...prev, { role: 'bot', content: response }]);
     }, 800);
   };

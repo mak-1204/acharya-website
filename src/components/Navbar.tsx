@@ -106,13 +106,22 @@ export const Navbar = () => {
 
         {/* Desktop Action Buttons (lg+) */}
         <div className="hidden lg:flex items-center gap-4 xl:gap-6 shrink-0">
-          <a
-            href="tel:9865440099"
-            className="flex items-center text-xs xl:text-sm font-bold text-[#1A237E] hover:text-[#D32F2F] transition-colors"
-          >
-            <Phone className="w-4 h-4 mr-2" />
-            9865440099
-          </a>
+          <div className="flex flex-col items-end">
+            <a
+              href="tel:9865440099"
+              className="flex items-center text-[10px] xl:text-xs font-bold text-[#1A237E] hover:text-[#D32F2F] transition-colors"
+            >
+              <Phone className="w-3 h-3 mr-1.5" />
+              9865440099
+            </a>
+            <a
+              href="tel:8870440099"
+              className="flex items-center text-[10px] xl:text-xs font-bold text-[#1A237E] hover:text-[#D32F2F] transition-colors"
+            >
+              <Phone className="w-3 h-3 mr-1.5" />
+              8870440099
+            </a>
+          </div>
           <Button asChild className="bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-full font-bold px-4 xl:px-6 h-9 xl:h-10 text-xs xl:text-sm text-white shadow-lg">
             <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Enquire Now</a>
           </Button>
@@ -163,13 +172,22 @@ export const Navbar = () => {
           <div className="mt-auto pt-8 pb-12 space-y-4">
             <div className="p-4 bg-muted rounded-2xl flex flex-col items-center gap-2">
               <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Support Line</p>
-              <a
-                href="tel:9865440099"
-                className="flex items-center gap-3 text-xl font-bold text-[#1A237E]"
-              >
-                <Phone className="w-5 h-5" />
-                9865440099
-              </a>
+              <div className="flex flex-col items-center gap-1">
+                <a
+                  href="tel:9865440099"
+                  className="flex items-center gap-3 text-xl font-bold text-[#1A237E]"
+                >
+                  <Phone className="w-5 h-5" />
+                  9865440099
+                </a>
+                <a
+                  href="tel:8870440099"
+                  className="flex items-center gap-3 text-xl font-bold text-[#1A237E]"
+                >
+                  <Phone className="w-5 h-5" />
+                  8870440099
+                </a>
+              </div>
             </div>
             <Button asChild className="w-full bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-xl h-14 text-lg font-bold shadow-lg text-white">
               <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Admission Enquiry</a>

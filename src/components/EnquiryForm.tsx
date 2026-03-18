@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -36,7 +37,8 @@ export const EnquiryForm = ({ source, title, isMinimal = false }: EnquiryFormPro
       </Button>
       
       <p className="mt-6 text-sm text-muted-foreground">
-        Or call us directly at <a href="tel:9865440099" className="font-bold text-secondary">9865440099</a>
+        Or call us directly at <br/>
+        <a href="tel:9865440099" className="font-bold text-secondary">98654 40099</a> / <a href="tel:8870440099" className="font-bold text-secondary">88704 40099</a>
       </p>
     </div>
   );
