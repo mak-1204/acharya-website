@@ -1,7 +1,6 @@
-
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc, serverTimestamp } from 'firebase/firestore';
 import { addDocumentNonBlocking, updateDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
@@ -12,9 +11,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, Trophy, Loader2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import Image from 'next/image';
 
 const getInitials = (name: string) => {
   return name
@@ -35,6 +33,17 @@ export default function StarsAdminPage() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
+  
+  // Controlled form state for the Switch
+  const [isPublished, setIsPublished] = useState(true);
+
+  useEffect(() => {
+    if (editingItem) {
+      setIsPublished(editingItem.isPublished ?? true);
+    } else {
+      setIsPublished(true);
+    }
+  }, [editingItem]);
 
   const handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -42,13 +51,13 @@ export default function StarsAdminPage() {
 
     const formData = new FormData(e.currentTarget);
     const data = {
-      name: formData.get('name'),
-      photo: formData.get('photo'),
-      score: formData.get('score'),
-      exam: formData.get('exam'),
-      courseName: formData.get('courseName'),
+      name: formData.get('name') as string,
+      photo: formData.get('photo') as string,
+      score: formData.get('score') as string,
+      exam: formData.get('exam') as string,
+      courseName: formData.get('courseName') as string,
       order: Number(formData.get('order')),
-      isPublished: formData.get('isPublished') === 'on',
+      isPublished: isPublished,
       updatedAt: serverTimestamp(),
     };
 
@@ -118,7 +127,11 @@ export default function StarsAdminPage() {
                   <Input id="star-order" name="order" type="number" defaultValue={editingItem?.order || 0} required />
                 </div>
                 <div className="flex items-center gap-2 pt-6">
-                  <Switch id="isPublished" name="isPublished" defaultChecked={editingItem?.isPublished ?? true} />
+                  <Switch 
+                    id="isPublished" 
+                    checked={isPublished}
+                    onCheckedChange={setIsPublished}
+                  />
                   <Label htmlFor="isPublished">Visible on Site</Label>
                 </div>
               </div>
