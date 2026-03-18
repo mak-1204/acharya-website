@@ -108,7 +108,6 @@ export default function Home() {
   useEffect(() => {
     const fetchImpactStats = async () => {
       try {
-        // Fetch all and filter in memory to avoid missing index errors during dev/testing
         const snap = await getDocs(query(collection(db, 'impact_stats'), orderBy('order', 'asc')));
         const allStats = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         setImpactStats(allStats.filter((s: any) => s.isPublished));
@@ -418,14 +417,14 @@ export default function Home() {
             <Badge className="bg-primary/10 text-primary border-none mb-4">Success Roadmap</Badge>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary leading-tight">Your Path to Excellence</h2>
           </div>
-          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-20 relative">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12 md:gap-x-12 md:gap-y-20 relative">
             <div className="hidden lg:block absolute top-12 left-[12%] right-[12%] h-0.5 bg-muted -translate-y-1/2 z-0"></div>
             {JOURNEY_STEPS.map((step, i) => (
               <div key={i} className="relative z-10 flex flex-col items-center text-center group">
                 <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white text-primary flex items-center justify-center mb-6 shadow-xl border-4 border-white ring-8 ring-primary/5 group-hover:scale-110 group-hover:ring-primary/10 transition-all duration-500">
                   <div className="w-8 h-8 md:w-10 md:h-10">{step.icon}</div>
                 </div>
-                <div className="absolute top-0 right-1/2 translate-x-12 -translate-y-2 w-8 h-8 rounded-full bg-secondary text-white text-xs font-bold flex items-center justify-center border-2 border-white shadow-lg">0{i + 1}</div>
+                <div className="absolute top-0 left-1/2 md:right-1/2 -translate-x-10 md:translate-x-12 -translate-y-2 w-8 h-8 rounded-full bg-secondary text-white text-xs font-bold flex items-center justify-center border-2 border-white shadow-lg">0{i + 1}</div>
                 <h3 className="text-xl font-bold text-secondary mb-3">{step.title}</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed max-w-[240px] px-4 md:px-0">{step.desc}</p>
               </div>
