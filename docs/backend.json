@@ -32,6 +32,10 @@
         "isFeatured": { "type": "boolean" },
         "isPublished": { "type": "boolean" },
         "order": { "type": "number" },
+        "audience": { "type": "string" },
+        "duration": { "type": "string" },
+        "highlights": { "type": "array", "items": { "type": "string" } },
+        "googleFormUrl": { "type": "string" },
         "createdAt": { "type": "string", "format": "date-time" },
         "updatedAt": { "type": "string", "format": "date-time" }
       },

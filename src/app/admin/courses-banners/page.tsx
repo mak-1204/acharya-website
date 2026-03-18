@@ -49,6 +49,7 @@ export default function CoursesBannersPage() {
   const [cAudience, setCAudience] = useState('');
   const [cDuration, setCDuration] = useState('');
   const [cHighlights, setCHighlights] = useState('');
+  const [cGoogleFormUrl, setCGoogleFormUrl] = useState('');
 
   const fetchData = async () => {
     setLoading(true);
@@ -71,7 +72,7 @@ export default function CoursesBannersPage() {
   };
 
   const resetCourseForm = () => {
-    setCTitle(''); setCSlug(''); setCDesc(''); setCBannerImage(''); setCPrice('0'); setCDiscountedPrice('0'); setCCategory(''); setCIsFeatured(false); setCIsPublished(true); setCOrder('0'); setCAudience(''); setCDuration(''); setCHighlights(''); setEditingCourse(null);
+    setCTitle(''); setCSlug(''); setCDesc(''); setCBannerImage(''); setCPrice('0'); setCDiscountedPrice('0'); setCCategory(''); setCIsFeatured(false); setCIsPublished(true); setCOrder('0'); setCAudience(''); setCDuration(''); setCHighlights(''); setCGoogleFormUrl(''); setEditingCourse(null);
   };
 
   const handleBannerSave = async (e: React.FormEvent) => {
@@ -102,6 +103,7 @@ export default function CoursesBannersPage() {
       audience: cAudience,
       duration: cDuration,
       highlights: cHighlights.split('\n').filter(h => h.trim() !== ''),
+      googleFormUrl: cGoogleFormUrl,
       updatedAt: serverTimestamp() 
     };
     try {
@@ -185,6 +187,7 @@ export default function CoursesBannersPage() {
                 </div>
                 <div className="space-y-2"><Label>Description</Label><Textarea value={cDesc} onChange={e => setCDesc(e.target.value)} /></div>
                 <div className="space-y-2"><Label>Program Highlights (One per line)</Label><Textarea value={cHighlights} onChange={e => setCHighlights(e.target.value)} placeholder="NCERT Intensive Program&#10;Daily Practice Papers" className="h-24" /></div>
+                <div className="space-y-2"><Label>Google Form Link (Enrollment URL)</Label><Input value={cGoogleFormUrl} onChange={e => setCGoogleFormUrl(e.target.value)} placeholder="https://docs.google.com/forms/..." /></div>
                 <div className="space-y-2"><Label>Banner Image URL</Label><Input value={cBannerImage} onChange={e => setCBannerImage(e.target.value)} /></div>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2"><Label>Price</Label><Input type="number" value={cPrice} onChange={e => setCPrice(e.target.value)} /></div>
@@ -231,6 +234,7 @@ export default function CoursesBannersPage() {
                     setCAudience(c.audience || '');
                     setCDuration(c.duration || '');
                     setCHighlights(Array.isArray(c.highlights) ? c.highlights.join('\n') : '');
+                    setCGoogleFormUrl(c.googleFormUrl || '');
                     setCourseDialogOpen(true); 
                   }}>Edit</Button>
                   <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10" onClick={() => handleDelete('courses', c.id)}><Trash2 className="w-4 h-4" /></Button>

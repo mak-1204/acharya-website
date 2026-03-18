@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { db } from '@/lib/firebase';
 import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
 
-const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
+const DEFAULT_GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   neet: <Zap className="w-6 h-6" />,
@@ -164,7 +164,7 @@ export default function CoursesPage() {
                             </p>
                             <div className="flex flex-col gap-3 pt-2">
                                <Button asChild className="w-full sm:w-auto bg-primary hover:bg-primary/90 h-12 px-8 rounded-full font-bold shadow-lg">
-                                 <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Enroll via Google Forms <ExternalLink className="ml-2 w-4 h-4" /></a>
+                                 <a href={course.googleFormUrl || DEFAULT_GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Enroll via Google Forms <ExternalLink className="ml-2 w-4 h-4" /></a>
                                </Button>
                                <Button asChild variant="outline" className="w-full sm:w-auto border-secondary text-secondary hover:bg-secondary/10 h-12 px-8 rounded-full font-bold shadow-md">
                                  <a href="tel:9865440099">Call to Enroll <Phone className="ml-2 w-4 h-4" /></a>
