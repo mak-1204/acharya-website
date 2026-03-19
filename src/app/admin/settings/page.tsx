@@ -1,9 +1,8 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -18,28 +17,28 @@ export default function SiteSettingsPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchSettings = async () => {
-      setLoading(true);
-      try {
-        const docRef = doc(db, 'site_settings', 'global');
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setEnquiryFormUrl(docSnap.data().enquiryFormUrl || '');
+    setLoading(true);
+    const unsub = onSnapshot(
+      doc(db, 'site_settings', 'general'),
+      (snap) => {
+        if (snap.exists()) {
+          setEnquiryFormUrl(snap.data().enquiryFormUrl || '');
         }
-      } catch (err: any) {
+        setLoading(false);
+      },
+      (err) => {
         toast({ title: 'Error fetching settings', description: err.message, variant: 'destructive' });
-      } finally {
         setLoading(false);
       }
-    };
-    fetchSettings();
+    );
+    return () => unsub();
   }, []);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      await setDoc(doc(db, 'site_settings', 'global'), {
+      await setDoc(doc(db, 'site_settings', 'general'), {
         enquiryFormUrl,
         updatedAt: serverTimestamp()
       }, { merge: true });
@@ -66,7 +65,7 @@ export default function SiteSettingsPage() {
           <Settings className="text-primary w-8 h-8" />
           Site Settings
         </h1>
-        <p className="text-muted-foreground italic">Configure global links and site-wide options.</p>
+        <p className="text-muted-foreground italic">Configure global links and site-wide options in real-time.</p>
       </div>
 
       <Card className="max-w-2xl border-none shadow-sm overflow-hidden">

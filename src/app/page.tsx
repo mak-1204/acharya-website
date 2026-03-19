@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -115,7 +114,7 @@ export default function Home() {
     setupListener('stars', where('isPublished', '==', true), 'stars');
 
     // 7. Listen to Site Settings
-    const unsubSettings = onSnapshot(doc(db, 'site_settings', 'global'), (snap) => {
+    const unsubSettings = onSnapshot(doc(db, 'site_settings', 'general'), (snap) => {
       if (snap.exists()) {
         setSiteData(prev => ({
           ...prev,

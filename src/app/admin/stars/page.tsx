@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, doc, addDoc, updateDoc, deleteDoc, getDocs, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -33,21 +33,20 @@ export default function StarsAdminPage() {
   const [isPublished, setIsPublished] = useState(true);
   const [order, setOrder] = useState('0');
 
-  const fetchItems = async () => {
-    setLoading(true);
-    try {
-      const snap = await getDocs(query(collection(db, 'stars'), orderBy('order', 'asc')));
-      setItems(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    } catch (err: any) {
-      console.error(err);
-      toast({ title: 'Error fetching', description: err.message, variant: 'destructive' });
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchItems();
+    setLoading(true);
+    const unsub = onSnapshot(
+      query(collection(db, 'stars'), orderBy('order', 'asc')),
+      (snapshot) => {
+        setItems(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+        setLoading(false);
+      },
+      (err) => {
+        toast({ title: 'Error fetching', description: err.message, variant: 'destructive' });
+        setLoading(false);
+      }
+    );
+    return () => unsub();
   }, []);
 
   const resetForm = () => {
@@ -97,9 +96,7 @@ export default function StarsAdminPage() {
       }
       setIsOpen(false);
       resetForm();
-      fetchItems();
     } catch (err: any) {
-      console.error(err);
       toast({ title: 'Error saving', description: err.message, variant: 'destructive' });
     } finally {
       setSubmitting(false);
@@ -110,7 +107,6 @@ export default function StarsAdminPage() {
     if (!confirm('Are you sure you want to remove this student?')) return;
     try {
       await deleteDoc(doc(db, 'stars', id));
-      setItems(prev => prev.filter(i => i.id !== id));
       toast({ title: 'Deleted', description: 'Student profile removed.' });
     } catch (err: any) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
@@ -125,7 +121,7 @@ export default function StarsAdminPage() {
             <StarIcon className="text-primary w-8 h-8" />
             Our Star Performers
           </h1>
-          <p className="text-muted-foreground italic">Highlight your students' academic achievements.</p>
+          <p className="text-muted-foreground italic">Highlight student achievements in real-time.</p>
         </div>
         <Dialog open={isOpen} onOpenChange={(v) => { setIsOpen(v); if(!v) resetForm(); }}>
           <DialogTrigger asChild>

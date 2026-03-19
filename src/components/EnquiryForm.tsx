@@ -1,11 +1,10 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, ClipboardCheck } from 'lucide-react';
 import { db } from '@/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 const DEFAULT_GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
 
@@ -19,17 +18,18 @@ export const EnquiryForm = ({ source, title, isMinimal = false }: EnquiryFormPro
   const [enquiryUrl, setEnquiryUrl] = useState(DEFAULT_GOOGLE_FORM_URL);
 
   useEffect(() => {
-    const fetchGlobalSettings = async () => {
-      try {
-        const snap = await getDoc(doc(db, 'site_settings', 'global'));
+    const unsub = onSnapshot(
+      doc(db, 'site_settings', 'general'),
+      (snap) => {
         if (snap.exists() && snap.data().enquiryFormUrl) {
           setEnquiryUrl(snap.data().enquiryFormUrl);
         }
-      } catch (err) {
-        console.error("Error fetching global enquiry URL:", err);
+      },
+      (err) => {
+        console.error("Error watching global enquiry URL:", err);
       }
-    };
-    fetchGlobalSettings();
+    );
+    return () => unsub();
   }, []);
 
   return (

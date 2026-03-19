@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, doc, addDoc, updateDoc, deleteDoc, getDocs, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -51,21 +51,38 @@ export default function CoursesBannersPage() {
   const [cHighlights, setCHighlights] = useState('');
   const [cGoogleFormUrl, setCGoogleFormUrl] = useState('');
 
-  const fetchData = async () => {
+  useEffect(() => {
     setLoading(true);
-    try {
-      const bSnap = await getDocs(query(collection(db, 'hero_banners'), orderBy('order', 'asc')));
-      const cSnap = await getDocs(query(collection(db, 'courses'), orderBy('order', 'asc')));
-      setBanners(bSnap.docs.map(d => ({ id: d.id, ...d.data() })));
-      setCourses(cSnap.docs.map(d => ({ id: d.id, ...d.data() })));
-    } catch (err: any) {
-      toast({ title: 'Error', description: err.message, variant: 'destructive' });
-    } finally {
-      setLoading(false);
-    }
-  };
+    
+    // Listen to Hero Banners
+    const unsubBanners = onSnapshot(
+      query(collection(db, 'hero_banners'), orderBy('order', 'asc')),
+      (snapshot) => {
+        setBanners(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+        setLoading(false);
+      },
+      (err) => {
+        toast({ title: 'Error loading banners', description: err.message, variant: 'destructive' });
+        setLoading(false);
+      }
+    );
 
-  useEffect(() => { fetchData(); }, []);
+    // Listen to Courses
+    const unsubCourses = onSnapshot(
+      query(collection(db, 'courses'), orderBy('order', 'asc')),
+      (snapshot) => {
+        setCourses(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+      },
+      (err) => {
+        toast({ title: 'Error loading courses', description: err.message, variant: 'destructive' });
+      }
+    );
+
+    return () => {
+      unsubBanners();
+      unsubCourses();
+    };
+  }, []);
 
   const resetBannerForm = () => {
     setBTitle(''); setBSubtitle(''); setBImageUrl(''); setBCtaText('Enroll Now'); setBCtaLink(''); setBIsActive(true); setBOrder('0'); setEditingBanner(null);
@@ -82,7 +99,7 @@ export default function CoursesBannersPage() {
     try {
       if (editingBanner) await updateDoc(doc(db, 'hero_banners', editingBanner.id), data);
       else await addDoc(collection(db, 'hero_banners'), { ...data, createdAt: serverTimestamp() });
-      setBannerDialogOpen(false); resetBannerForm(); fetchData(); toast({ title: 'Banner saved' });
+      setBannerDialogOpen(false); resetBannerForm(); toast({ title: 'Banner saved' });
     } catch (err: any) { toast({ variant: 'destructive', title: 'Error', description: err.message }); } finally { setSubmitting(false); }
   };
 
@@ -109,7 +126,7 @@ export default function CoursesBannersPage() {
     try {
       if (editingCourse) await updateDoc(doc(db, 'courses', editingCourse.id), data);
       else await addDoc(collection(db, 'courses'), { ...data, createdAt: serverTimestamp() });
-      setCourseDialogOpen(false); resetCourseForm(); fetchData(); toast({ title: 'Course saved' });
+      setCourseDialogOpen(false); resetCourseForm(); toast({ title: 'Course saved' });
     } catch (err: any) { toast({ variant: 'destructive', title: 'Error', description: err.message }); } finally { setSubmitting(false); }
   };
 
@@ -117,7 +134,6 @@ export default function CoursesBannersPage() {
     if (!confirm('Delete this item?')) return;
     try {
       await deleteDoc(doc(db, col, id));
-      fetchData();
       toast({ title: 'Deleted' });
     } catch (err: any) { toast({ variant: 'destructive', title: 'Error', description: err.message }); }
   };
@@ -126,7 +142,7 @@ export default function CoursesBannersPage() {
     <div className="space-y-12">
       <div className="space-y-2">
         <h1 className="text-3xl font-bold text-secondary">Promotions & Catalog</h1>
-        <p className="text-muted-foreground italic">Manage homepage banners and your educational offerings.</p>
+        <p className="text-muted-foreground italic">Manage homepage banners and your educational offerings in real-time.</p>
       </div>
 
       <section className="space-y-6">

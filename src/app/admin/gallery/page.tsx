@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, doc, addDoc, updateDoc, deleteDoc, getDocs, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -27,19 +27,21 @@ export default function GalleryAdminPage() {
   const [isPublished, setIsPublished] = useState(true);
   const [order, setOrder] = useState('0');
 
-  const fetchItems = async () => {
+  useEffect(() => {
     setLoading(true);
-    try {
-      const snap = await getDocs(query(collection(db, 'gallery'), orderBy('order', 'asc')));
-      setItems(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    } catch (err: any) {
-      toast({ title: 'Error', description: err.message, variant: 'destructive' });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => { fetchItems(); }, []);
+    const unsub = onSnapshot(
+      query(collection(db, 'gallery'), orderBy('order', 'asc')),
+      (snapshot) => {
+        setItems(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+        setLoading(false);
+      },
+      (err) => {
+        toast({ title: 'Error', description: err.message, variant: 'destructive' });
+        setLoading(false);
+      }
+    );
+    return () => unsub();
+  }, []);
 
   const resetForm = () => {
     setImageUrl(''); setCaption(''); setIsPublished(true); setOrder('0'); setEditingItem(null);
@@ -61,7 +63,7 @@ export default function GalleryAdminPage() {
     try {
       if (editingItem) await updateDoc(doc(db, 'gallery', editingItem.id), data);
       else await addDoc(collection(db, 'gallery'), { ...data, createdAt: serverTimestamp() });
-      setIsOpen(false); resetForm(); fetchItems(); toast({ title: 'Gallery item saved' });
+      setIsOpen(false); resetForm(); toast({ title: 'Gallery item saved' });
     } catch (err: any) { toast({ variant: 'destructive', title: 'Error', description: err.message }); } finally { setSubmitting(false); }
   };
 
@@ -69,7 +71,6 @@ export default function GalleryAdminPage() {
     if (!confirm('Delete this image?')) return;
     try {
       await deleteDoc(doc(db, 'gallery', id));
-      setItems(prev => prev.filter(i => i.id !== id));
       toast({ title: 'Deleted' });
     } catch (err: any) { toast({ variant: 'destructive', title: 'Error', description: err.message }); }
   };
@@ -79,7 +80,7 @@ export default function GalleryAdminPage() {
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold text-secondary flex items-center gap-2"><ImageIcon className="text-primary w-8 h-8" /> Campus Gallery</h1>
-          <p className="text-muted-foreground italic">Update the visual tour of your institute.</p>
+          <p className="text-muted-foreground italic">Update the visual tour of your institute in real-time.</p>
         </div>
         <Dialog open={isOpen} onOpenChange={v => { setIsOpen(v); if(!v) resetForm(); }}>
           <DialogTrigger asChild><Button className="rounded-xl gap-2 h-11 px-6"><Plus className="w-5 h-5" /> Add Image</Button></DialogTrigger>

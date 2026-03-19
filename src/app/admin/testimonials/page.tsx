@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
-import { collection, doc, addDoc, updateDoc, deleteDoc, getDocs, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -33,19 +33,21 @@ export default function TestimonialsAdminPage() {
   const [isPublished, setIsPublished] = useState(true);
   const [order, setOrder] = useState('0');
 
-  const fetchItems = async () => {
+  useEffect(() => {
     setLoading(true);
-    try {
-      const snap = await getDocs(query(collection(db, 'testimonials'), orderBy('order', 'asc')));
-      setItems(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    } catch (err: any) {
-      toast({ title: 'Error', description: err.message, variant: 'destructive' });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => { fetchItems(); }, []);
+    const unsub = onSnapshot(
+      query(collection(db, 'testimonials'), orderBy('order', 'asc')),
+      (snapshot) => {
+        setItems(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+        setLoading(false);
+      },
+      (err) => {
+        toast({ title: 'Error', description: err.message, variant: 'destructive' });
+        setLoading(false);
+      }
+    );
+    return () => unsub();
+  }, []);
 
   const resetForm = () => {
     setStudentName(''); setPhoto(''); setCourse(''); setReview(''); setResult(''); setRating('5'); setIsPublished(true); setOrder('0'); setEditingItem(null);
@@ -71,7 +73,7 @@ export default function TestimonialsAdminPage() {
     try {
       if (editingItem) await updateDoc(doc(db, 'testimonials', editingItem.id), data);
       else await addDoc(collection(db, 'testimonials'), { ...data, createdAt: serverTimestamp() });
-      setIsOpen(false); resetForm(); fetchItems(); toast({ title: 'Success', description: 'Testimonial saved.' });
+      setIsOpen(false); resetForm(); toast({ title: 'Success', description: 'Testimonial saved.' });
     } catch (err: any) { toast({ variant: 'destructive', title: 'Error', description: err.message }); } finally { setSubmitting(false); }
   };
 
@@ -79,7 +81,6 @@ export default function TestimonialsAdminPage() {
     if (!confirm('Delete this testimonial?')) return;
     try {
       await deleteDoc(doc(db, 'testimonials', id));
-      setItems(prev => prev.filter(i => i.id !== id));
       toast({ title: 'Deleted' });
     } catch (err: any) { toast({ variant: 'destructive', title: 'Error', description: err.message }); }
   };
@@ -89,7 +90,7 @@ export default function TestimonialsAdminPage() {
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h1 className="text-3xl font-bold text-secondary flex items-center gap-2"><MessageSquare className="text-primary w-8 h-8" /> Student Testimonials</h1>
-          <p className="text-muted-foreground italic">Manage student reviews and success stories.</p>
+          <p className="text-muted-foreground italic">Manage success stories in real-time.</p>
         </div>
         <Dialog open={isOpen} onOpenChange={v => { setIsOpen(v); if(!v) resetForm(); }}>
           <DialogTrigger asChild><Button className="rounded-xl gap-2 h-11 px-6"><Plus className="w-5 h-5" /> Add Testimonial</Button></DialogTrigger>
