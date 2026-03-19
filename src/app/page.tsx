@@ -28,6 +28,8 @@ import { collection, query, where, orderBy, getDocs, doc, getDoc } from 'firebas
 import { Skeleton } from '@/components/ui/skeleton';
 
 const DEFAULT_GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
+const CACHE_KEY = "acharya_site_data";
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 const ICON_MAP: Record<string, any> = {
   Users,
@@ -55,125 +57,88 @@ export default function Home() {
   const autoplayHero = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
   const autoplayStars = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
 
-  // --- Data Fetching State ---
-  const [banners, setBanners] = useState<any[]>([]);
-  const [bannersLoading, setBannersLoading] = useState(true);
-
-  const [impactStats, setImpactStats] = useState<any[]>([]);
-  const [impactStatsLoading, setImpactStatsLoading] = useState(true);
-
-  const [courses, setCourses] = useState<any[]>([]);
-  const [coursesLoading, setCoursesLoading] = useState(true);
-
-  const [testimonials, setTestimonials] = useState<any[]>([]);
-  const [testimonialsLoading, setTestimonialsLoading] = useState(true);
-
-  const [gallery, setGallery] = useState<any[]>([]);
-  const [galleryLoading, setGalleryLoading] = useState(true);
-
-  const [stars, setStars] = useState<any[]>([]);
-  const [starsLoading, setStarsLoading] = useState(true);
-
-  const [enquiryUrl, setEnquiryUrl] = useState(DEFAULT_GOOGLE_FORM_URL);
-
-  // --- Firestore Effects ---
-  useEffect(() => {
-    const fetchBanners = async () => {
-      try {
-        const snap = await getDocs(query(collection(db, 'hero_banners'), where('isActive', '==', true), orderBy('order', 'asc')));
-        setBanners(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-      } catch (err) {
-        console.error("Error fetching banners:", err);
-      } finally {
-        setBannersLoading(false);
-      }
-    };
-    fetchBanners();
-  }, []);
+  const [siteData, setSiteData] = useState<{
+    banners: any[];
+    impactStats: any[];
+    courses: any[];
+    testimonials: any[];
+    gallery: any[];
+    stars: any[];
+    enquiryUrl: string;
+    loading: boolean;
+  }>({
+    banners: [],
+    impactStats: [],
+    courses: [],
+    testimonials: [],
+    gallery: [],
+    stars: [],
+    enquiryUrl: DEFAULT_GOOGLE_FORM_URL,
+    loading: true,
+  });
 
   useEffect(() => {
-    const fetchGlobalSettings = async () => {
-      try {
-        const snap = await getDoc(doc(db, 'site_settings', 'global'));
-        if (snap.exists() && snap.data().enquiryFormUrl) {
-          setEnquiryUrl(snap.data().enquiryFormUrl);
+    const fetchData = async () => {
+      // 1. Check Cache
+      if (typeof window !== 'undefined') {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          try {
+            const { data, timestamp } = JSON.parse(cached);
+            if (Date.now() - timestamp < CACHE_DURATION) {
+              setSiteData({ ...data, loading: false });
+              return;
+            }
+          } catch (e) {
+            console.error("Cache parsing error", e);
+          }
         }
-      } catch (err) {
-        console.error("Error fetching global enquiry URL:", err);
       }
-    };
-    fetchGlobalSettings();
-  }, []);
 
-  useEffect(() => {
-    const fetchImpactStats = async () => {
+      // 2. Parallel Fetch
       try {
-        const snap = await getDocs(query(collection(db, 'impact_stats'), orderBy('order', 'asc')));
-        const allStats = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        setImpactStats(allStats.filter((s: any) => s.isPublished));
-      } catch (err) {
-        console.error("Error fetching impact stats:", err);
-      } finally {
-        setImpactStatsLoading(false);
-      }
-    };
-    fetchImpactStats();
-  }, []);
+        const [
+          bannersSnap,
+          statsSnap,
+          coursesSnap,
+          testimonialsSnap,
+          gallerySnap,
+          starsSnap,
+          settingsSnap
+        ] = await Promise.all([
+          getDocs(query(collection(db, 'hero_banners'), where('isActive', '==', true), orderBy('order', 'asc'))),
+          getDocs(query(collection(db, 'impact_stats'), where('isPublished', '==', true), orderBy('order', 'asc'))),
+          getDocs(query(collection(db, 'courses'), where('isPublished', '==', true), orderBy('order', 'asc'))),
+          getDocs(query(collection(db, 'testimonials'), where('isPublished', '==', true), orderBy('order', 'asc'))),
+          getDocs(query(collection(db, 'gallery'), where('isPublished', '==', true), orderBy('order', 'asc'))),
+          getDocs(query(collection(db, 'stars'), where('isPublished', '==', true), orderBy('order', 'asc'))),
+          getDoc(doc(db, 'site_settings', 'global'))
+        ]);
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const snap = await getDocs(query(collection(db, 'courses'), where('isPublished', '==', true), orderBy('order', 'asc')));
-        setCourses(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-      } catch (err) {
-        console.error("Error fetching courses:", err);
-      } finally {
-        setCoursesLoading(false);
-      }
-    };
-    fetchCourses();
-  }, []);
+        const freshData = {
+          banners: bannersSnap.docs.map(d => ({ id: d.id, ...d.data() })),
+          impactStats: statsSnap.docs.map(d => ({ id: d.id, ...d.data() })),
+          courses: coursesSnap.docs.map(d => ({ id: d.id, ...d.data() })),
+          testimonials: testimonialsSnap.docs.map(d => ({ id: d.id, ...d.data() })),
+          gallery: gallerySnap.docs.map(d => ({ id: d.id, ...d.data() })),
+          stars: starsSnap.docs.map(d => ({ id: d.id, ...d.data() })),
+          enquiryUrl: settingsSnap.exists() ? settingsSnap.data().enquiryFormUrl || DEFAULT_GOOGLE_FORM_URL : DEFAULT_GOOGLE_FORM_URL,
+        };
 
-  useEffect(() => {
-    const fetchTestimonials = async () => {
-      try {
-        const snap = await getDocs(query(collection(db, 'testimonials'), where('isPublished', '==', true), orderBy('order', 'asc')));
-        setTestimonials(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-      } catch (err) {
-        console.error("Error fetching testimonials:", err);
-      } finally {
-        setTestimonialsLoading(false);
-      }
-    };
-    fetchTestimonials();
-  }, []);
+        // 3. Update State & Cache
+        setSiteData({ ...freshData, loading: false });
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+          data: freshData,
+          timestamp: Date.now()
+        }));
 
-  useEffect(() => {
-    const fetchGallery = async () => {
-      try {
-        const snap = await getDocs(query(collection(db, 'gallery'), where('isPublished', '==', true), orderBy('order', 'asc')));
-        setGallery(snap.docs.map(d => ({ id: d.id, ...d.data() })));
       } catch (err) {
-        console.error("Error fetching gallery:", err);
-      } finally {
-        setGalleryLoading(false);
+        console.error("Error fetching site data:", err);
+        setSiteData(prev => ({ ...prev, loading: false }));
       }
     };
-    fetchGallery();
-  }, []);
 
-  useEffect(() => {
-    const fetchStars = async () => {
-      try {
-        const snap = await getDocs(query(collection(db, 'stars'), where('isPublished', '==', true), orderBy('order', 'asc')));
-        setStars(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-      } catch (err) {
-        console.error("Error fetching stars:", err);
-      } finally {
-        setStarsLoading(false);
-      }
-    };
-    fetchStars();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -188,15 +153,34 @@ export default function Home() {
     return <IconComp className="w-5 h-5" />;
   };
 
+  if (siteData.loading) {
+    return (
+      <div className="w-full animate-pulse">
+        {/* Hero skeleton */}
+        <div className="w-full h-[500px] md:h-[600px] bg-muted flex items-center justify-center">
+          <Loader2 className="animate-spin w-10 h-10 text-primary" />
+        </div>
+        {/* Stats skeleton */}
+        <div className="container mx-auto px-4 -mt-12">
+          <div className="h-24 bg-white rounded-3xl shadow-xl border w-full"></div>
+        </div>
+        {/* Content skeleton */}
+        <div className="py-20 container mx-auto px-4 max-w-7xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="h-64 bg-muted rounded-3xl" />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col w-full overflow-x-hidden">
       {/* 1. HERO SECTION */}
       <section id="hero" className="relative w-full pt-0 overflow-hidden">
-        {bannersLoading ? (
-          <div className="w-full h-[500px] md:h-[600px] bg-muted animate-pulse flex items-center justify-center">
-            <Loader2 className="animate-spin w-10 h-10 text-primary" />
-          </div>
-        ) : banners && banners.length > 0 ? (
+        {siteData.banners.length > 0 ? (
           <Carousel 
             setApi={setHeroApi} 
             opts={{ loop: true }} 
@@ -204,7 +188,7 @@ export default function Home() {
             className="w-full relative group"
           >
             <CarouselContent>
-              {banners.map((banner, index) => (
+              {siteData.banners.map((banner, index) => (
                 <CarouselItem key={index}>
                   <div className={cn("relative w-full min-h-[500px] md:h-[600px] flex items-center overflow-hidden py-12 md:py-0 bg-secondary")}>
                     <div className="container mx-auto px-4 z-10 grid grid-cols-1 lg:grid-cols-2 items-center gap-12 text-left">
@@ -220,7 +204,7 @@ export default function Home() {
                         </p>
                         <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-4">
                           <Button asChild size="lg" className="w-full sm:w-auto bg-white text-secondary hover:bg-white/90 font-bold rounded-full px-12 h-12 md:h-14 text-lg">
-                            <Link href={banner.ctaLink || enquiryUrl}>{banner.ctaText || 'Enroll Now'}</Link>
+                            <Link href={banner.ctaLink || siteData.enquiryUrl}>{banner.ctaText || 'Enroll Now'}</Link>
                           </Button>
                           <Button asChild size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-white text-white hover:bg-white/10 font-bold rounded-full px-12 h-12 md:h-14 text-lg">
                             <a href="tel:9865440099">Call Counselor</a>
@@ -251,7 +235,7 @@ export default function Home() {
             <CarouselNext className="hidden md:flex right-4 lg:right-8 bg-white/20 hover:bg-white/40 border-none text-white h-12 w-12 lg:h-14 lg:w-14 shadow-2xl transition-opacity opacity-0 group-hover:opacity-100 z-30" />
 
             <div className="absolute bottom-6 md:bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-20">
-              {banners.map((_, i) => (
+              {siteData.banners.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => heroApi?.scrollTo(i)}
@@ -269,26 +253,20 @@ export default function Home() {
       {/* 2. STATS STRIP */}
       <section id="stats" className="bg-white py-8 md:py-12 border-b relative z-30 -mt-6 md:-mt-12 mx-4 md:mx-12 lg:mx-auto max-w-7xl rounded-2xl md:rounded-3xl shadow-xl border">
         <div className="container mx-auto px-4">
-          {impactStatsLoading ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-              {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 text-center">
-              {impactStats.map((stat, i) => (
-                <div key={i} className="flex flex-col items-center group">
-                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-3 md:mb-4 group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                    {renderImpactStatIcon(stat.iconName)}
-                  </div>
-                  <div className="text-xl sm:text-2xl md:text-4xl font-bold text-secondary">{stat.value}</div>
-                  <div className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{stat.label}</div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 text-center">
+            {siteData.impactStats.map((stat, i) => (
+              <div key={i} className="flex flex-col items-center group">
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-3 md:mb-4 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                  {renderImpactStatIcon(stat.iconName)}
                 </div>
-              ))}
-              {impactStats.length === 0 && (
-                <div className="col-span-full py-2 text-muted-foreground italic text-sm">Empowering students in Madurai since 2007.</div>
-              )}
-            </div>
-          )}
+                <div className="text-xl sm:text-2xl md:text-4xl font-bold text-secondary">{stat.value}</div>
+                <div className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{stat.label}</div>
+              </div>
+            ))}
+            {siteData.impactStats.length === 0 && (
+              <div className="col-span-full py-2 text-muted-foreground italic text-sm">Empowering students in Madurai since 2007.</div>
+            )}
+          </div>
         </div>
       </section>
 
@@ -352,9 +330,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {coursesLoading ? (
-               Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-64 rounded-3xl" />)
-            ) : courses?.map((course) => (
+            {siteData.courses.map((course) => (
               <Card key={course.id} className="group hover:shadow-2xl transition-all duration-500 border rounded-2xl md:rounded-3xl overflow-hidden bg-white">
                 <CardContent className="p-6 md:p-8">
                   <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-secondary/5 flex items-center justify-center text-secondary mb-4 md:mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
@@ -408,7 +384,7 @@ export default function Home() {
       </section>
 
       {/* 6. MEET OUR STARS SECTION */}
-      {(starsLoading || (stars && stars.length > 0)) && (
+      {siteData.stars.length > 0 && (
         <section id="stars" className="py-16 md:py-24 bg-white scroll-mt-16 overflow-hidden">
           <div className="container mx-auto px-4 max-w-7xl">
             <div className="text-center">
@@ -417,58 +393,50 @@ export default function Home() {
               </h2>
 
               <div className="relative group px-1 md:px-12">
-                {starsLoading ? (
-                  <div className="flex gap-4 md:gap-6 overflow-hidden">
-                    {[1, 2, 3, 4, 5, 6].map((i) => (
-                      <Skeleton key={i} className="w-[140px] sm:w-[160px] md:w-[180px] h-[220px] md:h-[280px] rounded-xl md:rounded-2xl shrink-0" />
-                    ))}
-                  </div>
-                ) : (
-                  <Carousel
-                    opts={{
-                      align: "start",
-                      loop: stars.length > 4,
-                    }}
-                    plugins={[autoplayStars.current]}
-                    className="w-full"
-                  >
-                    <CarouselContent className="-ml-4">
-                      {stars.map((star) => (
-                        <CarouselItem key={star.id} className="pl-4 basis-[140px] sm:basis-[160px] md:basis-[200px] lg:basis-[220px]">
-                          <div className="bg-white rounded-xl md:rounded-2xl shadow-md overflow-hidden hover:scale-105 transition-transform duration-300 cursor-pointer border border-border h-full flex flex-col">
-                            <div className="h-32 sm:h-36 md:h-44 bg-gradient-to-br from-[#1A237E] to-[#D32F2F] flex items-center justify-center relative shrink-0">
-                              {star.photo ? (
-                                <Image 
-                                  src={star.photo} 
-                                  alt={star.name} 
-                                  fill 
-                                  className="object-cover" 
-                                  unoptimized={star.photo.includes('drive.google.com') || star.photo.includes('ibb.co')}
-                                />
-                              ) : (
-                                <span className="text-white text-2xl md:text-4xl font-bold">{getInitials(star.name)}</span>
-                              )}
-                              <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1 px-2 text-center">
-                                <span className="text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider">
-                                  {star.exam}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="p-3 md:p-4 text-left flex-1 flex flex-col justify-between">
-                              <div>
-                                <p className="font-bold text-[#1C1C1C] text-xs md:text-sm truncate">{star.name}</p>
-                                <p className="text-muted-foreground text-[8px] md:text-[10px] mt-0.5 line-clamp-1">{star.courseName}</p>
-                              </div>
-                              <p className="text-[#D32F2F] font-bold text-base md:text-lg mt-2 md:mt-3">{star.score}</p>
+                <Carousel
+                  opts={{
+                    align: "start",
+                    loop: siteData.stars.length > 4,
+                  }}
+                  plugins={[autoplayStars.current]}
+                  className="w-full"
+                >
+                  <CarouselContent className="-ml-4">
+                    {siteData.stars.map((star) => (
+                      <CarouselItem key={star.id} className="pl-4 basis-[140px] sm:basis-[160px] md:basis-[200px] lg:basis-[220px]">
+                        <div className="bg-white rounded-xl md:rounded-2xl shadow-md overflow-hidden hover:scale-105 transition-transform duration-300 cursor-pointer border border-border h-full flex flex-col">
+                          <div className="h-32 sm:h-36 md:h-44 bg-gradient-to-br from-[#1A237E] to-[#D32F2F] flex items-center justify-center relative shrink-0">
+                            {star.photo ? (
+                              <Image 
+                                src={star.photo} 
+                                alt={star.name} 
+                                fill 
+                                className="object-cover" 
+                                unoptimized={star.photo.includes('drive.google.com') || star.photo.includes('ibb.co')}
+                              />
+                            ) : (
+                              <span className="text-white text-2xl md:text-4xl font-bold">{getInitials(star.name)}</span>
+                            )}
+                            <div className="absolute bottom-0 left-0 right-0 bg-black/70 py-1 px-2 text-center">
+                              <span className="text-white text-[8px] md:text-[10px] font-bold uppercase tracking-wider">
+                                {star.exam}
+                              </span>
                             </div>
                           </div>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="hidden md:flex -left-4 bg-white border shadow-md hover:bg-muted" />
-                    <CarouselNext className="hidden md:flex -right-4 bg-white border shadow-md hover:bg-muted" />
-                  </Carousel>
-                )}
+                          <div className="p-3 md:p-4 text-left flex-1 flex flex-col justify-between">
+                            <div>
+                              <p className="font-bold text-[#1C1C1C] text-xs md:text-sm truncate">{star.name}</p>
+                              <p className="text-muted-foreground text-[8px] md:text-[10px] mt-0.5 line-clamp-1">{star.courseName}</p>
+                            </div>
+                            <p className="text-[#D32F2F] font-bold text-base md:text-lg mt-2 md:mt-3">{star.score}</p>
+                          </div>
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="hidden md:flex -left-4 bg-white border shadow-md hover:bg-muted" />
+                  <CarouselNext className="hidden md:flex -right-4 bg-white border shadow-md hover:bg-muted" />
+                </Carousel>
               </div>
             </div>
           </div>
@@ -476,7 +444,7 @@ export default function Home() {
       )}
 
       {/* 7. GALLERY SECTION */}
-      {(galleryLoading || (gallery && gallery.length > 0)) && (
+      {siteData.gallery.length > 0 && (
         <section id="gallery" className="py-16 md:py-24 bg-muted/30 scroll-mt-16">
           <div className="container mx-auto px-4 max-w-7xl">
             <div className="text-center mb-12 md:mb-16">
@@ -484,9 +452,7 @@ export default function Home() {
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary">Glimpses of Success</h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {galleryLoading ? (
-                Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-48 rounded-2xl" />)
-              ) : gallery?.map((img, i) => (
+              {siteData.gallery.map((img, i) => (
                 <div key={i} className={cn(
                   "relative overflow-hidden rounded-2xl shadow-lg group",
                   i === 0 && "col-span-2 row-span-2 h-[300px] md:h-[500px]",
@@ -512,14 +478,12 @@ export default function Home() {
       )}
 
       {/* 8. TESTIMONIALS SECTION */}
-      {(testimonialsLoading || (testimonials && testimonials.length > 0)) && (
+      {siteData.testimonials.length > 0 && (
         <section id="testimonials" className="py-16 md:py-24 bg-white scroll-mt-16">
           <div className="container mx-auto px-4 max-w-7xl">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary mb-12 md:mb-16 text-center">What Our Students Say</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {testimonialsLoading ? (
-                Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-48 rounded-3xl" />)
-              ) : testimonials?.map((t, i) => (
+              {siteData.testimonials.map((t, i) => (
                 <Card key={i} className="border-none shadow-xl rounded-2xl md:rounded-3xl p-6 md:p-10 bg-muted/30">
                   <Quote className="w-8 h-8 md:w-10 md:h-10 text-primary mb-4 md:mb-6 opacity-20 mx-auto" />
                   <p className="text-base md:text-lg italic text-secondary mb-6 md:mb-8 text-center">"{t.review}"</p>
