@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Lock, Eye, EyeOff, ArrowLeft, Info } from 'lucide-react';
+import { Loader2, Lock, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { useToast } from '@/hooks/use-toast';
 
@@ -74,14 +74,8 @@ export default function LoginPage() {
       }
     } catch (err: any) {
       console.error("Login Error:", err);
-      // Firebase returns 'auth/invalid-credential' for both wrong password and user not found
-      if (err.code === 'auth/invalid-credential') {
-        setError('Invalid email or password.');
-      } else if (err.code === 'auth/too-many-requests') {
-        setError('Too many failed attempts. Please try again later.');
-      } else {
-        setError('An error occurred during sign in. Please try again.');
-      }
+      // User friendly error message
+      setError('Invalid email or password.');
     } finally {
       setLoading(false);
     }
@@ -168,15 +162,6 @@ export default function LoginPage() {
             </CardFooter>
           </form>
         </Card>
-
-        {/* Development Helper Tip */}
-        <div className="p-4 bg-primary/5 border border-primary/10 rounded-2xl flex items-start gap-3">
-          <div className="text-[11px] text-muted-foreground leading-relaxed">
-            <p className="font-bold text-secondary mb-1">Login Tip:</p>
-            1. Create the user in <span className="font-bold">Firebase Console &gt; Authentication</span>.<br/>
-            2. Add the same email to the <span className="font-bold">admin</span> Firestore collection with field <span className="font-bold">user mail id</span>.
-          </div>
-        </div>
       </div>
     </div>
   );
