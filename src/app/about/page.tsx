@@ -1,17 +1,14 @@
 
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
-  Trophy, Users, GraduationCap, MapPin, 
-  Calendar, Eye, Target, ArrowRight 
+  Trophy, Users, GraduationCap, Target, Eye, BookOpen, CircleCheckBig
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 const WHY_ACHARYA_FEATURES = [
   { title: 'Experienced Faculty', desc: 'Expert mentors with 15+ years of proven success stories', icon: <GraduationCap className="text-primary" /> },
@@ -30,8 +27,6 @@ const TIMELINE_DATA = [
   { year: '2020', text: 'Introduced Online + Hybrid learning modes' },
   { year: '2024', text: '50,000+ students trained across 7+ centres' },
 ];
-
-import { BookOpen, CircleCheckBig } from 'lucide-react';
 
 export default function AboutPage() {
   return (
@@ -85,8 +80,8 @@ export default function AboutPage() {
             </div>
             <div className="relative aspect-square lg:aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl border-8 border-muted">
               <Image 
-                src="/ACHARYA.png" 
-                alt="Acharya Education Team" 
+                src="https://i.postimg.cc/SNbPKy8N/Whats-App-Image-2026-03-18-at-1-59-41-PM.jpg" 
+                alt="Acharya Education Campus" 
                 fill 
                 className="object-cover"
                 data-ai-hint="educational classroom"
