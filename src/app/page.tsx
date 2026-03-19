@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -23,7 +24,7 @@ import {
 } from "@/components/ui/carousel";
 import { cn } from '@/lib/utils';
 import { db } from '@/lib/firebase';
-import { collection, query, where, orderBy, onSnapshot, doc } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, doc, QueryConstraint } from 'firebase/firestore';
 
 const DEFAULT_GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
 
@@ -61,7 +62,6 @@ export default function Home() {
     gallery: any[];
     stars: any[];
     enquiryUrl: string;
-    loading: boolean;
   }>({
     banners: [],
     impactStats: [],
@@ -70,27 +70,36 @@ export default function Home() {
     gallery: [],
     stars: [],
     enquiryUrl: DEFAULT_GOOGLE_FORM_URL,
-    loading: true,
   });
 
-  useEffect(() => {
-    setSiteData(prev => ({ ...prev, loading: true }));
+  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({
+    banners: true,
+    impactStats: true,
+    courses: true,
+    testimonials: true,
+    gallery: true,
+    stars: true,
+    settings: true
+  });
 
+  const isPageLoading = Object.values(loadingStates).some(loading => loading);
+
+  useEffect(() => {
     const unsubscribers: (() => void)[] = [];
 
     // Helper to setup real-time listeners for collections
-    const setupListener = (colName: string, constraints: any, stateKey: string) => {
+    const setupListener = (colName: string, constraints: QueryConstraint, stateKey: string) => {
       const q = query(collection(db, colName), constraints, orderBy('order', 'asc'));
       const unsub = onSnapshot(q, (snapshot) => {
         const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         setSiteData(prev => ({
           ...prev,
-          [stateKey]: docs,
-          loading: false
+          [stateKey]: docs
         }));
+        setLoadingStates(prev => ({ ...prev, [stateKey]: false }));
       }, (err) => {
         console.error(`Error in ${colName} listener:`, err);
-        setSiteData(prev => ({ ...prev, loading: false }));
+        setLoadingStates(prev => ({ ...prev, [stateKey]: false }));
       });
       unsubscribers.push(unsub);
     };
@@ -118,19 +127,16 @@ export default function Home() {
       if (snap.exists()) {
         setSiteData(prev => ({
           ...prev,
-          enquiryUrl: snap.data().enquiryFormUrl || DEFAULT_GOOGLE_FORM_URL,
-          loading: false
+          enquiryUrl: snap.data().enquiryFormUrl || DEFAULT_GOOGLE_FORM_URL
         }));
-      } else {
-        setSiteData(prev => ({ ...prev, loading: false }));
       }
+      setLoadingStates(prev => ({ ...prev, settings: false }));
     }, (err) => {
       console.error("Error in site_settings listener:", err);
-      setSiteData(prev => ({ ...prev, loading: false }));
+      setLoadingStates(prev => ({ ...prev, settings: false }));
     });
     unsubscribers.push(unsubSettings);
 
-    // Cleanup all listeners on unmount
     return () => {
       unsubscribers.forEach(unsub => unsub());
     };
@@ -148,7 +154,7 @@ export default function Home() {
     return <IconComp className="w-5 h-5" />;
   };
 
-  if (siteData.loading && siteData.banners.length === 0) {
+  if (isPageLoading) {
     return (
       <div className="w-full animate-pulse">
         {/* Hero skeleton */}
@@ -249,16 +255,17 @@ export default function Home() {
       <section id="stats" className="bg-white py-8 md:py-12 border-b relative z-30 -mt-6 md:-mt-12 mx-4 md:mx-12 lg:mx-auto max-w-7xl rounded-2xl md:rounded-3xl shadow-xl border">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 text-center">
-            {siteData.impactStats.map((stat, i) => (
-              <div key={i} className="flex flex-col items-center group">
-                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-3 md:mb-4 group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                  {renderImpactStatIcon(stat.iconName)}
+            {siteData.impactStats.length > 0 ? (
+              siteData.impactStats.map((stat, i) => (
+                <div key={i} className="flex flex-col items-center group">
+                  <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-3 md:mb-4 group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                    {renderImpactStatIcon(stat.iconName)}
+                  </div>
+                  <div className="text-xl sm:text-2xl md:text-4xl font-bold text-secondary">{stat.value}</div>
+                  <div className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{stat.label}</div>
                 </div>
-                <div className="text-xl sm:text-2xl md:text-4xl font-bold text-secondary">{stat.value}</div>
-                <div className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest mt-1">{stat.label}</div>
-              </div>
-            ))}
-            {siteData.impactStats.length === 0 && (
+              ))
+            ) : (
               <div className="col-span-full py-2 text-muted-foreground italic text-sm">Empowering students in Madurai since 2007.</div>
             )}
           </div>
