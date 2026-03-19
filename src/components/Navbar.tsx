@@ -110,7 +110,7 @@ export const Navbar = () => {
               onClick={(e) => handleLinkClick(e, link.href, link.isExternal)}
               className={cn(
                 'text-xs xl:text-sm font-bold transition-colors hover:text-[#D32F2F] whitespace-nowrap uppercase tracking-wider',
-                (isHomePage && activeSection === link.href.substring(1)) || (pathname === link.href)
+                (isHomePage && activeSection === (link.href.startsWith('#') ? link.href.substring(1) : link.href))
                   ? 'text-[#D32F2F]' 
                   : 'text-foreground/80'
               )}
@@ -175,7 +175,7 @@ export const Navbar = () => {
                 onClick={(e) => handleLinkClick(e, link.href, link.isExternal)}
                 className={cn(
                   'text-sm font-bold flex items-center justify-between py-4 border-b border-muted uppercase tracking-wide',
-                  (isHomePage && activeSection === link.href.substring(1)) || (pathname === link.href)
+                  (isHomePage && activeSection === (link.href.startsWith('#') ? link.href.substring(1) : link.href))
                     ? 'text-[#D32F2F]' 
                     : 'text-foreground/80'
                 )}
