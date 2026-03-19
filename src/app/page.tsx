@@ -327,7 +327,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {siteData.courses.map((course) => (
+            {siteData.courses.slice(0, 6).map((course) => (
               <Card key={course.id} className="group hover:shadow-2xl transition-all duration-500 border rounded-2xl md:rounded-3xl overflow-hidden bg-white">
                 <CardContent className="p-6 md:p-8">
                   <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-secondary/5 flex items-center justify-center text-secondary mb-4 md:mb-6 group-hover:bg-primary group-hover:text-white transition-colors">
@@ -345,6 +345,14 @@ export default function Home() {
               </Card>
             ))}
           </div>
+
+          {siteData.courses.length > 6 && (
+            <div className="text-center mt-12">
+              <Button asChild size="lg" variant="outline" className="border-primary text-primary hover:bg-primary/5 rounded-full px-10 h-14 font-bold">
+                <Link href="/courses">Explore Other Programs <ArrowRight className="ml-2 w-5 h-5" /></Link>
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 
