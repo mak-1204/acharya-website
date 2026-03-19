@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -72,11 +71,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="flex min-h-screen bg-muted/30">
       {/* Sidebar */}
-      <aside className="w-64 bg-secondary text-white hidden md:flex flex-col fixed inset-y-0 border-r border-white/10">
-        <div className="p-6 border-b border-white/5 flex justify-center bg-white">
+      <aside className="w-64 bg-secondary text-white hidden md:flex flex-col fixed inset-y-0 border-r border-white/10 shadow-2xl">
+        <div className="p-6 border-b border-white/5 flex flex-col items-center bg-white">
           <Link href="/admin">
-            <Logo className="h-12" />
+            <Logo className="h-14" />
           </Link>
+          <div className="mt-3 px-3 py-1 bg-secondary/5 border border-secondary/10 rounded-full">
+            <span className="text-[10px] font-black text-secondary uppercase tracking-[0.2em]">Admin Portal</span>
+          </div>
         </div>
         <nav className="flex-1 p-6 space-y-2 overflow-y-auto">
           {navLinks.map((link) => {
