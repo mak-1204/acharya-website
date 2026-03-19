@@ -73,11 +73,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex min-h-screen bg-muted/30">
       {/* Sidebar */}
       <aside className="w-64 bg-secondary text-white hidden md:flex flex-col fixed inset-y-0 border-r border-white/10">
-        <div className="p-6 border-b border-white/5 flex justify-center">
+        <div className="p-6 border-b border-white/5 flex justify-center bg-white">
           <Link href="/admin">
-            <div className="bg-white p-2 rounded-xl">
-              <Logo className="h-8" />
-            </div>
+            <Logo className="h-12" />
           </Link>
         </div>
         <nav className="flex-1 p-6 space-y-2 overflow-y-auto">
