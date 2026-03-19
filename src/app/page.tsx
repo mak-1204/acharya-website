@@ -294,56 +294,41 @@ export default function Home() {
 
       {/* 3. SIMPLIFIED ABOUT SECTION */}
       <section id="about" className="py-20 bg-[#F5F5F5] scroll-mt-16 overflow-hidden">
-        <div className="container mx-auto px-4 lg:px-16 max-w-7xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8">
-              <div>
-                <span className="text-primary font-bold text-sm tracking-widest uppercase block mb-4">About Us</span>
-                <h2 className="text-3xl md:text-5xl font-bold text-secondary leading-tight">
-                  Madurai's Most Trusted Coaching Since 2007
-                </h2>
-              </div>
-              <div className="space-y-6 text-muted-foreground text-lg leading-relaxed">
-                <p>
-                  At Acharya Education, we understand the value of nurturing ambitious dreams from an early age. Since 2007, we have provided a unique and distinct learning experience. Unlike others who merely teach, we actively explore knowledge and foster practical understanding.
-                </p>
-                <p>
-                  What sets us apart is our unwavering commitment to quality and academic standards. Our exceptional study materials, experienced teaching faculty, and well-structured programs make us Madurai's most trusted coaching institute.
-                </p>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[
-                  "Expert Faculty with 15+ Years Experience",
-                  "Limited Batch Size of 15 Students",
-                  "Personalized Attention & Doubt Clearing",
-                  "Proven Results Since 2007"
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <CircleCheckBig className="text-primary w-5 h-5 shrink-0" />
-                    <span className="font-bold text-secondary text-sm md:text-base">{item}</span>
-                  </div>
-                ))}
-              </div>
+        <div className="container mx-auto px-4 lg:px-16 max-w-3xl">
+          <div className="space-y-8 text-center">
+            <div>
+              <span className="text-primary font-bold text-sm tracking-widest uppercase block mb-4">About Us</span>
+              <h2 className="text-3xl md:text-5xl font-bold text-secondary leading-tight">
+                Madurai's Most Trusted Coaching Since 2007
+              </h2>
+            </div>
+            <div className="space-y-6 text-muted-foreground text-lg leading-relaxed">
+              <p>
+                At Acharya Education, we understand the value of nurturing ambitious dreams from an early age. Since 2007, we have provided a unique and distinct learning experience. Unlike others who merely teach, we actively explore knowledge and foster practical understanding.
+              </p>
+              <p>
+                What sets us apart is our unwavering commitment to quality and academic standards. Our exceptional study materials, experienced teaching faculty, and well-structured programs make us Madurai's most trusted coaching institute.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                "Expert Faculty with 15+ Years Experience",
+                "Limited Batch Size of 15 Students",
+                "Personalized Attention & Doubt Clearing",
+                "Proven Results Since 2007"
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-3 justify-center sm:justify-start">
+                  <CircleCheckBig className="text-primary w-5 h-5 shrink-0" />
+                  <span className="font-bold text-secondary text-sm md:text-base">{item}</span>
+                </div>
+              ))}
+            </div>
+            <div className="pt-4">
               <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-10 h-14 font-bold shadow-lg group">
                 <Link href="/about">
                   Know More About Us <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
-            </div>
-            
-            {/* Stats Grid Right Side */}
-            <div className="grid grid-cols-2 gap-4 md:gap-6">
-              {[
-                { val: '50,000+', label: 'Students Trained', color: 'text-primary' },
-                { val: '300+', label: 'Teachers Benefited', color: 'text-primary' },
-                { val: '7+', label: 'Centres', color: 'text-primary' },
-                { val: '17+', label: 'Years of Excellence', color: 'text-primary' }
-              ].map((s, i) => (
-                <div key={i} className="bg-white p-6 md:p-8 rounded-2xl shadow-sm flex flex-col items-center text-center justify-center hover:shadow-md transition-shadow">
-                  <div className={cn("text-2xl md:text-4xl font-bold mb-2", s.color)}>{s.val}</div>
-                  <div className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground">{s.label}</div>
-                </div>
-              ))}
             </div>
           </div>
         </div>
