@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { Loader2, LayoutDashboard, LayoutTemplate, ImageIcon, MessageSquare, Star, LogOut, ExternalLink, BarChart3 } from 'lucide-react';
+import { Loader2, LayoutDashboard, LayoutTemplate, ImageIcon, MessageSquare, Star, LogOut, ExternalLink, BarChart3, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -60,6 +60,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: 'Gallery', href: '/admin/gallery', icon: ImageIcon },
     { name: 'Testimonials', href: '/admin/testimonials', icon: MessageSquare },
     { name: 'Our Stars', href: '/admin/stars', icon: Star },
+    { name: 'Site Settings', href: '/admin/settings', icon: Settings },
   ];
 
   const handleLogout = async () => {

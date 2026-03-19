@@ -8,8 +8,10 @@ import { Menu, X, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Logo } from './Logo';
+import { db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
-const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
+const DEFAULT_GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
 
 const NAV_LINKS = [
   { name: 'Home', href: '#hero' },
@@ -23,8 +25,23 @@ const NAV_LINKS = [
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+  const [enquiryUrl, setEnquiryUrl] = useState(DEFAULT_GOOGLE_FORM_URL);
   const pathname = usePathname();
   const isHomePage = pathname === '/';
+
+  useEffect(() => {
+    const fetchGlobalSettings = async () => {
+      try {
+        const snap = await getDoc(doc(db, 'site_settings', 'global'));
+        if (snap.exists() && snap.data().enquiryFormUrl) {
+          setEnquiryUrl(snap.data().enquiryFormUrl);
+        }
+      } catch (err) {
+        console.error("Error fetching global enquiry URL:", err);
+      }
+    };
+    fetchGlobalSettings();
+  }, []);
 
   useEffect(() => {
     if (!isHomePage) return;
@@ -122,7 +139,7 @@ export const Navbar = () => {
             </a>
           </div>
           <Button asChild className="bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-full font-bold px-4 xl:px-6 h-9 xl:h-10 text-xs xl:text-sm text-white shadow-lg">
-            <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Enquire Now</a>
+            <a href={enquiryUrl} target="_blank" rel="noopener noreferrer">Enquire Now</a>
           </Button>
         </div>
 
@@ -130,7 +147,7 @@ export const Navbar = () => {
         <div className="flex lg:hidden items-center gap-2 sm:gap-3">
           {/* Tablet Only Enquire (md+) */}
           <Button asChild className="hidden sm:flex lg:hidden bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-full font-bold px-4 h-9 text-xs shadow-md text-white">
-            <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Enquire</a>
+            <a href={enquiryUrl} target="_blank" rel="noopener noreferrer">Enquire</a>
           </Button>
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -189,7 +206,7 @@ export const Navbar = () => {
               </div>
             </div>
             <Button asChild className="w-full bg-[#D32F2F] hover:bg-[#D32F2F]/90 rounded-xl h-14 text-lg font-bold shadow-lg text-white">
-              <a href={GOOGLE_FORM_URL} target="_blank" rel="noopener noreferrer">Admission Enquiry</a>
+              <a href={enquiryUrl} target="_blank" rel="noopener noreferrer">Admission Enquiry</a>
             </Button>
           </div>
         </div>

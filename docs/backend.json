@@ -106,6 +106,15 @@
       },
       "required": ["label", "value", "iconName", "order"]
     },
+    "SiteSetting": {
+      "title": "SiteSetting",
+      "description": "Global site-wide configuration settings.",
+      "type": "object",
+      "properties": {
+        "enquiryFormUrl": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
     "Admin": {
       "title": "Admin",
       "description": "List of authorized administrators.",
@@ -168,6 +177,14 @@
           "entityName": "ImpactStat",
           "schema": { "$ref": "#/backend/entities/ImpactStat" },
           "description": "Counter statistics for landing page."
+        }
+      },
+      {
+        "path": "/site_settings/{settingId}",
+        "definition": {
+          "entityName": "SiteSetting",
+          "schema": { "$ref": "#/backend/entities/SiteSetting" },
+          "description": "Global settings like Enquire Form URL."
         }
       },
       {

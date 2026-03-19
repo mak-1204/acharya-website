@@ -24,10 +24,10 @@ import {
 } from "@/components/ui/carousel";
 import { cn } from '@/lib/utils';
 import { db } from '@/lib/firebase';
-import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
+import { collection, query, where, orderBy, getDocs, doc, getDoc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
+const DEFAULT_GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
 
 const WHY_ACHARYA = [
   { title: 'Experienced Faculty', desc: 'Expert mentors with 15+ years of success stories.', icon: <Award className="text-primary" /> },
@@ -90,6 +90,8 @@ export default function Home() {
   const [stars, setStars] = useState<any[]>([]);
   const [starsLoading, setStarsLoading] = useState(true);
 
+  const [enquiryUrl, setEnquiryUrl] = useState(DEFAULT_GOOGLE_FORM_URL);
+
   // --- Firestore Effects ---
   useEffect(() => {
     const fetchBanners = async () => {
@@ -103,6 +105,20 @@ export default function Home() {
       }
     };
     fetchBanners();
+  }, []);
+
+  useEffect(() => {
+    const fetchGlobalSettings = async () => {
+      try {
+        const snap = await getDoc(doc(db, 'site_settings', 'global'));
+        if (snap.exists() && snap.data().enquiryFormUrl) {
+          setEnquiryUrl(snap.data().enquiryFormUrl);
+        }
+      } catch (err) {
+        console.error("Error fetching global enquiry URL:", err);
+      }
+    };
+    fetchGlobalSettings();
   }, []);
 
   useEffect(() => {
@@ -220,7 +236,7 @@ export default function Home() {
                         </p>
                         <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-4">
                           <Button asChild size="lg" className="w-full sm:w-auto bg-white text-secondary hover:bg-white/90 font-bold rounded-full px-12 h-12 md:h-14 text-lg">
-                            <Link href={banner.ctaLink || GOOGLE_FORM_URL}>{banner.ctaText || 'Enroll Now'}</Link>
+                            <Link href={banner.ctaLink || enquiryUrl}>{banner.ctaText || 'Enroll Now'}</Link>
                           </Button>
                           <Button asChild size="lg" variant="outline" className="w-full sm:w-auto bg-transparent border-white text-white hover:bg-white/10 font-bold rounded-full px-12 h-12 md:h-14 text-lg">
                             <a href="tel:9865440099">Call Counselor</a>
