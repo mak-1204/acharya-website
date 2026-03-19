@@ -294,41 +294,50 @@ export default function Home() {
 
       {/* 3. SIMPLIFIED ABOUT SECTION */}
       <section id="about" className="py-20 bg-[#F5F5F5] scroll-mt-16 overflow-hidden">
-        <div className="container mx-auto px-4 lg:px-16 max-w-3xl">
-          <div className="space-y-8 text-center">
-            <div>
-              <span className="text-primary font-bold text-sm tracking-widest uppercase block mb-4">About Us</span>
-              <h2 className="text-3xl md:text-5xl font-bold text-secondary leading-tight">
-                Madurai's Most Trusted Coaching Since 2007
-              </h2>
+        <div className="container mx-auto px-4 lg:px-16 max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <div className="space-y-6 text-left">
+              <div>
+                <span className="text-primary font-bold text-sm tracking-widest uppercase block mb-2">About Us</span>
+                <h2 className="text-3xl md:text-5xl font-bold text-secondary leading-tight">
+                  Madurai's Most Trusted Coaching Since 2007
+                </h2>
+              </div>
+              <div className="space-y-4 text-muted-foreground text-lg leading-relaxed">
+                <p>
+                  At Acharya Education, we understand the value of nurturing ambitious dreams from an early age. Since 2007, we have provided a unique and distinct learning experience. Unlike others who merely teach, we actively explore knowledge and foster practical understanding.
+                </p>
+                <p>
+                  What sets us apart is our unwavering commitment to quality and academic standards. Our exceptional study materials, experienced teaching faculty, and well-structured programs make us Madurai's most trusted coaching institute.
+                </p>
+              </div>
+              <div className="pt-4">
+                <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-10 h-14 font-bold shadow-lg group">
+                  <Link href="/about">
+                    Know More About Us <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+              </div>
             </div>
-            <div className="space-y-6 text-muted-foreground text-lg leading-relaxed">
-              <p>
-                At Acharya Education, we understand the value of nurturing ambitious dreams from an early age. Since 2007, we have provided a unique and distinct learning experience. Unlike others who merely teach, we actively explore knowledge and foster practical understanding.
-              </p>
-              <p>
-                What sets us apart is our unwavering commitment to quality and academic standards. Our exceptional study materials, experienced teaching faculty, and well-structured programs make us Madurai's most trusted coaching institute.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {[
-                "Expert Faculty with 15+ Years Experience",
-                "Limited Batch Size of 15 Students",
-                "Personalized Attention & Doubt Clearing",
-                "Proven Results Since 2007"
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-3 justify-center sm:justify-start">
-                  <CircleCheckBig className="text-primary w-5 h-5 shrink-0" />
-                  <span className="font-bold text-secondary text-sm md:text-base">{item}</span>
-                </div>
-              ))}
-            </div>
-            <div className="pt-4">
-              <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-10 h-14 font-bold shadow-lg group">
-                <Link href="/about">
-                  Know More About Us <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </Button>
+
+            <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl border border-white/50 relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+               <div className="space-y-6 relative z-10">
+                 <h4 className="text-secondary font-bold text-xl mb-6">Why Choose Acharya?</h4>
+                 {[
+                   "Expert Faculty with 15+ Years Experience",
+                   "Limited Batch Size of 15 Students",
+                   "Personalized Attention & Doubt Clearing",
+                   "Proven Results Since 2007"
+                 ].map((item, i) => (
+                   <div key={i} className="flex items-center gap-4 group">
+                     <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                       <CircleCheckBig className="text-primary w-6 h-6" />
+                     </div>
+                     <span className="font-bold text-secondary text-base md:text-lg">{item}</span>
+                   </div>
+                 ))}
+               </div>
             </div>
           </div>
         </div>
