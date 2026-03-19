@@ -23,8 +23,8 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import { cn } from '@/lib/utils';
-import { db } from '@/lib/firebase';
-import { collection, query, where, orderBy, onSnapshot, doc, QueryConstraint } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
+import { collection, query, orderBy, onSnapshot, doc } from 'firebase/firestore';
 
 const DEFAULT_GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
 
@@ -53,6 +53,8 @@ export default function Home() {
   const [heroCurrent, setHeroCurrent] = useState(0);
   const autoplayHero = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
   const autoplayStars = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
+  
+  const db = useFirestore();
 
   const [siteData, setSiteData] = useState<{
     banners: any[];
@@ -85,16 +87,24 @@ export default function Home() {
   const isPageLoading = Object.values(loadingStates).some(loading => loading);
 
   useEffect(() => {
+    if (!db) return;
     const unsubscribers: (() => void)[] = [];
 
     // Helper to setup real-time listeners for collections
-    const setupListener = (colName: string, stateKey: string, constraints?: QueryConstraint) => {
-      const q = constraints 
-        ? query(collection(db, colName), constraints, orderBy('order', 'asc'))
-        : query(collection(db, colName), orderBy('order', 'asc'));
+    // Using client-side filtering to avoid mandatory composite index errors during development
+    const setupListener = (colName: string, stateKey: string) => {
+      const q = query(collection(db, colName), orderBy('order', 'asc'));
 
       const unsub = onSnapshot(q, (snapshot) => {
-        const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        let docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        
+        // Client-side filtering
+        if (stateKey === 'banners') {
+          docs = docs.filter((d: any) => d.isActive === true);
+        } else {
+          docs = docs.filter((d: any) => d.isPublished === true);
+        }
+
         setSiteData(prev => ({
           ...prev,
           [stateKey]: docs
@@ -108,22 +118,22 @@ export default function Home() {
     };
 
     // 1. Listen to Hero Banners
-    setupListener('hero_banners', 'banners', where('isActive', '==', true));
+    setupListener('hero_banners', 'banners');
 
     // 2. Listen to Impact Stats
-    setupListener('impact_stats', 'impactStats', where('isPublished', '==', true));
+    setupListener('impact_stats', 'impactStats');
 
     // 3. Listen to Courses
-    setupListener('courses', 'courses', where('isPublished', '==', true));
+    setupListener('courses', 'courses');
 
     // 4. Listen to Testimonials
-    setupListener('testimonials', 'testimonials', where('isPublished', '==', true));
+    setupListener('testimonials', 'testimonials');
 
     // 5. Listen to Gallery
-    setupListener('gallery', 'gallery', where('isPublished', '==', true));
+    setupListener('gallery', 'gallery');
 
     // 6. Listen to Stars
-    setupListener('stars', 'stars', where('isPublished', '==', true));
+    setupListener('stars', 'stars');
 
     // 7. Listen to Site Settings
     const unsubSettings = onSnapshot(doc(db, 'site_settings', 'general'), (snap) => {
@@ -143,7 +153,7 @@ export default function Home() {
     return () => {
       unsubscribers.forEach(unsub => unsub());
     };
-  }, []);
+  }, [db]);
 
   useEffect(() => {
     if (!heroApi) return;
@@ -160,15 +170,12 @@ export default function Home() {
   if (isPageLoading) {
     return (
       <div className="w-full animate-pulse">
-        {/* Hero skeleton */}
         <div className="w-full h-[500px] md:h-[600px] bg-muted flex items-center justify-center">
           <Loader2 className="animate-spin w-10 h-10 text-primary" />
         </div>
-        {/* Stats skeleton */}
         <div className="container mx-auto px-4 -mt-12">
           <div className="h-24 bg-white rounded-3xl shadow-xl border w-full"></div>
         </div>
-        {/* Content skeleton */}
         <div className="py-20 container mx-auto px-4 max-w-7xl">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[1, 2, 3].map(i => (
