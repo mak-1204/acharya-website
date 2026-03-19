@@ -2,13 +2,14 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EnquiryForm } from '@/components/EnquiryForm';
 import { 
   Target, CircleCheckBig, Monitor, GraduationCap, Zap, 
   BookOpen, Scale, Layers, Laptop, Building2, Calculator, 
-  ExternalLink, LayoutGrid, Phone, Loader2 
+  ExternalLink, LayoutGrid, Phone, Loader2, ArrowLeft 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { db } from '@/lib/firebase';
@@ -83,12 +84,22 @@ export default function CoursesPage() {
   return (
     <div className="bg-background min-h-screen pb-20">
       <section className="bg-secondary text-white py-12 md:py-20 relative overflow-hidden">
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <Badge className="bg-primary/20 text-white mb-4 border-none px-4 py-1 uppercase tracking-widest text-[10px] md:text-xs">Admissions Open 2026-27</Badge>
-          <h1 className="text-3xl md:text-6xl font-bold mb-4 tracking-tight leading-tight">Detailed Programs</h1>
-          <p className="text-white/70 max-w-2xl mx-auto text-base md:text-lg leading-relaxed px-4">
-            From Foundation to Professional Entrances, we provide a structured path to success with expert mentorship.
-          </p>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="mb-8 flex justify-center lg:justify-start">
+            <Button asChild variant="ghost" className="text-white hover:bg-white/10 gap-2 font-bold transition-all px-0">
+              <Link href="/">
+                <ArrowLeft className="w-5 h-5" />
+                Back to Home
+              </Link>
+            </Button>
+          </div>
+          <div className="text-center">
+            <Badge className="bg-primary/20 text-white mb-4 border-none px-4 py-1 uppercase tracking-widest text-[10px] md:text-xs">Admissions Open 2026-27</Badge>
+            <h1 className="text-3xl md:text-6xl font-bold mb-4 tracking-tight leading-tight">Detailed Programs</h1>
+            <p className="text-white/70 max-w-2xl mx-auto text-base md:text-lg leading-relaxed px-4">
+              From Foundation to Professional Entrances, we provide a structured path to success with expert mentorship.
+            </p>
+          </div>
         </div>
       </section>
 
