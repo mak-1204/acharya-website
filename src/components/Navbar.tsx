@@ -61,7 +61,7 @@ export const Navbar = () => {
     };
 
     const observer = new IntersectionObserver(handleIntersect, observerOptions);
-    const sections = ['hero', 'courses', 'stars', 'why', 'journey', 'mode', 'about', 'gallery', 'testimonials', 'enquire', 'contact'];
+    const sections = ['hero', 'courses', 'stars', 'about', 'why', 'journey', 'gallery', 'testimonials', 'enquire', 'contact'];
     
     sections.forEach((id) => {
       const el = document.getElementById(id);
@@ -175,7 +175,7 @@ export const Navbar = () => {
                 onClick={(e) => handleLinkClick(e, link.href, link.isExternal)}
                 className={cn(
                   'text-sm font-bold flex items-center justify-between py-4 border-b border-muted uppercase tracking-wide',
-                  (isHomePage && (activeSection === link.href.substring(1) || (link.name === 'Results' && activeSection === 'stars'))) || (pathname === link.href)
+                  (isHomePage && activeSection === link.href.substring(1)) || (pathname === link.href)
                     ? 'text-[#D32F2F]' 
                     : 'text-foreground/80'
                 )}

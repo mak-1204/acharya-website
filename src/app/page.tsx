@@ -408,7 +408,69 @@ export default function Home() {
         </section>
       )}
 
-      {/* 5. WHY ACHARYA */}
+      {/* 5. ABOUT US SECTION */}
+      <section id="about" className="py-20 bg-[#F5F5F5] scroll-mt-16 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 lg:px-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Side - Text */}
+            <div className="space-y-6 animate-in fade-in slide-in-from-left duration-700">
+              <span className="text-[#D32F2F] font-bold text-sm tracking-widest uppercase">About Us</span>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#1A237E] leading-tight">
+                Madurai's Most Trusted Coaching Since 2007
+              </h2>
+              <div className="space-y-4 text-muted-foreground leading-relaxed">
+                <p>
+                  At Acharya Education, we understand the value of nurturing ambitious dreams from an early age. 
+                  Since 2007, we have provided a unique and distinct learning experience. Unlike others who merely 
+                  teach, we actively explore knowledge and foster practical understanding.
+                </p>
+                <p>
+                  What sets us apart is our unwavering commitment to quality and academic standards. Our exceptional 
+                  study materials, experienced teaching faculty, and well-structured programs make us Madurai's most 
+                  trusted coaching institute.
+                </p>
+              </div>
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                {[
+                  "Expert Faculty with 15+ Years Experience",
+                  "Limited Batch Size of 15 Students",
+                  "Personalized Attention & Doubt Clearing",
+                  "Proven Results Since 2007"
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-2 text-secondary font-semibold text-sm">
+                    <CircleCheckBig className="text-[#D32F2F] w-5 h-5" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <div className="pt-4">
+                <Button asChild className="bg-primary hover:bg-primary/90 text-white rounded-full px-8 h-12 font-bold group">
+                  <Link href="#courses">
+                    Know More About Us <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Right Side - Stats Grid */}
+            <div className="grid grid-cols-2 gap-4 md:gap-6 animate-in fade-in slide-in-from-right duration-700">
+              {[
+                { number: "50,000+", label: "Students Trained" },
+                { number: "300+", label: "Teachers Benefited" },
+                { number: "7+", label: "Centres" },
+                { number: "17+", label: "Years of Excellence" }
+              ].map((stat, i) => (
+                <div key={i} className="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-border/50 flex flex-col items-center justify-center text-center group hover:shadow-md transition-shadow">
+                  <span className="text-[#D32F2F] text-2xl md:text-3xl font-extrabold mb-1">{stat.number}</span>
+                  <span className="text-muted-foreground text-xs md:text-sm font-medium">{stat.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. WHY ACHARYA */}
       <section id="why" className="py-16 md:py-24 bg-secondary text-white scroll-mt-16">
         <div className="container mx-auto px-4 text-center max-w-7xl">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-10 md:mb-16">Why Madurai Trusts Us?</h2>
@@ -426,7 +488,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. JOURNEY STEPPER */}
+      {/* 7. JOURNEY STEPPER */}
       <section id="journey" className="py-20 md:py-32 bg-white scroll-mt-20">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="text-center max-w-3xl mx-auto mb-16 md:mb-24">
@@ -449,7 +511,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 7. GALLERY SECTION */}
+      {/* 8. GALLERY SECTION */}
       {(galleryLoading || (gallery && gallery.length > 0)) && (
         <section id="gallery" className="py-16 md:py-24 bg-muted/30 scroll-mt-16">
           <div className="container mx-auto px-4 max-w-7xl">
@@ -485,7 +547,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* 8. TESTIMONIALS SECTION */}
+      {/* 9. TESTIMONIALS SECTION */}
       {(testimonialsLoading || (testimonials && testimonials.length > 0)) && (
         <section id="testimonials" className="py-16 md:py-24 bg-white scroll-mt-16">
           <div className="container mx-auto px-4 max-w-7xl">
@@ -508,7 +570,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* 9. ENQUIRE SECTION */}
+      {/* 10. ENQUIRE SECTION */}
       <section id="enquire" className="py-16 md:py-24 bg-primary relative overflow-hidden scroll-mt-16">
         <div className="container mx-auto px-4 relative z-10 text-center max-w-7xl">
           <div className="max-w-3xl mx-auto">
