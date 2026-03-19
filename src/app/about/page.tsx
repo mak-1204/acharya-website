@@ -4,10 +4,11 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
-  Trophy, Users, GraduationCap, Target, Eye, BookOpen, CircleCheckBig
+  Trophy, Users, GraduationCap, Target, Eye, BookOpen, CircleCheckBig, ArrowLeft
 } from 'lucide-react';
 
 const WHY_ACHARYA_FEATURES = [
@@ -29,30 +30,46 @@ const TIMELINE_DATA = [
 ];
 
 export default function AboutPage() {
+  const router = useRouter();
+
   return (
     <div className="flex flex-col w-full">
       {/* Part 1 - Banner */}
       <section className="bg-[#1A237E] text-white py-16 md:py-24 overflow-hidden relative">
-        <div className="container mx-auto px-4 max-w-7xl relative z-10 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight">
-            About Acharya Education
-          </h1>
-          <p className="text-xl md:text-2xl text-white/70 mb-12 font-medium">
-            Madurai's Most Trusted Coaching Since 2007
-          </p>
-          
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 pt-8 border-t border-white/10 max-w-5xl mx-auto">
-            {[
-              { label: 'Students Trained', val: '50,000+' },
-              { label: 'Teachers Benefited', val: '300+' },
-              { label: 'Centres', val: '7+' },
-              { label: 'Years of Excellence', val: '17+' }
-            ].map((s, i) => (
-              <div key={i} className="space-y-1">
-                <div className="text-2xl md:text-4xl font-bold text-primary">{s.val}</div>
-                <div className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-white/50">{s.label}</div>
-              </div>
-            ))}
+        <div className="container mx-auto px-4 max-w-7xl relative z-10">
+          {/* Back Button */}
+          <div className="mb-8 flex justify-start">
+            <Button 
+              variant="ghost" 
+              onClick={() => router.back()}
+              className="text-white hover:bg-white/10 gap-2 font-bold transition-all px-0"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              Go Back
+            </Button>
+          </div>
+
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight">
+              About Acharya Education
+            </h1>
+            <p className="text-xl md:text-2xl text-white/70 mb-12 font-medium">
+              Madurai's Most Trusted Coaching Since 2007
+            </p>
+            
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 pt-8 border-t border-white/10 max-w-5xl mx-auto">
+              {[
+                { label: 'Students Trained', val: '50,000+' },
+                { label: 'Teachers Benefited', val: '300+' },
+                { label: 'Centres', val: '7+' },
+                { label: 'Years of Excellence', val: '17+' }
+              ].map((s, i) => (
+                <div key={i} className="space-y-1">
+                  <div className="text-2xl md:text-4xl font-bold text-primary">{s.val}</div>
+                  <div className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-white/50">{s.label}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2"></div>
