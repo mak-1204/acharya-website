@@ -14,12 +14,12 @@ import { doc, getDoc } from 'firebase/firestore';
 const DEFAULT_GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
 
 const NAV_LINKS = [
-  { name: 'Home', href: '#hero' },
+  { name: 'Home', href: '/#hero' },
   { name: 'All Courses', href: '/courses', isExternal: true },
-  { name: 'About', href: '#about' },
-  { name: 'Results', href: '#stars' },
-  { name: 'Gallery', href: '#gallery' },
-  { name: 'Contact', href: '#contact' },
+  { name: 'About', href: '/#about' },
+  { name: 'Results', href: '/#stars' },
+  { name: 'Gallery', href: '/#gallery' },
+  { name: 'Contact', href: '/#contact' },
 ];
 
 export const Navbar = () => {
@@ -74,10 +74,10 @@ export const Navbar = () => {
   const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string, isExternal?: boolean) => {
     if (isExternal && pathname !== '/courses') return;
     
-    if (isHomePage && href.startsWith('#')) {
+    if (isHomePage && href.startsWith('/#')) {
       e.preventDefault();
       setIsMenuOpen(false);
-      const targetId = href.replace('#', '');
+      const targetId = href.replace('/#', '');
       const elem = document.getElementById(targetId);
       if (elem) {
         window.scrollTo({
@@ -94,8 +94,8 @@ export const Navbar = () => {
     <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md border-t-4 border-[#D32F2F]">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <Link 
-          href={isHomePage ? "#hero" : "/"} 
-          onClick={(e) => handleLinkClick(e, "#hero")}
+          href="/#hero" 
+          onClick={(e) => handleLinkClick(e, "/#hero")}
           className="flex items-center shrink-0 bg-white p-1 rounded-lg"
         >
           <Logo className="h-8 sm:h-10 md:h-12" />
@@ -106,11 +106,11 @@ export const Navbar = () => {
           {NAV_LINKS.map((link) => (
             <Link
               key={link.name}
-              href={isHomePage || link.isExternal ? link.href : `/${link.href}`}
+              href={link.href}
               onClick={(e) => handleLinkClick(e, link.href, link.isExternal)}
               className={cn(
                 'text-xs xl:text-sm font-bold transition-colors hover:text-[#D32F2F] whitespace-nowrap uppercase tracking-wider',
-                (isHomePage && activeSection === (link.href.startsWith('#') ? link.href.substring(1) : link.href))
+                (isHomePage && activeSection === (link.href.startsWith('/#') ? link.href.substring(2) : link.href))
                   ? 'text-[#D32F2F]' 
                   : 'text-foreground/80'
               )}
@@ -171,11 +171,11 @@ export const Navbar = () => {
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.name}
-                href={isHomePage || link.isExternal ? link.href : `/${link.href}`}
+                href={link.href}
                 onClick={(e) => handleLinkClick(e, link.href, link.isExternal)}
                 className={cn(
                   'text-sm font-bold flex items-center justify-between py-4 border-b border-muted uppercase tracking-wide',
-                  (isHomePage && activeSection === (link.href.startsWith('#') ? link.href.substring(1) : link.href))
+                  (isHomePage && activeSection === (link.href.startsWith('/#') ? link.href.substring(2) : link.href))
                     ? 'text-[#D32F2F]' 
                     : 'text-foreground/80'
                 )}

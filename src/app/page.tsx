@@ -29,31 +29,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const DEFAULT_GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
 
-const WHY_ACHARYA_FEATURES = [
-  { title: 'Experienced Faculty', desc: 'Expert mentors with 15+ years of proven success stories', icon: <GraduationCap className="text-primary" /> },
-  { title: 'Limited Batch Size', desc: 'Strict limit of 15 students per batch for personalized focus', icon: <Users className="text-secondary" /> },
-  { title: 'Comprehensive Study Material', desc: 'Research-backed modules tailored for competitive exams', icon: <BookOpen className="text-primary" /> },
-  { title: 'Regular Assessments', desc: 'Weekly tests and detailed performance analysis', icon: <Target className="text-secondary" /> },
-  { title: 'Personalized Attention', desc: 'Regular PTMs and individualized doubt-clearing sessions', icon: <CircleCheckBig className="text-primary" /> },
-  { title: 'Proven Results', desc: 'Legacy of top rankers in Madurai since 2007', icon: <Trophy className="text-secondary" /> },
-];
-
-const JOURNEY_STEPS = [
-  { title: 'Counseling', desc: 'Personalized guidance to pick the right academic path.', icon: <Users className="w-8 h-8" /> },
-  { title: 'Admission', desc: 'Smooth enrollment into Madurai’s most elite batches.', icon: <CircleCheckBig className="w-8 h-8" /> },
-  { title: 'Learning', desc: 'Rigorous training with PhD/Expert faculty members.', icon: <BookOpen className="w-8 h-8" /> },
-  { title: 'Success', desc: 'Regular testing and mentoring leading to top ranks.', icon: <Trophy className="w-8 h-8" /> },
-];
-
-const TIMELINE_DATA = [
-  { year: '2007', text: 'Founded in Madurai with a vision to provide quality coaching' },
-  { year: '2010', text: 'Expanded to 3 centres across Madurai' },
-  { year: '2015', text: 'Crossed 10,000 students trained milestone' },
-  { year: '2018', text: 'Launched CLAT and CUET programs' },
-  { year: '2020', text: 'Introduced Online + Hybrid learning modes' },
-  { year: '2024', text: '50,000+ students trained across 7+ centres' },
-];
-
 const ICON_MAP: Record<string, any> = {
   Users,
   GraduationCap,
@@ -317,7 +292,64 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. COURSES SECTION */}
+      {/* 3. SIMPLIFIED ABOUT SECTION */}
+      <section id="about" className="py-20 bg-[#F5F5F5] scroll-mt-16 overflow-hidden">
+        <div className="container mx-auto px-4 lg:px-16 max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-8">
+              <div>
+                <span className="text-primary font-bold text-sm tracking-widest uppercase block mb-4">About Us</span>
+                <h2 className="text-3xl md:text-5xl font-bold text-secondary leading-tight">
+                  Madurai's Most Trusted Coaching Since 2007
+                </h2>
+              </div>
+              <div className="space-y-6 text-muted-foreground text-lg leading-relaxed">
+                <p>
+                  At Acharya Education, we understand the value of nurturing ambitious dreams from an early age. Since 2007, we have provided a unique and distinct learning experience. Unlike others who merely teach, we actively explore knowledge and foster practical understanding.
+                </p>
+                <p>
+                  What sets us apart is our unwavering commitment to quality and academic standards. Our exceptional study materials, experienced teaching faculty, and well-structured programs make us Madurai's most trusted coaching institute.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {[
+                  "Expert Faculty with 15+ Years Experience",
+                  "Limited Batch Size of 15 Students",
+                  "Personalized Attention & Doubt Clearing",
+                  "Proven Results Since 2007"
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <CircleCheckBig className="text-primary w-5 h-5 shrink-0" />
+                    <span className="font-bold text-secondary text-sm md:text-base">{item}</span>
+                  </div>
+                ))}
+              </div>
+              <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-10 h-14 font-bold shadow-lg group">
+                <Link href="/about">
+                  Know More About Us <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                </Link>
+              </Button>
+            </div>
+            
+            {/* Stats Grid Right Side */}
+            <div className="grid grid-cols-2 gap-4 md:gap-6">
+              {[
+                { val: '50,000+', label: 'Students Trained', color: 'text-primary' },
+                { val: '300+', label: 'Teachers Benefited', color: 'text-primary' },
+                { val: '7+', label: 'Centres', color: 'text-primary' },
+                { val: '17+', label: 'Years of Excellence', color: 'text-primary' }
+              ].map((s, i) => (
+                <div key={i} className="bg-white p-6 md:p-8 rounded-2xl shadow-sm flex flex-col items-center text-center justify-center hover:shadow-md transition-shadow">
+                  <div className={cn("text-2xl md:text-4xl font-bold mb-2", s.color)}>{s.val}</div>
+                  <div className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-muted-foreground">{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. COURSES SECTION */}
       <section id="courses" className="py-16 md:py-24 bg-white scroll-mt-16">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="text-center mb-10 md:mb-16">
@@ -349,7 +381,39 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. MEET OUR STARS SECTION */}
+      {/* 5. SUCCESS ROADMAP */}
+      <section id="journey" className="py-20 bg-white scroll-mt-16">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <div className="text-center mb-16">
+            <span className="text-primary font-bold text-sm tracking-widest uppercase block mb-4">Success Roadmap</span>
+            <h2 className="text-3xl md:text-5xl font-bold text-secondary leading-tight">Your Path to Excellence</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { title: 'Counseling', desc: 'Personalized guidance to pick the right academic path.', icon: <Users className="w-8 h-8" />, step: '01' },
+              { title: 'Admission', desc: 'Smooth enrollment into Madurai’s most elite batches.', icon: <CircleCheckBig className="w-8 h-8" />, step: '02' },
+              { title: 'Learning', desc: 'Rigorous training with PhD/Expert faculty members.', icon: <BookOpen className="w-8 h-8" />, step: '03' },
+              { title: 'Success', desc: 'Regular testing and mentoring leading to top ranks.', icon: <Trophy className="w-8 h-8" />, step: '04' },
+            ].map((s, i) => (
+              <div key={i} className="relative group text-center md:text-left flex flex-col items-center md:items-start">
+                <div className="absolute -top-10 -left-4 md:-left-8 text-7xl md:text-9xl font-black text-muted opacity-30 group-hover:opacity-50 transition-opacity z-0 pointer-events-none">
+                  {s.step}
+                </div>
+                <div className="relative z-10 space-y-4">
+                  <div className="w-16 h-16 bg-white rounded-2xl shadow-lg border border-border flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                    {s.icon}
+                  </div>
+                  <h3 className="text-xl font-bold text-secondary">{s.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 6. MEET OUR STARS SECTION */}
       {(starsLoading || (stars && stars.length > 0)) && (
         <section id="stars" className="py-16 md:py-24 bg-white scroll-mt-16 overflow-hidden">
           <div className="container mx-auto px-4 max-w-7xl">
@@ -417,187 +481,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* 5. ABOUT SECTION (REPLACED WITH DETAILED VERSION) */}
-      <section id="about" className="scroll-mt-16">
-        {/* Part 1 - Banner */}
-        <div className="bg-[#1A237E] text-white py-16 md:py-24 overflow-hidden relative">
-          <div className="container mx-auto px-4 max-w-7xl relative z-10 text-center">
-            <h2 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight animate-in fade-in slide-in-from-bottom duration-700">
-              About Acharya Education
-            </h2>
-            <p className="text-xl md:text-2xl text-white/70 mb-12 font-medium">
-              Madurai's Most Trusted Coaching Since 2007
-            </p>
-            
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 pt-8 border-t border-white/10 max-w-5xl mx-auto">
-              {[
-                { label: 'Students Trained', val: '50,000+' },
-                { label: 'Teachers Benefited', val: '300+' },
-                { label: 'Centres', val: '7+' },
-                { label: 'Years of Excellence', val: '17+' }
-              ].map((s, i) => (
-                <div key={i} className="space-y-1">
-                  <div className="text-2xl md:text-4xl font-bold text-primary">{s.val}</div>
-                  <div className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-white/50">{s.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* Background Decorative */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2"></div>
-        </div>
-
-        {/* Part 2 - Introduction */}
-        <div className="bg-white py-20 lg:py-32 overflow-hidden">
-          <div className="container mx-auto px-4 lg:px-16 max-w-7xl">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              <div className="space-y-8 animate-in fade-in slide-in-from-left duration-700">
-                <div className="inline-block px-4 py-1 bg-primary/10 rounded-full text-primary font-bold text-sm tracking-widest uppercase">
-                  Who We Are
-                </div>
-                <div className="space-y-6 text-muted-foreground text-lg leading-relaxed">
-                  <p>
-                    At Acharya Education, we understand the value of nurturing ambitious dreams from an early age. Since 2007, we have provided a unique and distinct learning experience. Unlike others who merely teach, we actively explore knowledge and foster practical understanding.
-                  </p>
-                  <p>
-                    What sets us apart is our unwavering commitment to quality and academic standards. We distance ourselves from the crowd to ensure the utmost excellence. Our promises are not empty; they culminate in a remarkable journey towards IIT-JEE/NEET.
-                  </p>
-                  <p>
-                    While there may be numerous trainers out there, Acharya stands out due to our exceptional study materials, experienced teaching faculty, and well-structured programs.
-                  </p>
-                </div>
-              </div>
-              <div className="relative aspect-square lg:aspect-[4/5] rounded-[3rem] overflow-hidden shadow-2xl border-8 border-muted animate-in fade-in slide-in-from-right duration-700">
-                <Image 
-                  src="/ACHARYA.png" 
-                  alt="Acharya Education" 
-                  fill 
-                  className="object-cover"
-                  data-ai-hint="educational classroom"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Part 3 - Why Acharya? */}
-        <div id="why" className="bg-[#F5F5F5] py-20 lg:py-32 scroll-mt-16">
-          <div className="container mx-auto px-4 lg:px-16 max-w-7xl">
-            <div className="text-center max-w-3xl mx-auto mb-20">
-              <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-8">Why Acharya?</h2>
-              <div className="space-y-6 text-muted-foreground leading-relaxed">
-                <p>
-                  Acharya Education is dedicated to catering to the educational needs of young minds hungry for knowledge. Our primary focus is on providing intensive care and unparalleled classroom training. We aim to empower students who aspire to pursue courses in the country's top professional institutes such as IITs, NITs, NEET, AIIMS, JIPMER, and more.
-                </p>
-                <p className="text-sm">
-                  Students from Tamil Nadu can seek admission to IITs, NITs, IIITs & GTFIs, Deemed Universities, and Central Universities by taking the Joint Entrance Examination (JEE). Similarly, marks obtained in NEET are used to fill seats in medical colleges nationwide.
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {WHY_ACHARYA_FEATURES.map((f, i) => (
-                <Card key={i} className="border-none shadow-sm hover:shadow-xl transition-all duration-300 rounded-[2rem] p-4 group">
-                  <CardContent className="p-6 space-y-4 text-center">
-                    <div className="w-16 h-16 bg-white rounded-2xl shadow-md flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
-                      {f.icon}
-                    </div>
-                    <h3 className="text-xl font-bold text-secondary">{f.title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{f.desc}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Part 4 - Our Vision & Mission */}
-        <div className="bg-white py-20 lg:py-32">
-          <div className="container mx-auto px-4 lg:px-16 max-w-7xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24">
-              {/* Vision */}
-              <div className="space-y-6">
-                <div className="w-14 h-14 bg-secondary text-white rounded-2xl flex items-center justify-center shadow-lg">
-                  <Eye className="w-8 h-8" />
-                </div>
-                <h3 className="text-3xl font-bold text-secondary">Our Vision</h3>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  At Acharya Education, we believe that a guru is the light that guides and nurtures. Our vision is to be that guiding light, helping students pave their path to a successful and fulfilling future. We aim to create a holistic learning environment that prepares students not just for exams, but for the challenges of a rapidly evolving world.
-                </p>
-              </div>
-              {/* Mission */}
-              <div className="space-y-6">
-                <div className="w-14 h-14 bg-primary text-white rounded-2xl flex items-center justify-center shadow-lg">
-                  <Target className="w-8 h-8" />
-                </div>
-                <h3 className="text-3xl font-bold text-secondary">Our Mission</h3>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  Our mission is to provide a holistic approach to education that combines rigorous academic training with practical understanding and real-world applications. We are dedicated to fostering a futuristic mindset in our students, equipping them with the knowledge, skills, and values needed to excel in their chosen fields and contribute positively to society.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Part 5 - Journey Timeline */}
-        <div id="journey" className="bg-[#F5F5F5] py-20 lg:py-32 scroll-mt-16 overflow-hidden">
-          <div className="container mx-auto px-4 lg:px-16 max-w-7xl">
-            <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-20 text-center">
-              Our Journey <span className="text-primary">Since 2007</span>
-            </h2>
-            
-            {/* Timeline Desktop */}
-            <div className="hidden lg:block relative py-12">
-              <div className="absolute top-1/2 left-0 w-full h-1 bg-muted -translate-y-1/2"></div>
-              <div className="grid grid-cols-6 gap-4 relative z-10">
-                {TIMELINE_DATA.map((item, i) => (
-                  <div key={i} className="flex flex-col items-center text-center group">
-                    <div className="mb-8 p-3 bg-white rounded-xl shadow-md font-bold text-primary group-hover:scale-110 transition-transform">
-                      {item.year}
-                    </div>
-                    <div className="w-5 h-5 rounded-full bg-secondary border-4 border-white ring-4 ring-secondary/10 mb-8"></div>
-                    <p className="text-xs font-semibold text-muted-foreground max-w-[140px] leading-relaxed">
-                      {item.text}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Timeline Mobile */}
-            <div className="lg:hidden space-y-12 relative pl-8 before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-muted">
-              {TIMELINE_DATA.map((item, i) => (
-                <div key={i} className="relative">
-                  <div className="absolute -left-[36px] top-0 w-4 h-4 rounded-full bg-secondary border-2 border-white"></div>
-                  <div className="text-xl font-bold text-primary mb-2">{item.year}</div>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.text}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Part 6 - CTA Bar */}
-        <div className="bg-[#D32F2F] py-16 text-white text-center relative overflow-hidden">
-          <div className="container mx-auto px-4 max-w-7xl relative z-10">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">Ready to Begin Your Journey?</h2>
-            <p className="text-xl text-white/80 mb-10 font-medium">Join 50,000+ students who chose Acharya Education</p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 font-bold rounded-full px-12 h-14 text-lg shadow-xl">
-                <Link href="/courses">Explore Courses</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white/10 font-bold rounded-full px-12 h-14 text-lg">
-                <a href="tel:9865440099">Call Us Now</a>
-              </Button>
-            </div>
-          </div>
-          {/* Decorative */}
-          <div className="absolute top-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-        </div>
-      </section>
-
-      {/* 6. JOURNEY STEPPER (REMOVED OR MOVED) */}
-      
       {/* 7. GALLERY SECTION */}
       {(galleryLoading || (gallery && gallery.length > 0)) && (
         <section id="gallery" className="py-16 md:py-24 bg-muted/30 scroll-mt-16">
