@@ -195,7 +195,7 @@ export default function CoursesBannersPage() {
               <form onSubmit={handleCourseSave} className="space-y-4 pt-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2"><Label>Title</Label><Input value={cTitle} onChange={e => setCTitle(e.target.value)} required /></div>
-                  <div className="space-y-2"><Label>Slug (lowercase, no spaces)</Label><Input value={cSlug} onChange={e => setCSlug(e.target.value)} required /></div>
+                  <div className="space-y-2"><Label>Mode</Label><Input value={cSlug} onChange={e => setCSlug(e.target.value)} required /></div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2"><Label>Target Audience</Label><Input value={cAudience} onChange={e => setCAudience(e.target.value)} placeholder="e.g. Class 11, 12 & Repeaters" /></div>
