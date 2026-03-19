@@ -90,15 +90,12 @@ export default function Home() {
     if (!db) return;
     const unsubscribers: (() => void)[] = [];
 
-    // Helper to setup real-time listeners for collections
-    // Using client-side filtering to avoid mandatory composite index errors during development
     const setupListener = (colName: string, stateKey: string) => {
       const q = query(collection(db, colName), orderBy('order', 'asc'));
 
       const unsub = onSnapshot(q, (snapshot) => {
         let docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         
-        // Client-side filtering
         if (stateKey === 'banners') {
           docs = docs.filter((d: any) => d.isActive === true);
         } else {
@@ -117,25 +114,13 @@ export default function Home() {
       unsubscribers.push(unsub);
     };
 
-    // 1. Listen to Hero Banners
     setupListener('hero_banners', 'banners');
-
-    // 2. Listen to Impact Stats
     setupListener('impact_stats', 'impactStats');
-
-    // 3. Listen to Courses
     setupListener('courses', 'courses');
-
-    // 4. Listen to Testimonials
     setupListener('testimonials', 'testimonials');
-
-    // 5. Listen to Gallery
     setupListener('gallery', 'gallery');
-
-    // 6. Listen to Stars
     setupListener('stars', 'stars');
 
-    // 7. Listen to Site Settings
     const unsubSettings = onSnapshot(doc(db, 'site_settings', 'general'), (snap) => {
       if (snap.exists()) {
         setSiteData(prev => ({
@@ -276,7 +261,7 @@ export default function Home() {
                 </div>
               ))
             ) : (
-              <div className="col-span-full py-2 text-muted-foreground italic text-sm">Empowering students in Madurai since 2007.</div>
+              <div className="col-span-full py-2 text-muted-foreground italic text-sm text-center">Empowering students in Madurai since 2007.</div>
             )}
           </div>
         </div>
@@ -510,15 +495,15 @@ export default function Home() {
         </section>
       )}
 
-      {/* 9. ENQUIRE SECTION */}
-      <section id="enquire" className="py-16 md:py-24 bg-primary relative overflow-hidden scroll-mt-16">
+      {/* 9. CONTACT & ENQUIRE SECTION */}
+      <section id="contact" className="py-16 md:py-24 bg-primary relative overflow-hidden scroll-mt-16">
         <div className="container mx-auto px-4 relative z-10 text-center max-w-7xl">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10 md:mb-12 text-white">
               <h2 className="text-3xl sm:text-4xl lg:text-6xl font-bold mb-4">Start Your Journey</h2>
               <p className="text-lg md:text-xl opacity-80">Click below to fill out our official admission enquiry form.</p>
             </div>
-            <EnquiryForm source="home_enquire_section" title="Quick Admission Enquiry" />
+            <EnquiryForm source="home_contact_section" title="Quick Admission Enquiry" />
           </div>
         </div>
       </section>
