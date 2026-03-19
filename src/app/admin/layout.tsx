@@ -9,6 +9,7 @@ import { Loader2, LayoutDashboard, LayoutTemplate, ImageIcon, MessageSquare, Sta
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Logo } from '@/components/Logo';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
@@ -72,8 +73,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex min-h-screen bg-muted/30">
       {/* Sidebar */}
       <aside className="w-64 bg-secondary text-white hidden md:flex flex-col fixed inset-y-0 border-r border-white/10">
-        <div className="p-8 font-bold text-2xl tracking-tighter border-b border-white/5 text-center">
-          ACHARYA <span className="text-primary">ADMIN</span>
+        <div className="p-6 border-b border-white/5 flex justify-center">
+          <Link href="/admin">
+            <div className="bg-white p-2 rounded-xl">
+              <Logo className="h-8" />
+            </div>
+          </Link>
         </div>
         <nav className="flex-1 p-6 space-y-2 overflow-y-auto">
           {navLinks.map((link) => {
