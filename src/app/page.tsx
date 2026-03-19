@@ -24,12 +24,9 @@ import {
 } from "@/components/ui/carousel";
 import { cn } from '@/lib/utils';
 import { db } from '@/lib/firebase';
-import { collection, query, where, orderBy, getDocs, doc, getDoc } from 'firebase/firestore';
-import { Skeleton } from '@/components/ui/skeleton';
+import { collection, query, where, orderBy, onSnapshot, doc } from 'firebase/firestore';
 
 const DEFAULT_GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
-const CACHE_KEY = "acharya_site_data";
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 const ICON_MAP: Record<string, any> = {
   Users,
@@ -78,67 +75,66 @@ export default function Home() {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      // 1. Check Cache
-      if (typeof window !== 'undefined') {
-        const cached = localStorage.getItem(CACHE_KEY);
-        if (cached) {
-          try {
-            const { data, timestamp } = JSON.parse(cached);
-            if (Date.now() - timestamp < CACHE_DURATION) {
-              setSiteData({ ...data, loading: false });
-              return;
-            }
-          } catch (e) {
-            console.error("Cache parsing error", e);
-          }
-        }
-      }
+    setSiteData(prev => ({ ...prev, loading: true }));
 
-      // 2. Parallel Fetch
-      try {
-        const [
-          bannersSnap,
-          statsSnap,
-          coursesSnap,
-          testimonialsSnap,
-          gallerySnap,
-          starsSnap,
-          settingsSnap
-        ] = await Promise.all([
-          getDocs(query(collection(db, 'hero_banners'), where('isActive', '==', true), orderBy('order', 'asc'))),
-          getDocs(query(collection(db, 'impact_stats'), where('isPublished', '==', true), orderBy('order', 'asc'))),
-          getDocs(query(collection(db, 'courses'), where('isPublished', '==', true), orderBy('order', 'asc'))),
-          getDocs(query(collection(db, 'testimonials'), where('isPublished', '==', true), orderBy('order', 'asc'))),
-          getDocs(query(collection(db, 'gallery'), where('isPublished', '==', true), orderBy('order', 'asc'))),
-          getDocs(query(collection(db, 'stars'), where('isPublished', '==', true), orderBy('order', 'asc'))),
-          getDoc(doc(db, 'site_settings', 'global'))
-        ]);
+    const unsubscribers: (() => void)[] = [];
 
-        const freshData = {
-          banners: bannersSnap.docs.map(d => ({ id: d.id, ...d.data() })),
-          impactStats: statsSnap.docs.map(d => ({ id: d.id, ...d.data() })),
-          courses: coursesSnap.docs.map(d => ({ id: d.id, ...d.data() })),
-          testimonials: testimonialsSnap.docs.map(d => ({ id: d.id, ...d.data() })),
-          gallery: gallerySnap.docs.map(d => ({ id: d.id, ...d.data() })),
-          stars: starsSnap.docs.map(d => ({ id: d.id, ...d.data() })),
-          enquiryUrl: settingsSnap.exists() ? settingsSnap.data().enquiryFormUrl || DEFAULT_GOOGLE_FORM_URL : DEFAULT_GOOGLE_FORM_URL,
-        };
-
-        // 3. Update State & Cache
-        setSiteData({ ...freshData, loading: false });
-        localStorage.setItem(CACHE_KEY, JSON.stringify({
-          data: freshData,
-          timestamp: Date.now()
+    // Helper to setup real-time listeners for collections
+    const setupListener = (colName: string, constraints: any, stateKey: string) => {
+      const q = query(collection(db, colName), constraints, orderBy('order', 'asc'));
+      const unsub = onSnapshot(q, (snapshot) => {
+        const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        setSiteData(prev => ({
+          ...prev,
+          [stateKey]: docs,
+          loading: false
         }));
-
-      } catch (err) {
-        console.error("Error fetching site data:", err);
+      }, (err) => {
+        console.error(`Error in ${colName} listener:`, err);
         setSiteData(prev => ({ ...prev, loading: false }));
-      }
+      });
+      unsubscribers.push(unsub);
     };
 
-    fetchData();
+    // 1. Listen to Hero Banners
+    setupListener('hero_banners', where('isActive', '==', true), 'banners');
+
+    // 2. Listen to Impact Stats
+    setupListener('impact_stats', where('isPublished', '==', true), 'impactStats');
+
+    // 3. Listen to Courses
+    setupListener('courses', where('isPublished', '==', true), 'courses');
+
+    // 4. Listen to Testimonials
+    setupListener('testimonials', where('isPublished', '==', true), 'testimonials');
+
+    // 5. Listen to Gallery
+    setupListener('gallery', where('isPublished', '==', true), 'gallery');
+
+    // 6. Listen to Stars
+    setupListener('stars', where('isPublished', '==', true), 'stars');
+
+    // 7. Listen to Site Settings
+    const unsubSettings = onSnapshot(doc(db, 'site_settings', 'global'), (snap) => {
+      if (snap.exists()) {
+        setSiteData(prev => ({
+          ...prev,
+          enquiryUrl: snap.data().enquiryFormUrl || DEFAULT_GOOGLE_FORM_URL,
+          loading: false
+        }));
+      } else {
+        setSiteData(prev => ({ ...prev, loading: false }));
+      }
+    }, (err) => {
+      console.error("Error in site_settings listener:", err);
+      setSiteData(prev => ({ ...prev, loading: false }));
+    });
+    unsubscribers.push(unsubSettings);
+
+    // Cleanup all listeners on unmount
+    return () => {
+      unsubscribers.forEach(unsub => unsub());
+    };
   }, []);
 
   useEffect(() => {
@@ -153,7 +149,7 @@ export default function Home() {
     return <IconComp className="w-5 h-5" />;
   };
 
-  if (siteData.loading) {
+  if (siteData.loading && siteData.banners.length === 0) {
     return (
       <div className="w-full animate-pulse">
         {/* Hero skeleton */}
@@ -220,7 +216,7 @@ export default function Home() {
                               fill 
                               className="object-cover transition-transform duration-700 group-hover:scale-105" 
                               priority
-                              unoptimized={banner.imageUrl.includes('drive.google.com') || banner.imageUrl.includes('ibb.co')}
+                              unoptimized={banner.imageUrl.includes('drive.google.com') || banner.imageUrl.includes('ibb.co') || banner.imageUrl.includes('postimg.cc')}
                             />
                           )}
                         </div>
@@ -412,7 +408,7 @@ export default function Home() {
                                 alt={star.name} 
                                 fill 
                                 className="object-cover" 
-                                unoptimized={star.photo.includes('drive.google.com') || star.photo.includes('ibb.co')}
+                                unoptimized={star.photo.includes('drive.google.com') || star.photo.includes('ibb.co') || star.photo.includes('postimg.cc')}
                               />
                             ) : (
                               <span className="text-white text-2xl md:text-4xl font-bold">{getInitials(star.name)}</span>
@@ -464,7 +460,7 @@ export default function Home() {
                       alt={img.caption || 'Gallery'} 
                       fill 
                       className="object-cover transition-transform duration-500 group-hover:scale-110" 
-                      unoptimized={img.imageUrl.includes('drive.google.com') || img.imageUrl.includes('ibb.co')}
+                      unoptimized={img.imageUrl.includes('drive.google.com') || img.imageUrl.includes('ibb.co') || img.imageUrl.includes('postimg.cc')}
                     />
                   )}
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4">
