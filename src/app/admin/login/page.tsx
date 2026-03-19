@@ -36,7 +36,6 @@ export default function LoginPage() {
 
     try {
       // 1. Authenticate with Firebase Auth
-      // This requires the user to be created in the Firebase Console -> Authentication tab
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
@@ -59,7 +58,7 @@ export default function LoginPage() {
       if (adminSnapshot.empty) {
         // Not an authorized admin in Firestore, even if authenticated in Auth
         await signOut(auth);
-        setError('Unauthorized user: Your email is not in the admin collection.');
+        setError('Unauthorized user: Access restricted to administrators.');
         toast({
           variant: "destructive",
           title: "Access Denied",
@@ -77,7 +76,7 @@ export default function LoginPage() {
       console.error("Login Error:", err);
       // Firebase returns 'auth/invalid-credential' for both wrong password and user not found
       if (err.code === 'auth/invalid-credential') {
-        setError('Invalid credentials. Ensure this user is created in Firebase Console Authentication AND added to the "admin" Firestore collection.');
+        setError('Invalid email or password.');
       } else if (err.code === 'auth/too-many-requests') {
         setError('Too many failed attempts. Please try again later.');
       } else {
@@ -172,7 +171,6 @@ export default function LoginPage() {
 
         {/* Development Helper Tip */}
         <div className="p-4 bg-primary/5 border border-primary/10 rounded-2xl flex items-start gap-3">
-          <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
           <div className="text-[11px] text-muted-foreground leading-relaxed">
             <p className="font-bold text-secondary mb-1">Login Tip:</p>
             1. Create the user in <span className="font-bold">Firebase Console &gt; Authentication</span>.<br/>
