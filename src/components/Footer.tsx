@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -34,6 +33,8 @@ export const Footer = () => {
                   priority
                 />
               </Link>
+              {/* Vertical Separator - Only visible on desktop/tablet */}
+              <div className="hidden sm:block w-px h-16 bg-white/20 self-center"></div>
               <div className="space-y-2">
                 <p className="text-white font-bold text-sm md:text-base leading-snug max-w-[200px] text-center sm:text-left">
                   IIT, NEET & Beyond <br/>
