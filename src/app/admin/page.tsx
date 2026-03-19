@@ -59,7 +59,16 @@ export default function AdminDashboard() {
               <div className="w-2 h-2 rounded-full bg-primary" /> Image Hosting
             </h4>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Use direct image URLs from hosted platforms. Ensure images are high resolution (at least 800px width).
+              Use direct image URLs from hosted platforms. Use websites like{" "}
+              <a 
+                href="https://postimages.org/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-primary font-bold underline hover:text-primary/80"
+              >
+                Postimages
+              </a> 
+              {" "}to generate reliable URLs. Ensure images are high resolution (at least 800px width).
             </p>
           </div>
           <div className="space-y-3">
