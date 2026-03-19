@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { Loader2, LayoutDashboard, LayoutTemplate, ImageIcon, MessageSquare, Star, LogOut, ExternalLink, BarChart3, Settings } from 'lucide-react';
+import { Loader2, LayoutDashboard, LayoutTemplate, ImageIcon, MessageSquare, Star, LogOut, BarChart3, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -96,14 +96,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
         <div className="p-6 border-t border-white/5 space-y-2">
-          <Link 
-            href="/"
-            target="_blank"
-            className="flex items-center gap-2 px-4 py-2 text-white/40 hover:text-white transition-colors text-xs font-semibold"
-          >
-            <ExternalLink className="w-4 h-4" />
-            View Live Site
-          </Link>
           <Button 
             variant="ghost" 
             className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl font-bold"
