@@ -88,8 +88,11 @@ export default function Home() {
     const unsubscribers: (() => void)[] = [];
 
     // Helper to setup real-time listeners for collections
-    const setupListener = (colName: string, constraints: QueryConstraint, stateKey: string) => {
-      const q = query(collection(db, colName), constraints, orderBy('order', 'asc'));
+    const setupListener = (colName: string, stateKey: string, constraints?: QueryConstraint) => {
+      const q = constraints 
+        ? query(collection(db, colName), constraints, orderBy('order', 'asc'))
+        : query(collection(db, colName), orderBy('order', 'asc'));
+
       const unsub = onSnapshot(q, (snapshot) => {
         const docs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         setSiteData(prev => ({
@@ -105,22 +108,22 @@ export default function Home() {
     };
 
     // 1. Listen to Hero Banners
-    setupListener('hero_banners', where('isActive', '==', true), 'banners');
+    setupListener('hero_banners', 'banners', where('isActive', '==', true));
 
     // 2. Listen to Impact Stats
-    setupListener('impact_stats', where('isPublished', '==', true), 'impactStats');
+    setupListener('impact_stats', 'impactStats', where('isPublished', '==', true));
 
     // 3. Listen to Courses
-    setupListener('courses', where('isPublished', '==', true), 'courses');
+    setupListener('courses', 'courses', where('isPublished', '==', true));
 
     // 4. Listen to Testimonials
-    setupListener('testimonials', where('isPublished', '==', true), 'testimonials');
+    setupListener('testimonials', 'testimonials', where('isPublished', '==', true));
 
     // 5. Listen to Gallery
-    setupListener('gallery', where('isPublished', '==', true), 'gallery');
+    setupListener('gallery', 'gallery', where('isPublished', '==', true));
 
     // 6. Listen to Stars
-    setupListener('stars', where('isPublished', '==', true), 'stars');
+    setupListener('stars', 'stars', where('isPublished', '==', true));
 
     // 7. Listen to Site Settings
     const unsubSettings = onSnapshot(doc(db, 'site_settings', 'general'), (snap) => {
