@@ -8,9 +8,9 @@ export const metadata: Metadata = {
   title: 'Acharya Education | Your Gateway to IIT, NEET & Beyond',
   description: "Madurai's Most Trusted Coaching Institute since 2007. Expert coaching for JEE, NEET, CUET, CLAT and foundation courses.",
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png',
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
   },
 };
 
