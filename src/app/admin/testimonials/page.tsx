@@ -105,17 +105,21 @@ export default function TestimonialsAdminPage() {
     setSubmitting(false);
   };
 
-  const handleDelete = (id: string, e: React.MouseEvent) => {
+  const handleDeleteTestimonial = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!db || !confirm('Delete this testimonial?')) return;
-    const docRef = doc(db, 'testimonials', id);
-    deleteDoc(docRef).catch(async (error) => {
-      errorEmitter.emit('permission-error', new FirestorePermissionError({
-        path: docRef.path,
-        operation: 'delete',
-      }));
-    });
-    toast({ title: 'Deletion initiated' });
+    if (!db) {
+      alert("Database not connected. Try again.");
+      return;
+    }
+    const confirmed = window.confirm("Delete this testimonial?");
+    if (!confirmed) return;
+    try {
+      await deleteDoc(doc(db, "testimonials", id));
+      alert("Deleted successfully!");
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Failed to delete. Try again.");
+    }
   };
 
   return (
@@ -174,7 +178,7 @@ export default function TestimonialsAdminPage() {
                     <Badge variant={item.isPublished ? 'default' : 'secondary'}>{item.isPublished ? 'Public' : 'Draft'}</Badge>
                     <div className="flex gap-2">
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => handleEdit(item, e)}><Edit className="w-4 h-4" /></Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={(e) => handleDelete(item.id, e)}><Trash2 className="w-4 h-4" /></Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={(e) => handleDeleteTestimonial(item.id, e)}><Trash2 className="w-4 h-4" /></Button>
                     </div>
                   </div>
                 </div>

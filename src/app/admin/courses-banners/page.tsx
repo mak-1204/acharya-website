@@ -171,17 +171,38 @@ export default function CoursesBannersPage() {
     setSubmitting(false);
   };
 
-  const handleDelete = (col: string, id: string, e: React.MouseEvent) => {
+  const handleDeleteBanner = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!db || !confirm('Delete this item?')) return;
-    const docRef = doc(db, col, id);
-    deleteDoc(docRef).catch(async (error) => {
-      errorEmitter.emit('permission-error', new FirestorePermissionError({
-        path: docRef.path,
-        operation: 'delete',
-      }));
-    });
-    toast({ title: 'Deletion initiated' });
+    if (!db) {
+      alert("Database not connected. Try again.");
+      return;
+    }
+    const confirmed = window.confirm("Delete this banner?");
+    if (!confirmed) return;
+    try {
+      await deleteDoc(doc(db, "hero_banners", id));
+      alert("Deleted successfully!");
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Failed to delete. Try again.");
+    }
+  };
+
+  const handleDeleteCourse = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!db) {
+      alert("Database not connected. Try again.");
+      return;
+    }
+    const confirmed = window.confirm("Delete this course?");
+    if (!confirmed) return;
+    try {
+      await deleteDoc(doc(db, "courses", id));
+      alert("Deleted successfully!");
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Failed to delete. Try again.");
+    }
   };
 
   return (
@@ -223,7 +244,7 @@ export default function CoursesBannersPage() {
                 <div className="truncate"><p className="font-bold truncate text-secondary">{b.title}</p><p className="text-[10px] text-muted-foreground uppercase">Order: {b.order}</p></div>
                 <div className="flex gap-1">
                   <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); setEditingBanner(b); setBTitle(b.title); setBSubtitle(b.subtitle || ''); setBImageUrl(b.imageUrl); setBCtaText(b.ctaText); setBCtaLink(b.ctaLink || ''); setBIsActive(b.isActive); setBOrder(String(b.order)); setBannerDialogOpen(true); }}><Edit className="w-4 h-4" /></Button>
-                  <Button variant="ghost" size="icon" className="text-destructive" onClick={(e) => handleDelete('hero_banners', b.id, e)}><Trash2 className="w-4 h-4" /></Button>
+                  <Button variant="ghost" size="icon" className="text-destructive" onClick={(e) => handleDeleteBanner(b.id, e)}><Trash2 className="w-4 h-4" /></Button>
                 </div>
               </CardContent>
             </Card>
@@ -300,7 +321,7 @@ export default function CoursesBannersPage() {
                     setCGoogleFormUrl(c.googleFormUrl || '');
                     setCourseDialogOpen(true); 
                   }}>Edit</Button>
-                  <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10" onClick={(e) => handleDelete('courses', c.id, e)}><Trash2 className="w-4 h-4" /></Button>
+                  <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10" onClick={(e) => handleDeleteCourse(c.id, e)}>Delete</Button>
                 </div>
               </CardContent>
             </Card>

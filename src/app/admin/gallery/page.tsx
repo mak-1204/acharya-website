@@ -96,17 +96,21 @@ export default function GalleryAdminPage() {
     setSubmitting(false);
   };
 
-  const handleDelete = (id: string, e: React.MouseEvent) => {
+  const handleDeleteGallery = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!db || !confirm('Delete this image?')) return;
-    const docRef = doc(db, 'gallery', id);
-    deleteDoc(docRef).catch(async (error) => {
-      errorEmitter.emit('permission-error', new FirestorePermissionError({
-        path: docRef.path,
-        operation: 'delete',
-      }));
-    });
-    toast({ title: 'Item deletion initiated' });
+    if (!db) {
+      alert("Database not connected. Try again.");
+      return;
+    }
+    const confirmed = window.confirm("Delete this image?");
+    if (!confirmed) return;
+    try {
+      await deleteDoc(doc(db, "gallery", id));
+      alert("Deleted successfully!");
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Failed to delete. Try again.");
+    }
   };
 
   return (
@@ -148,7 +152,7 @@ export default function GalleryAdminPage() {
                   <p className="text-white text-xs font-medium line-clamp-2">{item.caption || 'No caption'}</p>
                   <div className="flex gap-2">
                     <Button variant="secondary" size="sm" className="flex-1 h-8" onClick={(e) => handleEdit(item, e)}><Edit className="w-3 h-3 mr-1" /> Edit</Button>
-                    <Button variant="destructive" size="sm" className="h-8 w-8 p-0" onClick={(e) => handleDelete(item.id, e)}><Trash2 className="w-3 h-3" /></Button>
+                    <Button variant="destructive" size="sm" className="h-8 w-8 p-0" onClick={(e) => handleDeleteGallery(item.id, e)}><Trash2 className="w-3 h-3" /></Button>
                   </div>
                 </div>
               </div>

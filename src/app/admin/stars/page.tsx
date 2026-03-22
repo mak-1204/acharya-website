@@ -106,17 +106,21 @@ export default function StarsAdminPage() {
     setSubmitting(false);
   };
 
-  const handleDelete = (id: string, e: React.MouseEvent) => {
+  const handleDeleteStar = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!db || !confirm('Are you sure you want to remove this student?')) return;
-    const docRef = doc(db, 'stars', id);
-    deleteDoc(docRef).catch(async (error) => {
-      errorEmitter.emit('permission-error', new FirestorePermissionError({
-        path: docRef.path,
-        operation: 'delete',
-      }));
-    });
-    toast({ title: 'Deletion initiated' });
+    if (!db) {
+      alert("Database not connected. Try again.");
+      return;
+    }
+    const confirmed = window.confirm("Delete this star?");
+    if (!confirmed) return;
+    try {
+      await deleteDoc(doc(db, "stars", id));
+      alert("Deleted successfully!");
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Failed to delete. Try again.");
+    }
   };
 
   return (
@@ -223,7 +227,7 @@ export default function StarsAdminPage() {
                   <Button variant="outline" size="sm" className="flex-1" onClick={(e) => handleEdit(item, e)}>
                     <Edit className="w-4 h-4 mr-2" /> Edit
                   </Button>
-                  <Button variant="outline" size="sm" className="w-10 p-0 text-destructive border-destructive/20 hover:bg-destructive/10" onClick={(e) => handleDelete(item.id, e)}>
+                  <Button variant="outline" size="sm" className="w-10 p-0 text-destructive border-destructive/20 hover:bg-destructive/10" onClick={(e) => handleDeleteStar(item.id, e)}>
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>

@@ -106,17 +106,21 @@ export default function ImpactStatsAdminPage() {
     setSubmitting(false);
   };
 
-  const handleDelete = (id: string, e: React.MouseEvent) => {
+  const handleDeleteStat = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!db || !confirm('Delete this stat?')) return;
-    const docRef = doc(db, 'impact_stats', id);
-    deleteDoc(docRef).catch(async (error) => {
-      errorEmitter.emit('permission-error', new FirestorePermissionError({
-        path: docRef.path,
-        operation: 'delete',
-      }));
-    });
-    toast({ title: 'Deletion initiated' });
+    if (!db) {
+      alert("Database not connected. Try again.");
+      return;
+    }
+    const confirmed = window.confirm("Delete this stat?");
+    if (!confirmed) return;
+    try {
+      await deleteDoc(doc(db, "impact_stats", id));
+      alert("Deleted successfully!");
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Failed to delete. Try again.");
+    }
   };
 
   const renderIcon = (name: string) => {
@@ -185,7 +189,7 @@ export default function ImpactStatsAdminPage() {
                 </div>
                 <div className="flex gap-2 border-t pt-4">
                   <Button variant="outline" size="sm" className="flex-1" onClick={() => handleEdit(item)}><Edit className="w-4 h-4 mr-2" /> Edit</Button>
-                  <Button variant="outline" size="sm" className="w-10 p-0 text-destructive border-destructive/20 hover:bg-destructive/10" onClick={(e) => handleDelete(item.id, e)}><Trash2 className="w-4 h-4" /></Button>
+                  <Button variant="outline" size="sm" className="w-10 p-0 text-destructive border-destructive/20 hover:bg-destructive/10" onClick={(e) => handleDeleteStat(item.id, e)}>Delete</Button>
                 </div>
               </CardContent>
             </Card>
