@@ -26,22 +26,22 @@ export const Footer = () => {
           {/* Brand Section */}
           <div className="lg:col-span-4 space-y-6">
             <div className="flex items-start gap-6">
-              {/* White Square Logo Container - Increased Size */}
-              <div className="bg-white p-4 rounded-2xl w-36 h-36 flex items-center justify-center shrink-0 shadow-lg">
+              {/* White Square Logo Container - Significantly Increased Size */}
+              <div className="bg-white p-5 rounded-3xl w-48 h-48 flex items-center justify-center shrink-0 shadow-lg">
                 {logoImage && (
                   <Image 
                     src={logoImage.imageUrl} 
                     alt={logoImage.description} 
-                    width={120}
-                    height={120}
+                    width={160}
+                    height={160}
                     className="object-contain"
                     data-ai-hint={logoImage.imageHint}
                   />
                 )}
               </div>
               
-              {/* Vertical Separator */}
-              <div className="w-px h-28 bg-white/20 self-center hidden sm:block"></div>
+              {/* Vertical Separator - Height adjusted for larger logo */}
+              <div className="w-px h-36 bg-white/20 self-center hidden sm:block"></div>
               
               {/* Brand Text */}
               <div className="space-y-1 self-center">
