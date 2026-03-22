@@ -26,14 +26,14 @@ export const Footer = () => {
           {/* Brand Section */}
           <div className="lg:col-span-4 space-y-6">
             <div className="flex items-start gap-6">
-              {/* White Square Logo Container */}
-              <div className="bg-white p-2 rounded-xl w-24 h-24 flex items-center justify-center shrink-0 shadow-lg">
+              {/* White Square Logo Container - Increased Size */}
+              <div className="bg-white p-4 rounded-2xl w-36 h-36 flex items-center justify-center shrink-0 shadow-lg">
                 {logoImage && (
                   <Image 
                     src={logoImage.imageUrl} 
                     alt={logoImage.description} 
-                    width={80}
-                    height={80}
+                    width={120}
+                    height={120}
                     className="object-contain"
                     data-ai-hint={logoImage.imageHint}
                   />
@@ -41,10 +41,10 @@ export const Footer = () => {
               </div>
               
               {/* Vertical Separator */}
-              <div className="w-px h-20 bg-white/20 self-center hidden sm:block"></div>
+              <div className="w-px h-28 bg-white/20 self-center hidden sm:block"></div>
               
               {/* Brand Text */}
-              <div className="space-y-1">
+              <div className="space-y-1 self-center">
                 <h3 className="text-white font-bold text-lg md:text-xl leading-tight">
                   IIT, NEET & Beyond
                 </h3>
