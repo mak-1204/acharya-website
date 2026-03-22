@@ -6,30 +6,32 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 
-// IMPORTANT: DO NOT MODIFY THIS FUNCTION
+// Helper to check if we are running on the server
+const isServer = typeof window === 'undefined';
+
 export function initializeFirebase() {
   if (!getApps().length) {
-    // Important! initializeApp() is called without any arguments because Firebase App Hosting
-    // integrates with the initializeApp() function to provide the environment variables needed to
-    // populate the FirebaseOptions in production. It is critical that we attempt to call initializeApp()
-    // without arguments.
-    let firebaseApp;
+    let firebaseApp: FirebaseApp;
     try {
-      // Attempt to initialize via Firebase App Hosting environment variables
-      firebaseApp = initializeApp();
-    } catch (e) {
-      // Only warn in production because it's normal to use the firebaseConfig to initialize
-      // during development
-      if (process.env.NODE_ENV === "production") {
-        console.warn('Automatic initialization failed. Falling back to firebase config object.', e);
+      // On the server, we avoid calling initializeApp() without arguments 
+      // unless we are certain the environment variables are present.
+      // This prevents the "Need to provide options" error during SSR/Build.
+      if (isServer) {
+        firebaseApp = initializeApp(firebaseConfig);
+      } else {
+        try {
+          firebaseApp = initializeApp();
+        } catch (e) {
+          firebaseApp = initializeApp(firebaseConfig);
+        }
       }
+    } catch (e) {
       firebaseApp = initializeApp(firebaseConfig);
     }
 
     return getSdks(firebaseApp);
   }
 
-  // If already initialized, return the SDKs with the already initialized App
   return getSdks(getApp());
 }
 

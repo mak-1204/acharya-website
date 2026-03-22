@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -50,8 +50,10 @@ const getInitials = (name: string) => {
 export default function Home() {
   const [heroApi, setHeroApi] = useState<CarouselApi>();
   const [heroCurrent, setHeroCurrent] = useState(0);
-  const autoplayHero = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
-  const autoplayStars = useRef(Autoplay({ delay: 3000, stopOnInteraction: true }));
+  
+  // Use useMemo for Embla plugins to ensure they are stable and safe during SSR
+  const autoplayHero = useMemo(() => Autoplay({ delay: 5000, stopOnInteraction: false }), []);
+  const autoplayStars = useMemo(() => Autoplay({ delay: 3000, stopOnInteraction: true }), []);
   
   const db = useFirestore();
 
@@ -184,7 +186,7 @@ export default function Home() {
           <Carousel 
             setApi={setHeroApi} 
             opts={{ loop: true }} 
-            plugins={[autoplayHero.current]}
+            plugins={[autoplayHero]}
             className="w-full relative group"
           >
             <CarouselContent>
@@ -407,7 +409,7 @@ export default function Home() {
                     align: "start",
                     loop: siteData.stars.length > 4,
                   }}
-                  plugins={[autoplayStars.current]}
+                  plugins={[autoplayStars]}
                   className="w-full"
                 >
                   <CarouselContent className="-ml-4">
