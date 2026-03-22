@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useFirestore } from '@/firebase';
+import { useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,7 +38,11 @@ export default function GalleryAdminPage() {
         setLoading(false);
       },
       (err) => {
-        toast({ title: 'Error', description: err.message, variant: 'destructive' });
+        const contextualError = new FirestorePermissionError({
+          operation: 'list',
+          path: 'gallery',
+        });
+        errorEmitter.emit('permission-error', contextualError);
         setLoading(false);
       }
     );
@@ -49,7 +53,8 @@ export default function GalleryAdminPage() {
     setImageUrl(''); setCaption(''); setIsPublished(true); setOrder('0'); setEditingItem(null);
   };
 
-  const handleEdit = (item: any) => {
+  const handleEdit = (item: any, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     setEditingItem(item);
     setImageUrl(item.imageUrl || '');
     setCaption(item.caption || '');
@@ -58,24 +63,50 @@ export default function GalleryAdminPage() {
     setIsOpen(true);
   };
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!db) return;
     setSubmitting(true);
     const data = { imageUrl, caption, isPublished, order: Number(order), updatedAt: serverTimestamp() };
-    try {
-      if (editingItem) await updateDoc(doc(db, 'gallery', editingItem.id), data);
-      else await addDoc(collection(db, 'gallery'), { ...data, createdAt: serverTimestamp() });
-      setIsOpen(false); resetForm(); toast({ title: 'Gallery item saved' });
-    } catch (err: any) { toast({ variant: 'destructive', title: 'Error', description: err.message }); } finally { setSubmitting(false); }
+    
+    if (editingItem) {
+      const docRef = doc(db, 'gallery', editingItem.id);
+      updateDoc(docRef, data).catch(async (error) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'update',
+          requestResourceData: data,
+        }));
+      });
+    } else {
+      const colRef = collection(db, 'gallery');
+      const addData = { ...data, createdAt: serverTimestamp() };
+      addDoc(colRef, addData).catch(async (error) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: colRef.path,
+          operation: 'create',
+          requestResourceData: addData,
+        }));
+      });
+    }
+
+    setIsOpen(false);
+    resetForm();
+    toast({ title: 'Gallery item saved' });
+    setSubmitting(false);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!db || !confirm('Delete this image?')) return;
-    try {
-      await deleteDoc(doc(db, 'gallery', id));
-      toast({ title: 'Deleted' });
-    } catch (err: any) { toast({ variant: 'destructive', title: 'Error', description: err.message }); }
+    const docRef = doc(db, 'gallery', id);
+    deleteDoc(docRef).catch(async (error) => {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: docRef.path,
+        operation: 'delete',
+      }));
+    });
+    toast({ title: 'Item deletion initiated' });
   };
 
   return (
@@ -116,8 +147,8 @@ export default function GalleryAdminPage() {
                 <div className="space-y-3">
                   <p className="text-white text-xs font-medium line-clamp-2">{item.caption || 'No caption'}</p>
                   <div className="flex gap-2">
-                    <Button variant="secondary" size="sm" className="flex-1 h-8" onClick={() => handleEdit(item)}><Edit className="w-3 h-3 mr-1" /> Edit</Button>
-                    <Button variant="destructive" size="sm" className="h-8 w-8 p-0" onClick={() => handleDelete(item.id)}><Trash2 className="w-3 h-3" /></Button>
+                    <Button variant="secondary" size="sm" className="flex-1 h-8" onClick={(e) => handleEdit(item, e)}><Edit className="w-3 h-3 mr-1" /> Edit</Button>
+                    <Button variant="destructive" size="sm" className="h-8 w-8 p-0" onClick={(e) => handleDelete(item.id, e)}><Trash2 className="w-3 h-3" /></Button>
                   </div>
                 </div>
               </div>

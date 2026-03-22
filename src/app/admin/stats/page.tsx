@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useFirestore } from '@/firebase';
+import { useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,7 +49,10 @@ export default function ImpactStatsAdminPage() {
         setLoading(false);
       },
       (err) => {
-        toast({ title: 'Error', description: err.message, variant: 'destructive' });
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          operation: 'list',
+          path: 'impact_stats',
+        }));
         setLoading(false);
       }
     );
@@ -70,24 +73,50 @@ export default function ImpactStatsAdminPage() {
     setIsOpen(true);
   };
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!db) return;
     setSubmitting(true);
     const data = { label, value, iconName, isPublished, order: Number(order), updatedAt: serverTimestamp() };
-    try {
-      if (editingItem) await updateDoc(doc(db, 'impact_stats', editingItem.id), data);
-      else await addDoc(collection(db, 'impact_stats'), { ...data, createdAt: serverTimestamp() });
-      setIsOpen(false); resetForm(); toast({ title: 'Stat saved successfully' });
-    } catch (err: any) { toast({ variant: 'destructive', title: 'Error', description: err.message }); } finally { setSubmitting(false); }
+    
+    if (editingItem) {
+      const docRef = doc(db, 'impact_stats', editingItem.id);
+      updateDoc(docRef, data).catch(async (error) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'update',
+          requestResourceData: data,
+        }));
+      });
+    } else {
+      const colRef = collection(db, 'impact_stats');
+      const addData = { ...data, createdAt: serverTimestamp() };
+      addDoc(colRef, addData).catch(async (error) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: colRef.path,
+          operation: 'create',
+          requestResourceData: addData,
+        }));
+      });
+    }
+
+    setIsOpen(false);
+    resetForm();
+    toast({ title: 'Stat updated' });
+    setSubmitting(false);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!db || !confirm('Delete this stat?')) return;
-    try {
-      await deleteDoc(doc(db, 'impact_stats', id));
-      toast({ title: 'Deleted' });
-    } catch (err: any) { toast({ variant: 'destructive', title: 'Error', description: err.message }); }
+    const docRef = doc(db, 'impact_stats', id);
+    deleteDoc(docRef).catch(async (error) => {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: docRef.path,
+        operation: 'delete',
+      }));
+    });
+    toast({ title: 'Deletion initiated' });
   };
 
   const renderIcon = (name: string) => {
@@ -156,7 +185,7 @@ export default function ImpactStatsAdminPage() {
                 </div>
                 <div className="flex gap-2 border-t pt-4">
                   <Button variant="outline" size="sm" className="flex-1" onClick={() => handleEdit(item)}><Edit className="w-4 h-4 mr-2" /> Edit</Button>
-                  <Button variant="outline" size="sm" className="w-10 p-0 text-destructive border-destructive/20 hover:bg-destructive/10" onClick={() => handleDelete(item.id)}><Trash2 className="w-4 h-4" /></Button>
+                  <Button variant="outline" size="sm" className="w-10 p-0 text-destructive border-destructive/20 hover:bg-destructive/10" onClick={(e) => handleDelete(item.id, e)}><Trash2 className="w-4 h-4" /></Button>
                 </div>
               </CardContent>
             </Card>
