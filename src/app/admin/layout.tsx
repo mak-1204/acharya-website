@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { useAuth } from '@/firebase';
 import { Loader2, LayoutDashboard, LayoutTemplate, ImageIcon, MessageSquare, Star, LogOut, BarChart3, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -13,6 +13,7 @@ import { Logo } from '@/components/Logo';
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const auth = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -23,6 +24,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       return;
     }
 
+    if (!auth) return;
+
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       if (u) {
         setUser(u);
@@ -32,7 +35,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       setLoading(false);
     });
     return () => unsubscribe();
-  }, [router, pathname]);
+  }, [router, pathname, auth]);
 
   if (loading) {
     return (
@@ -64,6 +67,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ];
 
   const handleLogout = async () => {
+    if (!auth) return;
     await signOut(auth);
     router.push('/admin/login');
   };

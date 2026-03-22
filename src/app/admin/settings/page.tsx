@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { db } from '@/lib/firebase';
+import { useFirestore } from '@/firebase';
 import { doc, setDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,12 +11,14 @@ import { Loader2, Settings, Save, Globe } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function SiteSettingsPage() {
+  const db = useFirestore();
   const [enquiryFormUrl, setEnquiryFormUrl] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
+    if (!db) return;
     setLoading(true);
     const unsub = onSnapshot(
       doc(db, 'site_settings', 'general'),
@@ -32,10 +34,11 @@ export default function SiteSettingsPage() {
       }
     );
     return () => unsub();
-  }, []);
+  }, [db]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!db) return;
     setSubmitting(true);
     try {
       await setDoc(doc(db, 'site_settings', 'general'), {

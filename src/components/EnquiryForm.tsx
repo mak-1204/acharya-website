@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, ClipboardCheck } from 'lucide-react';
-import { db } from '@/lib/firebase';
+import { useFirestore } from '@/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 
 const DEFAULT_GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
@@ -15,9 +15,11 @@ interface EnquiryFormProps {
 }
 
 export const EnquiryForm = ({ source, title, isMinimal = false }: EnquiryFormProps) => {
+  const db = useFirestore();
   const [enquiryUrl, setEnquiryUrl] = useState(DEFAULT_GOOGLE_FORM_URL);
 
   useEffect(() => {
+    if (!db) return;
     const unsub = onSnapshot(
       doc(db, 'site_settings', 'general'),
       (snap) => {
@@ -30,7 +32,7 @@ export const EnquiryForm = ({ source, title, isMinimal = false }: EnquiryFormPro
       }
     );
     return () => unsub();
-  }, []);
+  }, [db]);
 
   return (
     <div className={isMinimal ? "" : "bg-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl border border-border text-center"}>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { db } from '@/lib/firebase';
+import { useFirestore } from '@/firebase';
 import { collection, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +16,7 @@ import { Plus, Edit, Trash2, Loader2, MessageSquare, Star as StarIcon } from 'lu
 import { useToast } from '@/hooks/use-toast';
 
 export default function TestimonialsAdminPage() {
+  const db = useFirestore();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -34,6 +35,7 @@ export default function TestimonialsAdminPage() {
   const [order, setOrder] = useState('0');
 
   useEffect(() => {
+    if (!db) return;
     setLoading(true);
     const unsub = onSnapshot(
       query(collection(db, 'testimonials'), orderBy('order', 'asc')),
@@ -47,7 +49,7 @@ export default function TestimonialsAdminPage() {
       }
     );
     return () => unsub();
-  }, []);
+  }, [db]);
 
   const resetForm = () => {
     setStudentName(''); setPhoto(''); setCourse(''); setReview(''); setResult(''); setRating('5'); setIsPublished(true); setOrder('0'); setEditingItem(null);
@@ -68,6 +70,7 @@ export default function TestimonialsAdminPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!db) return;
     setSubmitting(true);
     const data = { studentName, photo, course, review, result, rating: Number(rating), isPublished, order: Number(order), updatedAt: serverTimestamp() };
     try {
@@ -78,7 +81,7 @@ export default function TestimonialsAdminPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this testimonial?')) return;
+    if (!db || !confirm('Delete this testimonial?')) return;
     try {
       await deleteDoc(doc(db, 'testimonials', id));
       toast({ title: 'Deleted' });
@@ -98,12 +101,12 @@ export default function TestimonialsAdminPage() {
             <DialogHeader><DialogTitle>{editingItem ? 'Edit Testimonial' : 'New Testimonial'}</DialogTitle></DialogHeader>
             <form onSubmit={handleSave} className="space-y-4 pt-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2"><Label>Student Name</Label><Input value={studentName} onChange={e => setStudentName(e.target.value)} required /></div>
-                <div className="space-y-2"><Label>Course Name</Label><Input value={course} onChange={e => setCourse(e.target.value)} required /></div>
+                <div className="space-y-2"><Label>Student Name</Label><Input value={studentName} onChange={setStudentName} required /></div>
+                <div className="space-y-2"><Label>Course Name</Label><Input value={course} onChange={setCourse} required /></div>
               </div>
-              <div className="space-y-2"><Label>Student Photo URL</Label><Input value={photo} onChange={e => setPhoto(e.target.value)} placeholder="https://..." /></div>
-              <div className="space-y-2"><Label>Review Content</Label><Textarea value={review} onChange={e => setReview(e.target.value)} required className="h-24" /></div>
-              <div className="space-y-2"><Label>Result / Success Metric (Optional)</Label><Input value={result} onChange={e => setResult(e.target.value)} placeholder="e.g. 99.5 Percentile in JEE" /></div>
+              <div className="space-y-2"><Label>Student Photo URL</Label><Input value={photo} onChange={setPhoto} placeholder="https://..." /></div>
+              <div className="space-y-2"><Label>Review Content</Label><Textarea value={review} onChange={setReview} required className="h-24" /></div>
+              <div className="space-y-2"><Label>Result / Success Metric (Optional)</Label><Input value={result} onChange={setResult} placeholder="e.g. 99.5 Percentile in JEE" /></div>
               <div className="grid grid-cols-2 gap-6 items-center">
                 <div className="space-y-2">
                   <Label>Star Rating</Label>
@@ -112,7 +115,7 @@ export default function TestimonialsAdminPage() {
                     <SelectContent>{[1,2,3,4,5].map(num => <SelectItem key={num} value={String(num)}>{num} Stars</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2"><Label>Order</Label><Input type="number" value={order} onChange={e => setOrder(e.target.value)} required /></div>
+                <div className="space-y-2"><Label>Order</Label><Input type="number" value={order} onChange={setOrder} required /></div>
               </div>
               <div className="flex items-center gap-3 pt-4 border-t"><Switch checked={isPublished} onCheckedChange={setIsPublished} /><Label>Published</Label></div>
               <Button type="submit" className="w-full h-12" disabled={submitting}>{submitting ? <Loader2 className="animate-spin" /> : null} Save Testimonial</Button>

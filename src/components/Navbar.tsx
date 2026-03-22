@@ -7,7 +7,7 @@ import { Menu, X, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Logo } from './Logo';
-import { db } from '@/lib/firebase';
+import { useFirestore } from '@/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 
 const DEFAULT_GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
@@ -25,10 +25,12 @@ export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [enquiryUrl, setEnquiryUrl] = useState(DEFAULT_GOOGLE_FORM_URL);
+  const db = useFirestore();
   const pathname = usePathname();
   const isHomePage = pathname === '/';
 
   useEffect(() => {
+    if (!db) return;
     const unsub = onSnapshot(
       doc(db, 'site_settings', 'general'),
       (snap) => {
@@ -41,7 +43,7 @@ export const Navbar = () => {
       }
     );
     return () => unsub();
-  }, []);
+  }, [db]);
 
   useEffect(() => {
     if (!isHomePage) return;

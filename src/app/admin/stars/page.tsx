@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { db } from '@/lib/firebase';
+import { useFirestore } from '@/firebase';
 import { collection, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +15,7 @@ import { Plus, Edit, Trash2, Loader2, Star as StarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function StarsAdminPage() {
+  const db = useFirestore();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -34,6 +35,7 @@ export default function StarsAdminPage() {
   const [order, setOrder] = useState('0');
 
   useEffect(() => {
+    if (!db) return;
     setLoading(true);
     const unsub = onSnapshot(
       query(collection(db, 'stars'), orderBy('order', 'asc')),
@@ -47,7 +49,7 @@ export default function StarsAdminPage() {
       }
     );
     return () => unsub();
-  }, []);
+  }, [db]);
 
   const resetForm = () => {
     setName('');
@@ -78,6 +80,7 @@ export default function StarsAdminPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!db) return;
     setSubmitting(true);
     const data = {
       name, photo, score, exam, rank, courseName, quote, 
@@ -104,7 +107,7 @@ export default function StarsAdminPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to remove this student?')) return;
+    if (!db || !confirm('Are you sure you want to remove this student?')) return;
     try {
       await deleteDoc(doc(db, 'stars', id));
       toast({ title: 'Deleted', description: 'Student profile removed.' });
@@ -135,39 +138,39 @@ export default function StarsAdminPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Student Name</Label>
-                  <Input value={name} onChange={e => setName(e.target.value)} required placeholder="e.g. John Doe" />
+                  <Input value={name} onChange={setName} required placeholder="e.g. John Doe" />
                 </div>
                 <div className="space-y-2">
                   <Label>Exam Name</Label>
-                  <Input value={exam} onChange={e => setExam(e.target.value)} required placeholder="e.g. NEET-UG '26" />
+                  <Input value={exam} onChange={setExam} required placeholder="e.g. NEET-UG '26" />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Score / Marks</Label>
-                  <Input value={score} onChange={e => setScore(e.target.value)} required placeholder="672 / 720" />
+                  <Input value={score} onChange={setScore} required placeholder="672 / 720" />
                 </div>
                 <div className="space-y-2">
                   <Label>Rank (Optional)</Label>
-                  <Input value={rank} onChange={e => setRank(e.target.value)} placeholder="e.g. AIR 1204" />
+                  <Input value={rank} onChange={setRank} placeholder="e.g. AIR 1204" />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label>Course Name</Label>
-                <Input value={courseName} onChange={e => setCourseName(e.target.value)} required placeholder="e.g. 2-Year Classroom Course" />
+                <Input value={courseName} onChange={setCourseName} required placeholder="e.g. 2-Year Classroom Course" />
               </div>
               <div className="space-y-2">
                 <Label>Student Photo URL</Label>
-                <Input value={photo} onChange={e => setPhoto(e.target.value)} placeholder="https://..." />
+                <Input value={photo} onChange={setPhoto} placeholder="https://..." />
               </div>
               <div className="space-y-2">
                 <Label>Inspirational Quote</Label>
-                <Textarea value={quote} onChange={e => setQuote(e.target.value)} placeholder="Consistency is the key..." className="h-24" />
+                <Textarea value={quote} onChange={setQuote} placeholder="Consistency is the key..." className="h-24" />
               </div>
               <div className="grid grid-cols-2 gap-6 items-center border-t pt-4">
                 <div className="space-y-2">
                   <Label>Display Order (Lower comes first)</Label>
-                  <Input type="number" value={order} onChange={e => setOrder(e.target.value)} required />
+                  <Input type="number" value={order} onChange={setOrder} required />
                 </div>
                 <div className="flex items-center gap-3">
                   <Switch checked={isPublished} onCheckedChange={setIsPublished} />

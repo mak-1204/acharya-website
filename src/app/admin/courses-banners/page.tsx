@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { db } from '@/lib/firebase';
+import { useFirestore } from '@/firebase';
 import { collection, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,6 +15,7 @@ import { Plus, Edit, Trash2, Loader2, LayoutTemplate, BookOpen, Layers } from 'l
 import { useToast } from '@/hooks/use-toast';
 
 export default function CoursesBannersPage() {
+  const db = useFirestore();
   const [banners, setBanners] = useState<any[]>([]);
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,6 +53,7 @@ export default function CoursesBannersPage() {
   const [cGoogleFormUrl, setCGoogleFormUrl] = useState('');
 
   useEffect(() => {
+    if (!db) return;
     setLoading(true);
     
     // Listen to Hero Banners
@@ -82,7 +84,7 @@ export default function CoursesBannersPage() {
       unsubBanners();
       unsubCourses();
     };
-  }, []);
+  }, [db]);
 
   const resetBannerForm = () => {
     setBTitle(''); setBSubtitle(''); setBImageUrl(''); setBCtaText('Enroll Now'); setBCtaLink(''); setBIsActive(true); setBOrder('0'); setEditingBanner(null);
@@ -94,6 +96,7 @@ export default function CoursesBannersPage() {
 
   const handleBannerSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!db) return;
     setSubmitting(true);
     const data = { title: bTitle, subtitle: bSubtitle, imageUrl: bImageUrl, ctaText: bCtaText, ctaLink: bCtaLink, isActive: bIsActive, order: Number(bOrder), updatedAt: serverTimestamp() };
     try {
@@ -105,6 +108,7 @@ export default function CoursesBannersPage() {
 
   const handleCourseSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!db) return;
     setSubmitting(true);
     const data = { 
       title: cTitle, 
@@ -131,7 +135,7 @@ export default function CoursesBannersPage() {
   };
 
   const handleDelete = async (col: string, id: string) => {
-    if (!confirm('Delete this item?')) return;
+    if (!db || !confirm('Delete this item?')) return;
     try {
       await deleteDoc(doc(db, col, id));
       toast({ title: 'Deleted' });

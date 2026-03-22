@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { db } from '@/lib/firebase';
+import { useFirestore } from '@/firebase';
 import { collection, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +24,7 @@ const ICON_OPTIONS = [
 ];
 
 export default function ImpactStatsAdminPage() {
+  const db = useFirestore();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -39,6 +40,7 @@ export default function ImpactStatsAdminPage() {
   const [order, setOrder] = useState('0');
 
   useEffect(() => {
+    if (!db) return;
     setLoading(true);
     const unsub = onSnapshot(
       query(collection(db, 'impact_stats'), orderBy('order', 'asc')),
@@ -52,7 +54,7 @@ export default function ImpactStatsAdminPage() {
       }
     );
     return () => unsub();
-  }, []);
+  }, [db]);
 
   const resetForm = () => {
     setLabel(''); setValue(''); setIconName('Users'); setIsPublished(true); setOrder('0'); setEditingItem(null);
@@ -70,6 +72,7 @@ export default function ImpactStatsAdminPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!db) return;
     setSubmitting(true);
     const data = { label, value, iconName, isPublished, order: Number(order), updatedAt: serverTimestamp() };
     try {
@@ -80,7 +83,7 @@ export default function ImpactStatsAdminPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this stat?')) return;
+    if (!db || !confirm('Delete this stat?')) return;
     try {
       await deleteDoc(doc(db, 'impact_stats', id));
       toast({ title: 'Deleted' });
