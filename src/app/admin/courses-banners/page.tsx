@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useFirestore } from '@/firebase';
+import { useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -56,7 +56,6 @@ export default function CoursesBannersPage() {
     if (!db) return;
     setLoading(true);
     
-    // Listen to Hero Banners
     const unsubBanners = onSnapshot(
       query(collection(db, 'hero_banners'), orderBy('order', 'asc')),
       (snapshot) => {
@@ -64,19 +63,24 @@ export default function CoursesBannersPage() {
         setLoading(false);
       },
       (err) => {
-        toast({ title: 'Error loading banners', description: err.message, variant: 'destructive' });
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          operation: 'list',
+          path: 'hero_banners',
+        }));
         setLoading(false);
       }
     );
 
-    // Listen to Courses
     const unsubCourses = onSnapshot(
       query(collection(db, 'courses'), orderBy('order', 'asc')),
       (snapshot) => {
         setCourses(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
       },
       (err) => {
-        toast({ title: 'Error loading courses', description: err.message, variant: 'destructive' });
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          operation: 'list',
+          path: 'courses',
+        }));
       }
     );
 
@@ -94,52 +98,90 @@ export default function CoursesBannersPage() {
     setCTitle(''); setCSlug(''); setCDesc(''); setCBannerImage(''); setCPrice('0'); setCDiscountedPrice('0'); setCCategory(''); setCIsFeatured(false); setCIsPublished(true); setCOrder('0'); setCAudience(''); setCDuration(''); setCHighlights(''); setCGoogleFormUrl(''); setEditingCourse(null);
   };
 
-  const handleBannerSave = async (e: React.FormEvent) => {
+  const handleBannerSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!db) return;
     setSubmitting(true);
     const data = { title: bTitle, subtitle: bSubtitle, imageUrl: bImageUrl, ctaText: bCtaText, ctaLink: bCtaLink, isActive: bIsActive, order: Number(bOrder), updatedAt: serverTimestamp() };
-    try {
-      if (editingBanner) await updateDoc(doc(db, 'hero_banners', editingBanner.id), data);
-      else await addDoc(collection(db, 'hero_banners'), { ...data, createdAt: serverTimestamp() });
-      setBannerDialogOpen(false); resetBannerForm(); toast({ title: 'Banner saved' });
-    } catch (err: any) { toast({ variant: 'destructive', title: 'Error', description: err.message }); } finally { setSubmitting(false); }
+    
+    if (editingBanner) {
+      const docRef = doc(db, 'hero_banners', editingBanner.id);
+      updateDoc(docRef, data).catch(async (error) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'update',
+          requestResourceData: data,
+        }));
+      });
+    } else {
+      const colRef = collection(db, 'hero_banners');
+      const addData = { ...data, createdAt: serverTimestamp() };
+      addDoc(colRef, addData).catch(async (error) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: colRef.path,
+          operation: 'create',
+          requestResourceData: addData,
+        }));
+      });
+    }
+
+    setBannerDialogOpen(false);
+    resetBannerForm();
+    toast({ title: 'Banner saved' });
+    setSubmitting(false);
   };
 
-  const handleCourseSave = async (e: React.FormEvent) => {
+  const handleCourseSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!db) return;
     setSubmitting(true);
+    const highlightsArray = cHighlights.split('\n').filter(h => h.trim() !== '');
     const data = { 
-      title: cTitle, 
-      slug: cSlug, 
-      description: cDesc, 
-      bannerImage: cBannerImage, 
-      price: Number(cPrice), 
-      discountedPrice: Number(cDiscountedPrice), 
-      category: cCategory, 
-      isFeatured: cIsFeatured, 
-      isPublished: cIsPublished, 
-      order: Number(cOrder),
-      audience: cAudience,
-      duration: cDuration,
-      highlights: cHighlights.split('\n').filter(h => h.trim() !== ''),
-      googleFormUrl: cGoogleFormUrl,
-      updatedAt: serverTimestamp() 
+      title: cTitle, slug: cSlug, description: cDesc, bannerImage: cBannerImage, 
+      price: Number(cPrice), discountedPrice: Number(cDiscountedPrice), 
+      category: cCategory, isFeatured: cIsFeatured, isPublished: cIsPublished, 
+      order: Number(cOrder), audience: cAudience, duration: cDuration, 
+      highlights: highlightsArray, googleFormUrl: cGoogleFormUrl, updatedAt: serverTimestamp() 
     };
-    try {
-      if (editingCourse) await updateDoc(doc(db, 'courses', editingCourse.id), data);
-      else await addDoc(collection(db, 'courses'), { ...data, createdAt: serverTimestamp() });
-      setCourseDialogOpen(false); resetCourseForm(); toast({ title: 'Course saved' });
-    } catch (err: any) { toast({ variant: 'destructive', title: 'Error', description: err.message }); } finally { setSubmitting(false); }
+
+    if (editingCourse) {
+      const docRef = doc(db, 'courses', editingCourse.id);
+      updateDoc(docRef, data).catch(async (error) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'update',
+          requestResourceData: data,
+        }));
+      });
+    } else {
+      const colRef = collection(db, 'courses');
+      const addData = { ...data, createdAt: serverTimestamp() };
+      addDoc(colRef, addData).catch(async (error) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: colRef.path,
+          operation: 'create',
+          requestResourceData: addData,
+        }));
+      });
+    }
+
+    setCourseDialogOpen(false);
+    resetCourseForm();
+    toast({ title: 'Course saved' });
+    setSubmitting(false);
   };
 
-  const handleDelete = async (col: string, id: string) => {
+  const handleDelete = (col: string, id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!db || !confirm('Delete this item?')) return;
-    try {
-      await deleteDoc(doc(db, col, id));
-      toast({ title: 'Deleted' });
-    } catch (err: any) { toast({ variant: 'destructive', title: 'Error', description: err.message }); }
+    const docRef = doc(db, col, id);
+    deleteDoc(docRef).catch(async (error) => {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: docRef.path,
+        operation: 'delete',
+      }));
+    });
+    toast({ title: 'Deletion initiated' });
   };
 
   return (
@@ -180,8 +222,8 @@ export default function CoursesBannersPage() {
               <CardContent className="p-4 flex justify-between items-center">
                 <div className="truncate"><p className="font-bold truncate text-secondary">{b.title}</p><p className="text-[10px] text-muted-foreground uppercase">Order: {b.order}</p></div>
                 <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" onClick={() => { setEditingBanner(b); setBTitle(b.title); setBSubtitle(b.subtitle || ''); setBImageUrl(b.imageUrl); setBCtaText(b.ctaText); setBCtaLink(b.ctaLink || ''); setBIsActive(b.isActive); setBOrder(String(b.order)); setBannerDialogOpen(true); }}><Edit className="w-4 h-4" /></Button>
-                  <Button variant="ghost" size="icon" className="text-destructive" onClick={() => handleDelete('hero_banners', b.id)}><Trash2 className="w-4 h-4" /></Button>
+                  <Button variant="ghost" size="icon" onClick={(e) => { e.stopPropagation(); setEditingBanner(b); setBTitle(b.title); setBSubtitle(b.subtitle || ''); setBImageUrl(b.imageUrl); setBCtaText(b.ctaText); setBCtaLink(b.ctaLink || ''); setBIsActive(b.isActive); setBOrder(String(b.order)); setBannerDialogOpen(true); }}><Edit className="w-4 h-4" /></Button>
+                  <Button variant="ghost" size="icon" className="text-destructive" onClick={(e) => handleDelete('hero_banners', b.id, e)}><Trash2 className="w-4 h-4" /></Button>
                 </div>
               </CardContent>
             </Card>
@@ -239,7 +281,8 @@ export default function CoursesBannersPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => { 
+                  <Button variant="outline" size="sm" onClick={(e) => { 
+                    e.stopPropagation();
                     setEditingCourse(c); 
                     setCTitle(c.title); 
                     setCSlug(c.slug); 
@@ -257,7 +300,7 @@ export default function CoursesBannersPage() {
                     setCGoogleFormUrl(c.googleFormUrl || '');
                     setCourseDialogOpen(true); 
                   }}>Edit</Button>
-                  <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10" onClick={() => handleDelete('courses', c.id)}><Trash2 className="w-4 h-4" /></Button>
+                  <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10" onClick={(e) => handleDelete('courses', c.id, e)}><Trash2 className="w-4 h-4" /></Button>
                 </div>
               </CardContent>
             </Card>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useFirestore } from '@/firebase';
+import { useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,7 +44,10 @@ export default function TestimonialsAdminPage() {
         setLoading(false);
       },
       (err) => {
-        toast({ title: 'Error', description: err.message, variant: 'destructive' });
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          operation: 'list',
+          path: 'testimonials',
+        }));
         setLoading(false);
       }
     );
@@ -55,7 +58,8 @@ export default function TestimonialsAdminPage() {
     setStudentName(''); setPhoto(''); setCourse(''); setReview(''); setResult(''); setRating('5'); setIsPublished(true); setOrder('0'); setEditingItem(null);
   };
 
-  const handleEdit = (item: any) => {
+  const handleEdit = (item: any, e: React.MouseEvent) => {
+    e.stopPropagation();
     setEditingItem(item);
     setStudentName(item.studentName || '');
     setPhoto(item.photo || '');
@@ -68,24 +72,50 @@ export default function TestimonialsAdminPage() {
     setIsOpen(true);
   };
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!db) return;
     setSubmitting(true);
     const data = { studentName, photo, course, review, result, rating: Number(rating), isPublished, order: Number(order), updatedAt: serverTimestamp() };
-    try {
-      if (editingItem) await updateDoc(doc(db, 'testimonials', editingItem.id), data);
-      else await addDoc(collection(db, 'testimonials'), { ...data, createdAt: serverTimestamp() });
-      setIsOpen(false); resetForm(); toast({ title: 'Success', description: 'Testimonial saved.' });
-    } catch (err: any) { toast({ variant: 'destructive', title: 'Error', description: err.message }); } finally { setSubmitting(false); }
+    
+    if (editingItem) {
+      const docRef = doc(db, 'testimonials', editingItem.id);
+      updateDoc(docRef, data).catch(async (error) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'update',
+          requestResourceData: data,
+        }));
+      });
+    } else {
+      const colRef = collection(db, 'testimonials');
+      const addData = { ...data, createdAt: serverTimestamp() };
+      addDoc(colRef, addData).catch(async (error) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: colRef.path,
+          operation: 'create',
+          requestResourceData: addData,
+        }));
+      });
+    }
+
+    setIsOpen(false);
+    resetForm();
+    toast({ title: 'Testimonial saved' });
+    setSubmitting(false);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!db || !confirm('Delete this testimonial?')) return;
-    try {
-      await deleteDoc(doc(db, 'testimonials', id));
-      toast({ title: 'Deleted' });
-    } catch (err: any) { toast({ variant: 'destructive', title: 'Error', description: err.message }); }
+    const docRef = doc(db, 'testimonials', id);
+    deleteDoc(docRef).catch(async (error) => {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: docRef.path,
+        operation: 'delete',
+      }));
+    });
+    toast({ title: 'Deletion initiated' });
   };
 
   return (
@@ -101,12 +131,12 @@ export default function TestimonialsAdminPage() {
             <DialogHeader><DialogTitle>{editingItem ? 'Edit Testimonial' : 'New Testimonial'}</DialogTitle></DialogHeader>
             <form onSubmit={handleSave} className="space-y-4 pt-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2"><Label>Student Name</Label><Input value={studentName} onChange={setStudentName} required /></div>
-                <div className="space-y-2"><Label>Course Name</Label><Input value={course} onChange={setCourse} required /></div>
+                <div className="space-y-2"><Label>Student Name</Label><Input value={studentName} onChange={e => setStudentName(e.target.value)} required /></div>
+                <div className="space-y-2"><Label>Course Name</Label><Input value={course} onChange={e => setCourse(e.target.value)} required /></div>
               </div>
-              <div className="space-y-2"><Label>Student Photo URL</Label><Input value={photo} onChange={setPhoto} placeholder="https://..." /></div>
-              <div className="space-y-2"><Label>Review Content</Label><Textarea value={review} onChange={setReview} required className="h-24" /></div>
-              <div className="space-y-2"><Label>Result / Success Metric (Optional)</Label><Input value={result} onChange={setResult} placeholder="e.g. 99.5 Percentile in JEE" /></div>
+              <div className="space-y-2"><Label>Student Photo URL</Label><Input value={photo} onChange={e => setPhoto(e.target.value)} placeholder="https://..." /></div>
+              <div className="space-y-2"><Label>Review Content</Label><Textarea value={review} onChange={e => setReview(e.target.value)} required className="h-24" /></div>
+              <div className="space-y-2"><Label>Result / Success Metric (Optional)</Label><Input value={result} onChange={e => setResult(e.target.value)} placeholder="e.g. 99.5 Percentile in JEE" /></div>
               <div className="grid grid-cols-2 gap-6 items-center">
                 <div className="space-y-2">
                   <Label>Star Rating</Label>
@@ -115,7 +145,7 @@ export default function TestimonialsAdminPage() {
                     <SelectContent>{[1,2,3,4,5].map(num => <SelectItem key={num} value={String(num)}>{num} Stars</SelectItem>)}</SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2"><Label>Order</Label><Input type="number" value={order} onChange={setOrder} required /></div>
+                <div className="space-y-2"><Label>Order</Label><Input type="number" value={order} onChange={e => setOrder(e.target.value)} required /></div>
               </div>
               <div className="flex items-center gap-3 pt-4 border-t"><Switch checked={isPublished} onCheckedChange={setIsPublished} /><Label>Published</Label></div>
               <Button type="submit" className="w-full h-12" disabled={submitting}>{submitting ? <Loader2 className="animate-spin" /> : null} Save Testimonial</Button>
@@ -143,8 +173,8 @@ export default function TestimonialsAdminPage() {
                   <div className="flex items-center justify-between pt-3 border-t">
                     <Badge variant={item.isPublished ? 'default' : 'secondary'}>{item.isPublished ? 'Public' : 'Draft'}</Badge>
                     <div className="flex gap-2">
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(item)}><Edit className="w-4 h-4" /></Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleDelete(item.id)}><Trash2 className="w-4 h-4" /></Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => handleEdit(item, e)}><Edit className="w-4 h-4" /></Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={(e) => handleDelete(item.id, e)}><Trash2 className="w-4 h-4" /></Button>
                     </div>
                   </div>
                 </div>

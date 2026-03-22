@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useFirestore } from '@/firebase';
+import { useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, doc, addDoc, updateDoc, deleteDoc, query, orderBy, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -44,7 +44,10 @@ export default function StarsAdminPage() {
         setLoading(false);
       },
       (err) => {
-        toast({ title: 'Error fetching', description: err.message, variant: 'destructive' });
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          operation: 'list',
+          path: 'stars',
+        }));
         setLoading(false);
       }
     );
@@ -52,19 +55,11 @@ export default function StarsAdminPage() {
   }, [db]);
 
   const resetForm = () => {
-    setName('');
-    setPhoto('');
-    setScore('');
-    setExam('');
-    setRank('');
-    setCourseName('');
-    setQuote('');
-    setIsPublished(true);
-    setOrder('0');
-    setEditingItem(null);
+    setName(''); setPhoto(''); setScore(''); setExam(''); setRank(''); setCourseName(''); setQuote(''); setIsPublished(true); setOrder('0'); setEditingItem(null);
   };
 
-  const handleEdit = (item: any) => {
+  const handleEdit = (item: any, e: React.MouseEvent) => {
+    e.stopPropagation();
     setEditingItem(item);
     setName(item.name || '');
     setPhoto(item.photo || '');
@@ -78,42 +73,50 @@ export default function StarsAdminPage() {
     setIsOpen(true);
   };
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!db) return;
     setSubmitting(true);
-    const data = {
-      name, photo, score, exam, rank, courseName, quote, 
-      isPublished, 
-      order: Number(order),
-      updatedAt: serverTimestamp()
-    };
+    const data = { name, photo, score, exam, rank, courseName, quote, isPublished, order: Number(order), updatedAt: serverTimestamp() };
 
-    try {
-      if (editingItem) {
-        await updateDoc(doc(db, 'stars', editingItem.id), data);
-        toast({ title: 'Success', description: 'Student profile updated.' });
-      } else {
-        await addDoc(collection(db, 'stars'), { ...data, createdAt: serverTimestamp() });
-        toast({ title: 'Success', description: 'New star added successfully.' });
-      }
-      setIsOpen(false);
-      resetForm();
-    } catch (err: any) {
-      toast({ title: 'Error saving', description: err.message, variant: 'destructive' });
-    } finally {
-      setSubmitting(false);
+    if (editingItem) {
+      const docRef = doc(db, 'stars', editingItem.id);
+      updateDoc(docRef, data).catch(async (error) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'update',
+          requestResourceData: data,
+        }));
+      });
+    } else {
+      const colRef = collection(db, 'stars');
+      const addData = { ...data, createdAt: serverTimestamp() };
+      addDoc(colRef, addData).catch(async (error) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: colRef.path,
+          operation: 'create',
+          requestResourceData: addData,
+        }));
+      });
     }
+
+    setIsOpen(false);
+    resetForm();
+    toast({ title: 'Student profile saved' });
+    setSubmitting(false);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!db || !confirm('Are you sure you want to remove this student?')) return;
-    try {
-      await deleteDoc(doc(db, 'stars', id));
-      toast({ title: 'Deleted', description: 'Student profile removed.' });
-    } catch (err: any) {
-      toast({ title: 'Error', description: err.message, variant: 'destructive' });
-    }
+    const docRef = doc(db, 'stars', id);
+    deleteDoc(docRef).catch(async (error) => {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: docRef.path,
+        operation: 'delete',
+      }));
+    });
+    toast({ title: 'Deletion initiated' });
   };
 
   return (
@@ -138,39 +141,39 @@ export default function StarsAdminPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Student Name</Label>
-                  <Input value={name} onChange={setName} required placeholder="e.g. John Doe" />
+                  <Input value={name} onChange={e => setName(e.target.value)} required placeholder="e.g. John Doe" />
                 </div>
                 <div className="space-y-2">
                   <Label>Exam Name</Label>
-                  <Input value={exam} onChange={setExam} required placeholder="e.g. NEET-UG '26" />
+                  <Input value={exam} onChange={e => setExam(e.target.value)} required placeholder="e.g. NEET-UG '26" />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Score / Marks</Label>
-                  <Input value={score} onChange={setScore} required placeholder="672 / 720" />
+                  <Input value={score} onChange={e => setScore(e.target.value)} required placeholder="672 / 720" />
                 </div>
                 <div className="space-y-2">
                   <Label>Rank (Optional)</Label>
-                  <Input value={rank} onChange={setRank} placeholder="e.g. AIR 1204" />
+                  <Input value={rank} onChange={e => setRank(e.target.value)} placeholder="e.g. AIR 1204" />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label>Course Name</Label>
-                <Input value={courseName} onChange={setCourseName} required placeholder="e.g. 2-Year Classroom Course" />
+                <Input value={courseName} onChange={e => setCourseName(e.target.value)} required placeholder="e.g. 2-Year Classroom Course" />
               </div>
               <div className="space-y-2">
                 <Label>Student Photo URL</Label>
-                <Input value={photo} onChange={setPhoto} placeholder="https://..." />
+                <Input value={photo} onChange={e => setPhoto(e.target.value)} placeholder="https://..." />
               </div>
               <div className="space-y-2">
                 <Label>Inspirational Quote</Label>
-                <Textarea value={quote} onChange={setQuote} placeholder="Consistency is the key..." className="h-24" />
+                <Textarea value={quote} onChange={e => setQuote(e.target.value)} placeholder="Consistency is the key..." className="h-24" />
               </div>
               <div className="grid grid-cols-2 gap-6 items-center border-t pt-4">
                 <div className="space-y-2">
-                  <Label>Display Order (Lower comes first)</Label>
-                  <Input type="number" value={order} onChange={setOrder} required />
+                  <Label>Display Order</Label>
+                  <Input type="number" value={order} onChange={e => setOrder(e.target.value)} required />
                 </div>
                 <div className="flex items-center gap-3">
                   <Switch checked={isPublished} onCheckedChange={setIsPublished} />
@@ -217,10 +220,10 @@ export default function StarsAdminPage() {
                   {item.rank && <p className="text-xs font-bold text-muted-foreground">{item.rank}</p>}
                 </div>
                 <div className="flex gap-2 pt-2 border-t">
-                  <Button variant="outline" size="sm" className="flex-1" onClick={() => handleEdit(item)}>
+                  <Button variant="outline" size="sm" className="flex-1" onClick={(e) => handleEdit(item, e)}>
                     <Edit className="w-4 h-4 mr-2" /> Edit
                   </Button>
-                  <Button variant="outline" size="sm" className="w-10 p-0 text-destructive border-destructive/20 hover:bg-destructive/10" onClick={() => handleDelete(item.id)}>
+                  <Button variant="outline" size="sm" className="w-10 p-0 text-destructive border-destructive/20 hover:bg-destructive/10" onClick={(e) => handleDelete(item.id, e)}>
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>

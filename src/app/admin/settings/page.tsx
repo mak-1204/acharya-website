@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useFirestore } from '@/firebase';
+import { useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { doc, setDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,28 +29,33 @@ export default function SiteSettingsPage() {
         setLoading(false);
       },
       (err) => {
-        toast({ title: 'Error fetching settings', description: err.message, variant: 'destructive' });
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          operation: 'get',
+          path: 'site_settings/general',
+        }));
         setLoading(false);
       }
     );
     return () => unsub();
   }, [db]);
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!db) return;
     setSubmitting(true);
-    try {
-      await setDoc(doc(db, 'site_settings', 'general'), {
-        enquiryFormUrl,
-        updatedAt: serverTimestamp()
-      }, { merge: true });
-      toast({ title: 'Settings Saved', description: 'Global enquiry link updated successfully.' });
-    } catch (err: any) {
-      toast({ variant: 'destructive', title: 'Error saving', description: err.message });
-    } finally {
-      setSubmitting(false);
-    }
+    const data = { enquiryFormUrl, updatedAt: serverTimestamp() };
+    const docRef = doc(db, 'site_settings', 'general');
+
+    setDoc(docRef, data, { merge: true }).catch(async (error) => {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: docRef.path,
+        operation: 'write',
+        requestResourceData: data,
+      }));
+    });
+
+    toast({ title: 'Settings Saved', description: 'Global enquiry link updated successfully.' });
+    setSubmitting(false);
   };
 
   if (loading) {
