@@ -4,13 +4,15 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Instagram, Linkedin, Mail, Phone, MapPin, ExternalLink } from 'lucide-react';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const MAPS_URL = "https://maps.app.goo.gl/TZzPBCmpdXqS4KDC6";
 const INSTAGRAM_URL = "https://www.instagram.com/acharyaeducation_madurai?igsh=MTduemJtM2s4aDIyYw==";
 const LINKEDIN_URL = "https://www.linkedin.com/in/acharya-education-b17a35275/";
 
 export const Footer = () => {
-  const [year, setYear] = useState("2026");
+  const [year, setYear] = useState("2025");
+  const logoImage = PlaceHolderImages.find(img => img.id === 'footer-logo');
 
   useEffect(() => {
     setYear(new Date().getFullYear().toString());
@@ -26,13 +28,16 @@ export const Footer = () => {
             <div className="flex items-start gap-6">
               {/* White Square Logo Container */}
               <div className="bg-white p-2 rounded-xl w-24 h-24 flex items-center justify-center shrink-0 shadow-lg">
-                <Image 
-                  src="/logo.png" 
-                  alt="Acharya Education" 
-                  width={80}
-                  height={80}
-                  className="object-contain"
-                />
+                {logoImage && (
+                  <Image 
+                    src={logoImage.imageUrl} 
+                    alt={logoImage.description} 
+                    width={80}
+                    height={80}
+                    className="object-contain"
+                    data-ai-hint={logoImage.imageHint}
+                  />
+                )}
               </div>
               
               {/* Vertical Separator */}

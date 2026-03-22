@@ -7,6 +7,12 @@
       "imageHint": "student studying"
     },
     {
+      "id": "footer-logo",
+      "description": "Acharya Education Brand Logo",
+      "imageUrl": "https://picsum.photos/seed/acharya-logo-shield/200/200",
+      "imageHint": "educational logo"
+    },
+    {
       "id": "anish-kumar",
       "description": "Anish Kumar JEE Result",
       "imageUrl": "https://picsum.photos/seed/student1/300/400",
