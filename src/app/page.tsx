@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -174,6 +173,11 @@ export default function Home() {
 
   return (
     <div className="flex flex-col w-full overflow-x-hidden">
+      {/* Visual H1 for SEO */}
+      <h1 className="sr-only">
+        Best JEE NEET CLAT CUET Coaching Institute in Madurai Since 2007 - Acharya Education
+      </h1>
+
       {/* 1. HERO SECTION */}
       <section id="hero" className="relative w-full pt-0 overflow-hidden">
         {siteData.banners.length > 0 ? (
@@ -192,9 +196,9 @@ export default function Home() {
                         <Badge className="bg-white/20 text-white border-none px-4 py-1.5 uppercase tracking-wider text-[10px] md:text-xs">
                           Promoted
                         </Badge>
-                        <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-tight">
+                        <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight leading-tight">
                           {banner.title}
-                        </h1>
+                        </h2>
                         <p className="text-base md:text-xl text-white/80">
                           {banner.subtitle}
                         </p>
@@ -212,7 +216,7 @@ export default function Home() {
                           {banner.imageUrl && (
                             <Image 
                               src={banner.imageUrl} 
-                              alt={banner.title} 
+                              alt={`JEE NEET Coaching Classes Madurai - ${banner.title}`} 
                               fill 
                               className="object-cover transition-transform duration-700 group-hover:scale-105" 
                               priority
@@ -275,7 +279,7 @@ export default function Home() {
               <div>
                 <span className="text-primary font-bold text-sm tracking-widest uppercase block mb-2">About Us</span>
                 <h2 className="text-3xl md:text-5xl font-bold text-secondary leading-tight">
-                  Madurai's Most Trusted Coaching Since 2007
+                  About Acharya Education
                 </h2>
               </div>
               <div className="space-y-4 text-muted-foreground text-lg leading-relaxed">
@@ -298,7 +302,7 @@ export default function Home() {
             <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl border border-white/50 relative overflow-hidden">
                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                <div className="space-y-6 relative z-10">
-                 <h4 className="text-secondary font-bold text-xl mb-6">Why Choose Acharya?</h4>
+                 <h3 className="text-secondary font-bold text-xl mb-6">Why Choose Acharya Education</h3>
                  {[
                    "Expert Faculty with 15+ Years Experience",
                    "Limited Batch Size of 15 Students",
@@ -322,7 +326,7 @@ export default function Home() {
       <section id="courses" className="py-16 md:py-24 bg-white scroll-mt-16">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="text-center mb-10 md:mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary mb-4">Our Impulse</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-secondary mb-4">Our Courses</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto italic text-sm md:text-base">Guiding Madurai's brightest minds towards excellence.</p>
           </div>
 
@@ -414,7 +418,7 @@ export default function Home() {
                             {star.photo ? (
                               <Image 
                                 src={star.photo} 
-                                alt={star.name} 
+                                alt={`${star.name} - JEE NEET Topper Madurai Acharya Education`} 
                                 fill 
                                 className="object-cover" 
                                 unoptimized={star.photo.includes('drive.google.com') || star.photo.includes('ibb.co') || star.photo.includes('postimg.cc')}
@@ -466,7 +470,7 @@ export default function Home() {
                   {img.imageUrl && (
                     <Image 
                       src={img.imageUrl} 
-                      alt={img.caption || 'Gallery'} 
+                      alt={img.caption || `Inside Acharya Education Campus Madurai - Gallery Image ${i+1}`} 
                       fill 
                       className="object-cover transition-transform duration-500 group-hover:scale-110" 
                       unoptimized={img.imageUrl.includes('drive.google.com') || img.imageUrl.includes('ibb.co') || img.imageUrl.includes('postimg.cc')}

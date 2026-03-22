@@ -25,8 +25,8 @@ export const Footer = () => {
             <div className="flex flex-col sm:flex-row items-center gap-6">
               <Link href="/" className="inline-block bg-white p-3 rounded-2xl overflow-hidden shadow-2xl shrink-0 transition-transform hover:scale-105">
                 <Image 
-                  src="/WhatsApp Image 2026-03-17 at 7.07.47 PM.jpeg" 
-                  alt="Acharya Education Logo" 
+                  src="/logo.png" 
+                  alt="Acharya Education Logo - Best Coaching Institute Madurai" 
                   width={320}
                   height={100}
                   className="h-16 md:h-24 w-auto object-contain"

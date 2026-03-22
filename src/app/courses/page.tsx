@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -12,8 +11,8 @@ import {
   ExternalLink, LayoutGrid, Phone, Loader2, ArrowLeft 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { db } from '@/lib/firebase';
-import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
+import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 
 const DEFAULT_GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdU7f-A8m7OqD7-r1tI_mO8-z8U-v-placeholder/viewform";
 
@@ -32,20 +31,20 @@ export default function CoursesPage() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const db = useFirestore();
 
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const snap = await getDocs(query(collection(db, 'courses'), where('isPublished', '==', true), orderBy('order', 'asc')));
-        setCourses(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-      } catch (err) {
-        console.error("Error fetching courses:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCourses();
-  }, []);
+    if (!db) return;
+    const q = query(collection(db, 'courses'), where('isPublished', '==', true), orderBy('order', 'asc'));
+    const unsub = onSnapshot(q, (snap) => {
+      setCourses(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setLoading(false);
+    }, (err) => {
+      console.error("Error fetching courses:", err);
+      setLoading(false);
+    });
+    return () => unsub();
+  }, [db]);
 
   const handleFilterChange = (category: string) => {
     setActiveCategory(category);
@@ -60,12 +59,10 @@ export default function CoursesPage() {
   useEffect(() => {
     const hash = window.location.hash.replace('#', '');
     if (hash) {
-      // Check if the hash matches a category or a slug
       setActiveCategory(hash);
     }
   }, [courses]);
 
-  // Derive unique categories from the course list
   const uniqueCategories = Array.from(new Set(courses.map(c => c.category).filter(Boolean))) as string[];
 
   const displayCourses = activeCategory === 'all' 
@@ -108,7 +105,7 @@ export default function CoursesPage() {
           {/* Sidebar Navigation */}
           <aside className="lg:w-1/4 lg:sticky lg:top-24 h-fit z-20">
              <div className="bg-white p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm border border-border">
-                <h4 className="hidden lg:block text-xs font-bold text-muted-foreground uppercase tracking-widest mb-6 px-2">Program Categories</h4>
+                <h2 className="hidden lg:block text-xs font-bold text-muted-foreground uppercase tracking-widest mb-6 px-2">Program Categories</h2>
                 <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 no-scrollbar scroll-smooth">
                   <button
                     onClick={() => handleFilterChange('all')}
@@ -197,7 +194,7 @@ export default function CoursesPage() {
                          
                          {course.highlights && Array.isArray(course.highlights) && course.highlights.length > 0 && (
                            <div className="space-y-3">
-                              <h4 className="text-[10px] md:text-sm font-bold text-secondary uppercase tracking-widest mb-4">Program Highlights</h4>
+                              <h3 className="text-[10px] md:text-sm font-bold text-secondary uppercase tracking-widest mb-4">Program Highlights</h3>
                               <div className="grid grid-cols-1 gap-3">
                                 {course.highlights.map((h: string, i: number) => (
                                   <div key={i} className="flex items-center gap-3 bg-muted/30 p-3 md:p-4 rounded-xl md:rounded-2xl border border-transparent hover:border-primary/20 hover:bg-white transition-all">
