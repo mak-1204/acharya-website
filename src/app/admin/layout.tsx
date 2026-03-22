@@ -18,6 +18,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
 
   useEffect(() => {
+    // Check auth on every mount/render using sessionStorage
+    const isAuth = sessionStorage.getItem('adminAuth');
+    if (!isAuth && pathname !== '/admin/login') {
+      router.replace('/admin/login');
+      return;
+    }
+
     // Skip guard for login page
     if (pathname === '/admin/login') {
       setLoading(false);
@@ -30,6 +37,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       if (u) {
         setUser(u);
       } else {
+        // Extra safety check: if Firebase thinks we're out, clear sessionStorage
+        sessionStorage.removeItem('adminAuth');
         router.push('/admin/login');
       }
       setLoading(false);
@@ -68,6 +77,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const handleLogout = async () => {
     if (!auth) return;
+    // Explicit logout clears the session
+    sessionStorage.removeItem('adminAuth');
     await signOut(auth);
     router.push('/admin/login');
   };

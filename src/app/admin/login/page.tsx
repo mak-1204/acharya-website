@@ -65,7 +65,9 @@ export default function LoginPage() {
           description: "This email is not authorized in the database.",
         });
       } else {
-        // Success
+        // Success - Set sessionStorage for auto sign-out on close/refresh
+        sessionStorage.setItem('adminAuth', 'true');
+        
         toast({
           title: "Login Successful",
           description: "Welcome back, admin.",
