@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { MainLayoutWrapper } from '@/components/MainLayoutWrapper';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: 'Acharya Education | Best JEE NEET CLAT CUET Coaching in Madurai',
@@ -272,6 +273,7 @@ export default function RootLayout({
           </MainLayoutWrapper>
           <Toaster />
         </FirebaseClientProvider>
+        <Analytics />
       </body>
     </html>
   );
